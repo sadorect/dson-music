@@ -37,9 +37,11 @@
     <link rel="stylesheet" href="{{ asset('css/dson-theme.css') }}">
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="{{ asset('js/dson-main.js') }}" defer></script>
-</head><body class="font-sans antialiased">
+    
+    @vite(['resources/css/app.css', 'resources/css/dson-theme.css', 'resources/js/app.js'])
+
+</head>
+<body class="font-sans antialiased">
     <div class="min-h-screen">
         @include('layouts.navigation')
         

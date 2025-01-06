@@ -1,0 +1,149 @@
+:root {
+  --dson-red: #ff0000;
+  --dson-black: #000000;
+  --dson-white: #ffffff;
+  --dson-gray: #f5f5f5;
+}
+
+body {
+  background-color: var(--dson-white);
+  color: var(--dson-black);
+}
+
+.dson-primary {
+  color: var(--dson-red);
+}
+
+.dson-btn {
+  background-color: var(--dson-red);
+  color: var(--dson-white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: opacity 0.3s ease;
+}
+
+.dson-btn:hover {
+  opacity: 0.9;
+}
+
+.dson-nav {
+  background-color: var(--dson-black);
+  color: var(--dson-white);
+}
+
+.dson-player {
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.dson-btn-player {
+    background-color: var(--dson-red);
+    color: var(--dson-white);
+    padding: 8px 16px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.track-info {
+    max-width: 300px;
+}
+
+.dson-nav {
+  background-color: var(--dson-black);
+  border-bottom: 2px solid var(--dson-red);
+}
+
+.nav-link {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.nav-link:after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--dson-red);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover:after,
+.nav-link.active:after {
+  width: 100%;
+}
+
+.search-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--dson-red);
+}
+
+.user-dropdown {
+  background: var(--dson-black);
+  border: 1px solid var(--dson-red);
+}
+
+.mobile-menu {
+  backdrop-filter: blur(10px);
+}
+
+/* Hero Section Enhancements */
+.hero-section {
+  background: linear-gradient(to right, var(--dson-black), #1a1a1a);
+  padding: 120px 0;
+}
+
+/* Featured Playlists */
+.playlist-card {
+  background: var(--dson-white);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.playlist-card:hover {
+  transform: translateY(-5px);
+}
+
+/* New Releases Section */
+.new-releases {
+  background-color: var(--dson-gray);
+}
+
+/* Navigation Refinements */
+.dson-nav {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Button Improvements */
+.dson-btn {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.playlist-card img {
+  transition: transform 0.3s ease;
+}
+
+.playlist-card:hover img {
+  transform: scale(1.05);
+}
+
+.new-releases .bg-white {
+  transition: all 0.3s ease;
+}
+
+.new-releases .bg-white:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
