@@ -1,0 +1,33 @@
+:root {
+  --dson-red: #ff0000;
+  --dson-black: #000000;
+  --dson-white: #ffffff;
+  --dson-gray: #f5f5f5;
+}
+
+body {
+  background-color: var(--dson-white);
+  color: var(--dson-black);
+}
+
+.dson-primary {
+  color: var(--dson-red);
+}
+
+.dson-btn {
+  background-color: var(--dson-red);
+  color: var(--dson-white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: opacity 0.3s ease;
+}
+
+.dson-btn:hover {
+  opacity: 0.9;
+}
+
+.dson-nav {
+  background-color: var(--dson-black);
+  color: var(--dson-white);
+}
