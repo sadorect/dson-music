@@ -1,5 +1,5 @@
 import './bootstrap';
-
+import './tracks.js';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;

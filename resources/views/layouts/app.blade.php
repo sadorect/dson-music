@@ -39,7 +39,8 @@
     <!-- Scripts -->
     
     @vite(['resources/css/app.css', 'resources/css/dson-theme.css', 'resources/js/app.js'])
-
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen">

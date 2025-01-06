@@ -147,3 +147,27 @@ body {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
+
+@media (max-width: 768px) {
+    .track-card {
+        @apply col-span-1;
+    }
+    
+    .dson-player {
+        @apply p-2;
+    }
+    
+    .track-info {
+        @apply max-w-[150px];
+    }
+}
+
+@media (max-width: 640px) {
+    .hero-section {
+        @apply py-12;
+    }
+    
+    .hero-section h1 {
+        @apply text-3xl;
+    }
+}

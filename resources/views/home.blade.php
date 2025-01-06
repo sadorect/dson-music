@@ -44,14 +44,7 @@
 <section class="py-16 bg-gray-50">
     <div class="container mx-auto px-4">
         <h2 class="text-3xl font-bold mb-8">New Releases</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="bg-white p-4 rounded-lg shadow-sm">
-                <img src="path/to/album1.jpg" alt="Album" class="w-full aspect-square object-cover rounded-lg mb-3">
-                <h4 class="font-semibold">Song Title</h4>
-                <p class="text-gray-600 text-sm">Artist Name</p>
-            </div>
-            <!-- Repeat for other tracks -->
-        </div>
+        @include('components.tracks-grid')
     </div>
 </section>
 
