@@ -1,4 +1,6 @@
 <x-guest-layout>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <div class="min-h-screen flex items-center justify-center bg-black">
         <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-xl">
             <div class="text-center mb-8">
@@ -6,8 +8,20 @@
                 <p class="text-gray-600 mt-2">Start your musical journey today</p>
             </div>
 
-            <form method="POST" action="{{ route('register') }}" class="space-y-6">
-                @csrf
+                    <form method="POST" action="{{ route('register') }}" class="space-y-6" id="registerForm" >
+                        @csrf
+
+                        @if (session('error'))
+                            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session('success'))
+                            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                                {{ session('success') }}
+                            </div>
+                        @endif
 
                 <!-- Name -->
                 <div>
@@ -46,7 +60,8 @@
                     </select>
                     <x-input-error :messages="$errors->get('user_type')" class="mt-2" />
                 </div>
-
+                
+               
                 <div class="flex items-center justify-between mt-6">
                     <a class="text-sm text-gray-600 hover:text-red-500" href="{{ route('login') }}">
                         {{ __('Already registered?') }}
@@ -59,4 +74,8 @@
             </form>
         </div>
     </div>
+    @push('scripts')
+    <script src="{{ asset('js/recaptcha.js') }}"></script>
+    @endpush
+    
 </x-guest-layout>

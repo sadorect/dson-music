@@ -3,9 +3,10 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\ArtistProfile;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -48,7 +49,7 @@ class User extends Authenticatable
     }
 
     public function isArtist()
-    {
+    { 
         return $this->user_type === 'artist';
     }
 
@@ -56,4 +57,10 @@ class User extends Authenticatable
     {
         return $this->user_type === 'admin';
     }
+
+    public function artistProfile()
+    {
+        return $this->hasOne(ArtistProfile::class);
+    }
 }
+

@@ -33,18 +33,30 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+             'user_type' => ['required', 'in:user,artist']
+            //'recaptcha_token' => ['required', 'string'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'user_type' => $request->user_type,
+            ]);
 
-        event(new Registered($user));
+            event(new Registered($user));
 
-        Auth::login($user);
+            Auth::login($user);
+            if ($user->user_type === 'artist') {
+                return redirect()->route('artist.register');
+            }
 
-        return redirect(route('dashboard', absolute: false));
+            session()->flash('success', 'Registration completed successfully!');
+            return redirect(route('dashboard', absolute: false));
+        } catch (\Exception $e) {
+            session()->flash('error', 'Registration failed. Please try again.');
+            return back()->withInput($request->except('password'));
+        }
     }
 }

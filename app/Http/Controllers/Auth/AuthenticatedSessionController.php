@@ -28,6 +28,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        if ($user->isArtist()) {
+            
+            return redirect()->route('artist.dashboard');
+        }
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+        dd('is regular user');
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

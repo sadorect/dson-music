@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ArtistProfile;
+use Illuminate\Support\Facades\Auth;
 
 class ArtistController extends Controller
 {
@@ -36,5 +37,17 @@ class ArtistController extends Controller
 
         return redirect()->route('artist.dashboard')->with('success', 'Artist profile created successfully!');
     }
+
+    public function dashboard()
+    {
+        if (!auth()->user()->artistProfile) {
+            return redirect()->route('artist.register.form')
+                ->with('message', 'Please complete your artist profile first');
+        }
+    
+        $artist = auth()->user()->artistProfile;
+        return view('artist.dashboard', compact('artist'));
+    }
+
 }
 
