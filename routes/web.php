@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -30,6 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/artist/register', [ArtistController::class, 'showRegistrationForm'])->name('artist.register.form');
     Route::post('/artist/register', [ArtistController::class, 'register'])->name('artist.register');
     Route::get('/artist/dashboard', [ArtistController::class, 'dashboard'])->name('artist.dashboard');
+    Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
+     // Track routes
+     Route::resource('artist/tracks', TrackController::class, ['as' => 'artist']);
 });
 
 Route::get('/artist/profile/create', [ArtistController::class, 'create'])->name('artist.profile.create');

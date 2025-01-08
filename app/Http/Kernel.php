@@ -12,5 +12,12 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'artist.profile.complete' => \App\Http\Middleware\EnsureArtistProfileComplete::class,
         'recaptcha' => \App\Http\Middleware\VerifyReCaptcha::class,
+        //'filesize' => \App\Http\Middleware\HandlePostSizeErrors::class,
     ];
+
+    protected $middleware = [
+        // ... other middleware
+        //\App\Http\Middleware\HandlePostSizeErrors::class,
+    ];
+    
 }
