@@ -2,11 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -47,6 +51,21 @@ Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.p
     Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
      // Track routes
      Route::resource('artist/tracks', TrackController::class, ['as' => 'artist']);
+
+     // Follow routes
+    Route::post('artists/{artist}/follow', [FollowController::class, 'follow'])->name('artists.follow');
+    Route::delete('artists/{artist}/unfollow', [FollowController::class, 'unfollow'])->name('artists.unfollow');
+
+    // Like routes
+    Route::post('tracks/{track}/like', [LikeController::class, 'toggleLike'])->name('tracks.like');
+
+    // Comment routes
+    Route::post('tracks/{track}/comments', [CommentController::class, 'store'])->name('tracks.comments.store');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Download routes
+    Route::get('tracks/{track}/download', [DownloadController::class, 'download'])->name('tracks.download');
+
 });
 
 
