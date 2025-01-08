@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\PlayHistory;
 use Illuminate\Database\Eloquent\Model;
 
 class Track extends Model
@@ -49,4 +50,9 @@ class Track extends Model
         $this->increment('play_count');
     }
     
+    public function plays()
+{
+    return $this->hasMany(PlayHistory::class);
+}
+
 }

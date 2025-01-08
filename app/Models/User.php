@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Playlist;
+use App\Models\PlayHistory;
 use App\Models\ArtistProfile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -78,6 +79,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Playlist::class);
     }
+
+    public function plays()
+    {
+        return $this->hasMany(PlayHistory::class);
+    }
+
 /*
     public function likes()
     {

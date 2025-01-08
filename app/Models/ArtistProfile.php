@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\Album;
 use App\Models\Track;
+use App\Models\PlayHistory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class ArtistProfile extends Model
@@ -43,6 +45,26 @@ public function tracks()
 
 }
 
+
+
+public function plays()
+{
+    return $this->hasManyThrough(PlayHistory::class, Track::class, 'artist_id', 'track_id');
+}
+
+public function getAnalytics($days = 30)
+{
+    return [
+        'total_plays' => $this->plays()->count(),
+        'unique_listeners' => $this->plays()->distinct('user_id')->count(),
+        'plays_by_day' => $this->plays()
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->take($days)
+            ->get()
+    ];
+}
 
 
 }
