@@ -7,6 +7,7 @@ use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -55,3 +56,6 @@ Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tra
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/search/{query}', [SearchController::class, 'index'])->name('search.query');
 Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('search.quick');
+
+Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
+Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');

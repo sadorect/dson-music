@@ -35,4 +35,18 @@ class Track extends Model
     {
         return $this->belongsTo(Album::class);
     }
+
+
+    public function scopeTrending($query)
+    {
+        return $query->where('status', 'published')
+            ->orderBy('play_count', 'desc')
+            ->take(10);
+    }
+
+    public function incrementPlayCount()
+    {
+        $this->increment('play_count');
+    }
+    
 }

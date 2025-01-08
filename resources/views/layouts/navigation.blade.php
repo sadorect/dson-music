@@ -23,6 +23,9 @@
                     <x-nav-link href="#" class="text-white">
                         {{ __('Radio') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('trending')" :active="request()->routeIs('trending')">
+                        {{ __('Trending') }}
+                    </x-nav-link>
                 </div>
             </div>
 <!-- Mobile Search (Shows in hamburger menu) -->

@@ -172,4 +172,11 @@ class TrackController extends Controller
         return redirect()->route('artist.tracks.index')
             ->with('success', 'Track deleted successfully');
     }
+
+    public function recordPlay(Track $track)
+{
+    $track->incrementPlayCount();
+    return response()->json(['success' => true]);
+}
+
 }

@@ -32,6 +32,13 @@ window.tracksGrid = function() {
             
             this.currentTrackIndex = this.tracks.findIndex(t => t.id === track.id);
             
+            // Record play
+            fetch(`/tracks/${track.id}/play`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
             window.player = new Howl({
                 src: [track.audioUrl],
                 html5: true,
