@@ -50,6 +50,7 @@ Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('art
 
 
 require __DIR__.'/auth.php';
+require __DIR__.'/admin.php';
 
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
 

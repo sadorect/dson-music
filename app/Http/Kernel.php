@@ -20,5 +20,11 @@ class Kernel extends HttpKernel
         //\App\Http\Middleware\HandlePostSizeErrors::class,
         \App\Http\Middleware\CSPMiddleware::class,
     ];
+
+    protected $routeMiddleware = [
+        // ... other middlewares
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
+    ];
+    
     
 }

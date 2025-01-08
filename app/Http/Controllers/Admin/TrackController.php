@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Track;
+use Illuminate\Http\Request;
+
+class TrackController extends Controller
+{
+    public function index()
+    {
+        $tracks = Track::with(['artist', 'album'])
+            ->withCount('plays')
+            ->latest()
+            ->paginate(20);
+            
+        return view('admin.tracks.index', compact('tracks'));
+    }
+
+    public function edit(Track $track)
+    {
+        return view('admin.tracks.edit', compact('track'));
+    }
+
+    public function update(Request $request, Track $track)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'status' => 'required|in:published,draft,private',
+            'is_featured' => 'boolean'
+        ]);
+
+        $track->update($validated);
+        
+        return redirect()->route('admin.tracks.index')
+            ->with('success', 'Track updated successfully');
+    }
+}
