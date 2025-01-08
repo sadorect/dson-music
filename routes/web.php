@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -50,3 +51,7 @@ Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('art
 require __DIR__.'/auth.php';
 
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
+
+Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::get('/search/{query}', [SearchController::class, 'index'])->name('search.query');
+Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('search.quick')->withoutMiddleware(['auth']);

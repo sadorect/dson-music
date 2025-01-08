@@ -64,8 +64,12 @@ window.tracksGrid = function() {
         togglePlay() {
             if (window.player) {
                 if (window.player.playing()) {
+                    // Store current position before pausing
+                    this.currentPosition = window.player.seek();
                     window.player.pause();
                 } else {
+                    // Resume from stored position
+                    window.player.seek(this.currentPosition);
                     window.player.play();
                 }
             }
