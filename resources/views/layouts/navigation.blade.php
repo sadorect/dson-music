@@ -40,51 +40,23 @@
     </div>
 </div>
             <!-- Search Bar -->
-            <div class="hidden sm:flex sm:items-center" x-data="{ 
-                query: '', 
-                results: [],
-                async search() {
-                    if (this.query.length < 2) {
-                        this.results = [];
-                        return;
-                    }
-                    
-                    try {
-                        const response = await fetch(`/search/quick?q=${this.query}`);
-                        this.results = await response.json();
-                    } catch (error) {
-                        console.log('Search failed:', error);
-                    }
-                }
-            }">
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        x-model="query"
-                        @input.debounce.300ms="search"
-                        class="bg-gray-800 text-white rounded-full py-2 px-4 pl-10 w-64 focus:w-96 transition-all duration-300"
-                        placeholder="Search tracks, artists...">
-                    <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
-            
-                    <!-- Results Dropdown -->
-                    <div 
-                        x-show="query.length > 1 && results.length > 0"
-                        @click.away="results = []"
-                        class="absolute mt-2 w-full bg-gray-900 rounded-lg shadow-lg z-50">
-                        <div class="max-h-96 overflow-y-auto py-2">
-                            <template x-for="result in results" :key="result.id">
-                                <a :href="result.url" class="flex items-center px-4 py-2 hover:bg-gray-800">
-                                    <img :src="result.image" class="w-10 h-10 rounded">
-                                    <div class="ml-3">
-                                        <p x-text="result.title" class="text-white"></p>
-                                        <p x-text="result.subtitle" class="text-sm text-gray-400"></p>
-                                    </div>
-                                </a>
-                            </template>
-                        </div>
+            <div class="hidden sm:flex sm:items-center">
+                <form action="{{ route('search') }}" method="GET">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            name="q"
+                            class="bg-gray-800 text-white rounded-full py-2 px-4 pl-10 w-64"
+                            placeholder="Search tracks, artists...">
+                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                        <button type="submit" class="hidden">Search</button>
                     </div>
-                </div>
+                </form>
             </div>
+            
+            
+            
+               
 
             <!-- User Menu -->
             @auth

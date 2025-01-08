@@ -54,4 +54,4 @@ Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tra
 
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/search/{query}', [SearchController::class, 'index'])->name('search.query');
-Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('search.quick')->withoutMiddleware(['auth']);
+Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('search.quick');
