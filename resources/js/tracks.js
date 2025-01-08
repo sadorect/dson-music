@@ -1,76 +1,100 @@
 window.tracksGrid = function() {
     return {
         tracks: [],
-        player: null,
+        currentTrackIndex: 0,
         
         init() {
             this.loadTracks();
-            this.initPlayer();
+            window.player = null;
+            this.setupEventListeners();
         },
         
         async loadTracks() {
-            this.tracks = [
-                {
-                    id: 1,
-                    title: "Classical Symphony",
-                    artist: "Mozart Orchestra",
-                    artwork: "https://images.pexels.com/photos/3944091/pexels-photo-3944091.jpeg",
-                    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-                },
-                {
-                    id: 2,
-                    title: "Jazz Fusion",
-                    artist: "The Cool Quartet",
-                    artwork: "https://images.pexels.com/photos/4087991/pexels-photo-4087991.jpeg",
-                    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-                },
-                {
-                    id: 3,
-                    title: "Electronic Dreams",
-                    artist: "Digital Waves",
-                    artwork: "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg",
-                    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-                },
-                {
-                    id: 4,
-                    title: "Rock Anthem",
-                    artist: "The Amplifiers",
-                    artwork: "https://images.pexels.com/photos/1389429/pexels-photo-1389429.jpeg",
-                    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
-                },
-                {
-                    id: 5,
-                    title: "Urban Beat",
-                    artist: "Street Rhythm",
-                    artwork: "https://images.pexels.com/photos/1626481/pexels-photo-1626481.jpeg",
-                    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
-                },
-                {
-                    id: 6,
-                    title: "Acoustic Session",
-                    artist: "Wood & Strings",
-                    artwork: "https://images.pexels.com/photos/1407322/pexels-photo-1407322.jpeg",
-                    audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
-                }
-            ];
+            try {
+                const response = await fetch('/tracks/public');
+                this.tracks = await response.json();
+            } catch (error) {
+                console.log('Error loading tracks:', error);
+            }
         },
         
-        initPlayer() {
-            this.player = new Howl({
-                src: [],
-                html5: true
-            });
+        setupEventListeners() {
+            window.addEventListener('player:toggle', () => this.togglePlay());
+            window.addEventListener('player:previous', () => this.previousTrack());
+            window.addEventListener('player:next', () => this.nextTrack());
+            window.addEventListener('player:seek', (e) => this.seek(e.detail.percent));
         },
         
         playTrack(track) {
-            if (this.player.playing()) {
-                this.player.stop();
+            if (window.player) {
+                window.player.unload();
             }
-            this.player = new Howl({
+            
+            this.currentTrackIndex = this.tracks.findIndex(t => t.id === track.id);
+            
+            window.player = new Howl({
                 src: [track.audioUrl],
-                html5: true
+                html5: true,
+                autoplay: true,
+                volume: 1.0,
+                onload: () => {
+                    window.dispatchEvent(new CustomEvent('track:duration', { 
+                        detail: { duration: window.player.duration() } 
+                    }));
+                },
+                onplay: () => {
+                    this.updateProgress();
+                },
+                onend: () => this.nextTrack()
             });
-            this.player.play();
+            
+            window.dispatchEvent(new CustomEvent('track:play', { detail: track }));
+        },
+        
+        updateProgress() {
+            if (window.player && window.player.playing()) {
+                const seek = window.player.seek() || 0;
+                window.dispatchEvent(new CustomEvent('track:progress', { 
+                    detail: { currentTime: seek } 
+                }));
+                requestAnimationFrame(() => this.updateProgress());
+            }
+        },
+
+        togglePlay() {
+            if (window.player) {
+                if (window.player.playing()) {
+                    window.player.pause();
+                } else {
+                    window.player.play();
+                }
+            }
+        },
+        
+        previousTrack() {
+            if (this.currentTrackIndex > 0) {
+                this.playTrack(this.tracks[this.currentTrackIndex - 1]);
+            }
+        },
+        
+        nextTrack() {
+            if (this.currentTrackIndex < this.tracks.length - 1) {
+                this.playTrack(this.tracks[this.currentTrackIndex + 1]);
+            }
+        },
+        
+        seek(percent) {
+                if (window.player) {
+                const duration = window.player.duration();
+                const seekTime = duration * percent;
+                window.player.seek(seekTime);
+                 // Emit progress event with new position
+                window.dispatchEvent(new CustomEvent('track:progress', { 
+                    detail: { currentTime: seekTime,
+                        duration: duration,
+                        percent: percent * 100 } 
+                }));
+            }
         }
     }
 }

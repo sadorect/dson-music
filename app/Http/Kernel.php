@@ -18,6 +18,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         // ... other middleware
         //\App\Http\Middleware\HandlePostSizeErrors::class,
+        \App\Http\Middleware\CSPMiddleware::class,
     ];
     
 }

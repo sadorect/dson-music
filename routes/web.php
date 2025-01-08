@@ -6,9 +6,14 @@ use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
+->name('artist.tracks.api')
+->middleware(['auth']);
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -43,3 +48,5 @@ Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('art
 
 
 require __DIR__.'/auth.php';
+
+Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');

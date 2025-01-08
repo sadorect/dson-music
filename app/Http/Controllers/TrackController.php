@@ -11,6 +11,25 @@ use Illuminate\Support\Facades\Storage;
 
 class TrackController extends Controller
 {
+    public function apiIndex()
+    {
+        $tracks = auth()->user()->artistProfile->tracks()
+            ->select(['id', 'title', 'file_path', 'cover_art'])
+            ->with('artist:id,artist_name')
+            ->get()
+            ->map(function ($track) {
+                return [
+                    'id' => $track->id,
+                    'title' => $track->title,
+                    'artist' => $track->artist->artist_name,
+                    'artwork' => Storage::url($track->cover_art),
+                    'audioUrl' => Storage::url($track->file_path)
+                ];
+            });
+
+        return response()->json($tracks);
+    }
+
     public function index()
     {
         $tracks = auth()->user()->artistProfile->tracks()->latest()->paginate(10);

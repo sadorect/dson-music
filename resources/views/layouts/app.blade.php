@@ -17,6 +17,8 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:image" content="{{ asset('images/dson-music-og.jpg') }}">
     
+
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="DSON Music">
@@ -32,15 +34,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/dson-theme.css') }}">
+    
 
     <!-- Scripts -->
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script> 
     @vite(['resources/css/app.css', 'resources/css/dson-theme.css', 'resources/js/app.js'])
     <script src="https://unpkg.com/alpinejs" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+   
     <script>
         window.recaptchaSiteKey = "{{ config('services.recaptcha.site_key') }}";
     </script>
