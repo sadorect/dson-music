@@ -16,14 +16,16 @@ class ArtistProfile extends Model
         'profile_image',
         'cover_image',
         'social_links',
-        'verified',
+        'is_verified',
+        'verified_at',
         'custom_url',
         'completion_percentage'
     ];
 
     protected $casts = [
         'social_links' => 'array',
-        'verified' => 'boolean'
+        'is_verified' => 'boolean',
+        'verified_at' => 'datetime'
     ];
 
     public function user()
@@ -40,5 +42,7 @@ public function tracks()
     return $this->hasMany(Track::class, 'artist_id');
 
 }
+
+
 
 }

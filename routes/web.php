@@ -39,14 +39,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/artist/register', [ArtistController::class, 'showRegistrationForm'])->name('artist.register.form');
     Route::post('/artist/register', [ArtistController::class, 'register'])->name('artist.register');
     Route::get('/artist/dashboard', [ArtistController::class, 'dashboard'])->name('artist.dashboard');
+    Route::get('/artist/profile/create', [ArtistController::class, 'create'])->name('artist.profile.create');
+Route::post('/artist/profile', [ArtistController::class, 'store'])->name('artist.profile.store');
+Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('artist.profile.edit');
+Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.profile.show');
+    
     Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
      // Track routes
      Route::resource('artist/tracks', TrackController::class, ['as' => 'artist']);
 });
 
-Route::get('/artist/profile/create', [ArtistController::class, 'create'])->name('artist.profile.create');
-Route::post('/artist/profile', [ArtistController::class, 'store'])->name('artist.profile.store');
-Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('artist.profile.edit');
+
 
 
 require __DIR__.'/auth.php';

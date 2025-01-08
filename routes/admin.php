@@ -15,6 +15,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('users', UserController::class);
     Route::resource('tracks', TrackController::class);
     Route::resource('artists', ArtistController::class);
+    Route::post('artists/{artist}/verify', [ArtistController::class, 'verify'])->name('artists.verify');
+Route::post('artists/{artist}/unverify', [ArtistController::class, 'unverify'])->name('artists.unverify');
+
+
     Route::get('reports', [ReportController::class, 'index'])->name('reports');
     Route::get('settings', [SettingController::class, 'index'])->name('settings');
 });
