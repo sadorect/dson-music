@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\User;
 use App\Models\Album;
 use App\Models\Track;
+use App\Models\Follow;
 use App\Models\PlayHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -66,5 +67,14 @@ public function getAnalytics($days = 30)
     ];
 }
 
+public function followers()
+{
+    return $this->hasMany(Follow::class);
+}
+
+public function followersCount()
+{
+    return $this->followers()->count();
+}
 
 }

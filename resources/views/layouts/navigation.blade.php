@@ -26,6 +26,15 @@
                     <x-nav-link :href="route('trending')" :active="request()->routeIs('trending')">
                         {{ __('Trending') }}
                     </x-nav-link>
+                    @if(session()->has('impersonated_by'))
+    <form action="{{ route('admin.stop-impersonating') }}" method="POST">
+        @csrf
+        <button type="submit" class="text-red-600 hover:text-red-900">
+            Stop Impersonating
+        </button>
+    </form>
+@endif
+
                 </div>
             </div>
 <!-- Mobile Search (Shows in hamburger menu) -->

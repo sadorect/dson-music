@@ -85,6 +85,11 @@ class User extends Authenticatable
         return $this->hasMany(PlayHistory::class);
     }
 
+    public function isFollowing(ArtistProfile $artist)
+    {
+        return $this->follows()->where('artist_profile_id', $artist->id)->exists();
+    }
+
 /*
     public function likes()
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Like;
 use App\Models\PlayHistory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -51,8 +52,17 @@ class Track extends Model
     }
     
     public function plays()
-{
-    return $this->hasMany(PlayHistory::class);
-}
-
+        {
+            return $this->hasMany(PlayHistory::class);
+        }
+        public function likes()
+        {
+            return $this->morphMany(Like::class, 'likeable');
+        }
+        
+        public function likesCount()
+        {
+            return $this->likes()->count();
+        }
+        
 }
