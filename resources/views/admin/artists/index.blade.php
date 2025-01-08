@@ -59,6 +59,7 @@
                     <!-- Add this in the Actions column -->
                   <td class="px-6 py-4 text-sm font-medium">
                     <div class="flex space-x-3">
+                        <a href="{{ route('admin.artists.show', $artist) }}" class="text-blue-600 hover:text-blue-900">View</a>
                         <a href="{{ route('admin.artists.edit', $artist) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                         
                         @if(!$artist->is_verified)
