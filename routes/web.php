@@ -19,6 +19,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
 ->name('artist.tracks.api')
 ->middleware(['auth']);
+Route::get('/artists/{artist}', [ArtistController::class, 'show'])->name('artists.show');
+
 
 
 Route::get('/dashboard', function () {
@@ -32,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
 });
 
 Route::middleware('auth')->group(function () {

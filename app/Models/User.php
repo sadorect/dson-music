@@ -90,6 +90,15 @@ class User extends Authenticatable
         return $this->follows()->where('artist_profile_id', $artist->id)->exists();
     }
 
+    public function follows()
+    {
+        return $this->hasMany(Follow::class);
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(ArtistProfile::class, 'follows', 'user_id', 'artist_profile_id');
+    }
 /*
     public function likes()
     {
@@ -101,10 +110,7 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
-    public function follows()
-    {
-        return $this->hasMany(Follow::class);
-    }
+    
 
     public function followers()
     {

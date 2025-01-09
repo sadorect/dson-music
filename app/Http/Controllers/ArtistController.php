@@ -49,5 +49,18 @@ class ArtistController extends Controller
         return view('artist.dashboard', compact('artist'));
     }
 
+    // For authenticated artist viewing their own profile
+// For public viewing of artist profiles
+public function show(ArtistProfile $artist)
+{
+    $artist->loadCount(['tracks', 'followers'])
+          ->load(['tracks' => function($query) {
+              $query->withCount(['plays', 'likes', 'downloads']);
+          }]);
+
+    return view('artists.public.show', compact('artist'));
+}
+
+
 }
 

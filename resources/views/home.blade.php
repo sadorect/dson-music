@@ -6,19 +6,14 @@
 <div class="min-h-screen bg-white">
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="container mx-auto px-4">
-            <h1 class="text-5xl font-bold mb-6 animate-fade-in">Your Music, Your Way</h1>
-            <p class="text-xl mb-8 opacity-90">Stream millions of songs with DSON Music</p>
-            <a href="{{ route('register') }}" class="dson-btn text-lg hover:scale-105 transform transition">
-                Start Listening
-            </a>
-        </div>
+        <x-home.hero />
     </section>
     
 
     <!-- Featured Playlists -->
 <section class="py-16">
-    <div class="container mx-auto px-4">
+    <x-home.featured-artists :artists="$featuredArtists" />
+    <!--div class="container mx-auto px-4">
         <h2 class="text-3xl font-bold mb-8">Featured Playlists</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="playlist-card p-6">
@@ -36,7 +31,7 @@
                 <h3 class="text-xl font-bold mb-2">Electronic Mix</h3>
                 <p class="text-gray-600">Best EDM and dance hits</p>
             </div>
-        </div>
+        </div-->
         
     </div></section>
 
@@ -49,6 +44,6 @@
 </section>
 
 
-    @include('components.player')
+
 </div>
 @endsection

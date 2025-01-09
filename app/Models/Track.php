@@ -64,5 +64,16 @@ class Track extends Model
         {
             return $this->likes()->count();
         }
+
+        public function downloads()
+        {
+            return $this->hasMany(Download::class);
+        }
+
+        public function downloadsCount()
+        {
+            return $this->downloads()->count();
+        }
+
         
 }

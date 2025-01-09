@@ -54,7 +54,13 @@
         <!-- Page Content -->
         <main>
             @yield('content')
+            <x-player />
+        <x-footer />
+        
+        @stack('scripts')
         </main>
+        
+      
     </div>
 </body>
 </html>
