@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Track;
 use App\Models\ArtistProfile;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -20,9 +21,18 @@ class HomeController extends Controller
                                     ->take(8)
                                     ->get(),
                                     
-            'newReleases' => Track::latest()
+            'newReleases' => Track::with('artist')
+                                 ->latest()
                                  ->take(8)
                                  ->get(),
+                                 
+            'genres' => Track::select('genre')
+                            ->distinct()
+                            ->pluck('genre'),
+                            
+            'genreCounts' => Track::select('genre', DB::raw('count(*) as count'))
+                                 ->groupBy('genre')
+                                 ->pluck('count', 'genre')
         ];
 
         return view('home', $data);

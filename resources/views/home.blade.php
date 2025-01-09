@@ -9,41 +9,24 @@
         <x-home.hero />
     </section>
     
+    <!-- Featured Artists -->
+    <section class="py-16">
+        <x-home.featured-artists :artists="$featuredArtists" />
+    </section>
 
-    <!-- Featured Playlists -->
-<section class="py-16">
-    <x-home.featured-artists :artists="$featuredArtists" />
-    <!--div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-8">Featured Playlists</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="playlist-card p-6">
-                <img src="https://images.pexels.com/photos/1626481/pexels-photo-1626481.jpeg" alt="Hip Hop Playlist" class="w-full h-48 object-cover rounded-lg mb-4">
-                <h3 class="text-xl font-bold mb-2">Hip Hop Essentials</h3>
-                <p class="text-gray-600">Latest beats and classic tracks</p>
-            </div>
-            <div class="playlist-card p-6">
-                <img src="https://images.pexels.com/photos/1389429/pexels-photo-1389429.jpeg" alt="Rock Playlist" class="w-full h-48 object-cover rounded-lg mb-4">
-                <h3 class="text-xl font-bold mb-2">Rock Legends</h3>
-                <p class="text-gray-600">Ultimate rock collection</p>
-            </div>
-            <div class="playlist-card p-6">
-                <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" alt="Electronic Playlist" class="w-full h-48 object-cover rounded-lg mb-4">
-                <h3 class="text-xl font-bold mb-2">Electronic Mix</h3>
-                <p class="text-gray-600">Best EDM and dance hits</p>
-            </div>
-        </div-->
-        
-    </div></section>
+    <!-- Trending Tracks -->
+    <section class="py-16 bg-gray-50">
+        <x-home.trending-tracks :tracks="$trendingTracks" />
+    </section>
 
-<!-- New Releases -->
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-8">New Releases</h2>
-        @include('components.tracks-grid')
-    </div>
-</section>
+    <!-- New Releases -->
+    <section class="py-16">
+        <x-home.new-releases :tracks="$newReleases" />
+    </section>
 
-
-
+    <!-- Genre Explorer -->
+    <section class="py-16 bg-gray-50">
+        <x-home.genres :genres="$genres" :genreCounts="$genreCounts" />
+    </section>
 </div>
 @endsection
