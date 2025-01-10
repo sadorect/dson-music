@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Log;
 use getID3;
+use App\Models\User;
 use App\Models\Track;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\NewTrackPendingApproval;
+use Illuminate\Container\Attributes\Log as AttributesLog;
 
 class TrackController extends Controller
 {
@@ -58,12 +62,15 @@ class TrackController extends Controller
                 'cover_art' => 'nullable|image|max:2048',
                 'release_date' => 'required|date',
                 'album_id' => 'nullable|exists:albums,id',
-                'status' => 'required|in:draft,published,private'
+                'status' => 'required|in:draft,published,private',
+                'download_type' => 'required|in:free,donate',
+        'minimum_donation' => 'required_if:download_type,donate|nullable|numeric|min:0.01'
             ]);
     
             $track = new Track($validated);
             $track->artist_id = auth()->user()->artistProfile->id;
-    
+            $track->approval_status = 'pending';
+
             if ($request->hasFile('track_file')) {
                 $track->file_path = $request->file('track_file')->store('tracks', 'public');
                 
@@ -78,18 +85,25 @@ class TrackController extends Controller
     
             $track->save();
     
+            // Log the activity
             ActivityLogger::log(
                 auth()->id(),
                 'track_upload',
                 "Uploaded new track: {$track->title}"
             );
     
+            // Notify admins about new track pending approval
+    Notification::send(
+        User::where('user_type', 'admin')->get(),
+        new NewTrackPendingApproval($track)
+    );
             return redirect()->route('artist.tracks.index')
-                ->with('success', 'Track "' . $track->title . '" uploaded successfully');
+                ->with('success', 'Track "' . $track->title . '" uploaded successfully and pending approval');
     
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Upload failed. Please check file size limits and try again.')
+            Log::error($e->getMessage()); 
+               return redirect()->back()
+                ->with('error', 'Upload failed: ' . $e->getMessage())
                 ->withInput();
         }
     }

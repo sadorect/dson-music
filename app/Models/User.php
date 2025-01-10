@@ -49,7 +49,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-
+public function userType()
+    {
+        return $this->user_type;
+    }
     public function isArtist()
     { 
         return $this->user_type === 'artist';

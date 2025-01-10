@@ -19,13 +19,21 @@ class Track extends Model
         'release_date',
         'is_featured',
         'play_count',
-        'status'
+        'status',
+        'approval_status',
+        'rejection_reason',
+        'download_type',
+        'minimum_donation',
+        'approved_at',
+        'approved_by'
     ];
 
     protected $casts = [
         'release_date' => 'datetime',
         'is_featured' => 'boolean',
-        'play_count' => 'integer'
+        'play_count' => 'integer',
+         'approved_at' => 'datetime',
+        'minimum_donation' => 'decimal:2'
     ];
 
     public function artist()
@@ -74,6 +82,33 @@ class Track extends Model
         {
             return $this->downloads()->count();
         }
+
+        // New status checking methods
+    public function isApproved()
+    {
+        return $this->approval_status === 'approved';
+    }
+
+    public function isPending()
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    public function isRejected()
+    {
+        return $this->approval_status === 'rejected';
+    }
+
+    public function requiresDonation()
+    {
+        return $this->download_type === 'donate';
+    }
+
+    // Admin relationship
+    public function approvedBy()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 
         
 }

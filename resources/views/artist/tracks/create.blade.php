@@ -72,9 +72,27 @@
                             <option value="private">Private</option>
                         </select>
                     </div>
+<!-- Add this inside the existing form -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Download Options</label>
+                        <select name="download_type" 
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
+                            <option value="free">Free Download</option>
+                            <option value="donate">Donate to Download</option>
+                        </select>
+                    </div>
+
+                    <div id="donation-amount" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700">Minimum Donation Amount ($)</label>
+                        <input type="number" 
+                            name="minimum_donation" 
+                            step="0.01" 
+                            min="0.01"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
+                    </div>
 
                     <div class="flex justify-end space-x-4">
-                        <a href="{{ url()->previous() }}" 
+                        <a href="{{ route('artist.tracks.index') }}" 
                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                             Cancel
                         </a>
