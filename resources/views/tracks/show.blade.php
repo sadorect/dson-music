@@ -39,40 +39,10 @@
         </div>
 
         <!-- Comments Section -->
-        <div class="p-6">
-            <h3 class="text-lg font-semibold mb-4">Comments ({{ $track->comments_count }})</h3>
-            
-            <!-- Comment Form -->
-            <form id="comment-form" class="mb-6">
-                @csrf
-                <textarea 
-                    name="content" 
-                    rows="3" 
-                    class="w-full border rounded-lg p-2"
-                    placeholder="Add a comment..."></textarea>
-                <button type="submit" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                    Post Comment
-                </button>
-            </form>
-
-            <!-- Comments List -->
-            <div id="comments-container" class="space-y-4">
-                @foreach($track->comments()->latest()->get() as $comment)
-                    <div class="flex space-x-4">
-                        <img src="{{ $comment->user->profile_photo_url }}" class="w-10 h-10 rounded-full">
-                        <div class="flex-1">
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <div class="font-semibold">{{ $comment->user->name }}</div>
-                                <div class="text-gray-600">{{ $comment->content }}</div>
-                            </div>
-                            <div class="mt-1 text-sm text-gray-500">
-                                {{ $comment->created_at->diffForHumans() }}
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
+        @include('components.comments.section', [
+            'type' => 'track',
+            'model' => $track
+        ])
     </div>
 </div>
 

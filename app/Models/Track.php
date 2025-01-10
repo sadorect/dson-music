@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use App\Models\Like;
+use App\Models\Comment;
 use App\Models\PlayHistory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasComments;
 
 class Track extends Model
 {
+    use HasComments;
+    
     protected $fillable = [
         'title',
         'artist_id',
@@ -71,6 +75,11 @@ class Track extends Model
         public function likesCount()
         {
             return $this->likes()->count();
+        }
+
+        public function comments()
+        {
+            return $this->hasMany(Comment::class);
         }
 
         public function downloads()
