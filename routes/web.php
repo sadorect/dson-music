@@ -20,6 +20,7 @@ Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
 ->name('artist.tracks.api')
 ->middleware(['auth']);
 Route::get('/artists/{artist}', [ArtistController::class, 'show'])->name('artists.show');
+Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index');
 
 
 
@@ -82,6 +83,7 @@ require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
 
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
+Route::get('/tracks/{track}', [PublicTrackController::class, 'show'])->name('tracks.show');
 
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/search/{query}', [SearchController::class, 'index'])->name('search.query');

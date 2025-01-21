@@ -5,6 +5,8 @@ import './search';
 import playerControls from './components/player';
 import './comments';
 
+window.submitComment = submitComment;
+
 window.playerControls = playerControls;
 window.Alpine = Alpine;
 

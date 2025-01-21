@@ -78,4 +78,30 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', 'User deleted successfully');
     }
+
+    public function suspend(User $user)
+    {
+        $user->update(['status' => 'suspended']);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User suspended successfully');
+    }
+
+    public function show(User $user)
+    {
+        // Eager load relationships to prevent N+1 queries
+        $user->load([
+            'artistProfile',
+            'activities' => fn($query) => $query->latest()->take(5),
+        ]);
+
+        // Get the count of tracks if user has an artist profile
+        $tracksCount = $user->artistProfile?->tracks()->count() ?? 0;
+        
+        return view('admin.users.show', [
+            'user' => $user,
+            'tracks_count' => $tracksCount
+        ]);
+    }
+    
 }

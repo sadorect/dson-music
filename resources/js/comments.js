@@ -12,16 +12,48 @@ export const submitComment = async (event, type, id) => {
             },
             body: JSON.stringify({ 
                 content,
-                commentable_type: type,
+                commentable_type: type.toLowerCase(),
                 commentable_id: id
             })
         });
         
         const data = await response.json();
-        location.reload();
+        console.log('Comment response:', data); // Debug response
+        
+         // Insert new comment at the top
+         const commentHtml = renderComment(data.comment);
+         commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+         /*
+        const commentsContainer = document.getElementById('comments-container');
+        commentsContainer.insertAdjacentHTML('afterbegin', renderComment(data.comment));
+        */
+        form.reset();
+        
     } catch (error) {
         console.error('Error posting comment:', error);
     }
+};
+
+
+const renderComment = (comment) => {
+    return `
+        <div class="comment-${comment.id} bg-white rounded-lg p-4 shadow-sm">
+            <div class="flex items-start space-x-3">
+                <img src="${comment.user.profile_photo_url}" alt="" class="w-10 h-10 rounded-full">
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-medium">${comment.user.name}</h4>
+                            <span class="text-sm text-gray-500">Just now</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-gray-700">
+                        ${comment.content}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 };
 
 export const submitReply = async (event, type, id, parentId) => {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Activity;
 use App\Models\Playlist;
 use App\Models\PlayHistory;
 use App\Models\ArtistProfile;
@@ -102,6 +103,14 @@ public function userType()
     {
         return $this->belongsToMany(ArtistProfile::class, 'follows', 'user_id', 'artist_profile_id');
     }
+
+    // Add this to your existing User model
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
+
 /*
     public function likes()
     {

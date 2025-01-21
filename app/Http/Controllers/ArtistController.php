@@ -61,6 +61,15 @@ public function show(ArtistProfile $artist)
     return view('artists.public.show', compact('artist'));
 }
 
+public function index()
+{
+    $artists = ArtistProfile::where('is_verified', true)
+        ->withCount(['tracks', 'followers'])
+        ->latest()
+        ->paginate(12);
+        
+    return view('artists.index', compact('artists'));
+}
 
 }
 

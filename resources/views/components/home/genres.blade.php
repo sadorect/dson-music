@@ -12,7 +12,7 @@
                             <p class="text-gray-200 text-sm">{{ $genreCounts[$genre] ?? 0 }} tracks</p>
                         </div>
                     </div>
-                    <a href="{{ route('tracks.public', ['genre' => $genre]) }}" 
+                    <a href="" 
                        class="absolute inset-0 z-10">
                     </a>
                 </div>

@@ -11,27 +11,28 @@ use App\Models\ArtistProfile;
 class CommentController extends Controller
 {
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'content' => 'required|string|max:1000',
-            'parent_id' => 'nullable|exists:comments,id',
-            'commentable_type' => 'required|string',
-            'commentable_id' => 'required|integer'
-        ]);
+{
+    $validated = $request->validate([
+        'content' => 'required|string|max:1000',
+        'parent_id' => 'nullable|exists:comments,id',
+        'commentable_type' => 'required|string',
+        'commentable_id' => 'required|integer'
+    ]);
 
-        $commentable = $this->getCommentable($validated['commentable_type'], $validated['commentable_id']);
+    $commentable = $this->getCommentable($validated['commentable_type'], $validated['commentable_id']);
 
-        $comment = $commentable->comments()->create([
-            'user_id' => auth()->id(),
-            'content' => $validated['content'],
-            'parent_id' => $validated['parent_id'] ?? null
-        ]);
+    $comment = $commentable->comments()->create([
+        'user_id' => auth()->id(),
+        'content' => $validated['content'],
+        'parent_id' => $validated['parent_id'] ?? null
+    ]);
 
-        return response()->json([
-            'comment' => $comment->load('user'),
-            'message' => 'Comment posted successfully'
-        ]);
-    }
+    return response()->json([
+        'comment' => $comment->load('user'),
+        'message' => 'Comment posted successfully'
+    ]);
+}
+
 
     public function update(Request $request, Comment $comment)
     {

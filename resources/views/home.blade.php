@@ -16,7 +16,7 @@
 
     <!-- Trending Tracks -->
     <section class="py-16 bg-gray-50">
-        <x-home.trending-tracks :tracks="$trendingTracks" />
+        <x-home.trending-tracks :trendingTracks="$trendingTracks" />
     </section>
 
     <!-- New Releases -->

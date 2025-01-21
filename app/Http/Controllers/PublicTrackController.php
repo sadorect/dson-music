@@ -26,4 +26,15 @@ class PublicTrackController extends Controller
 
         return response()->json($tracks);
     }
+
+    public function show(Track $track)
+    {
+        $relatedTracks = Track::where('genre', $track->genre)
+            ->where('id', '!=', $track->id)
+            ->take(4)
+            ->get();
+
+        return view('tracks.show', compact('track', 'relatedTracks'));
+    }
+
 }
