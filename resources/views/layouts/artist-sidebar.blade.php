@@ -5,10 +5,18 @@
             <div class="flex items-center space-x-3">
                 <img src="{{ Storage::url(auth()->user()->artistProfile->profile_image) }}" 
                      class="w-10 h-10 rounded-full object-cover">
-                <div>
+                <div class="flex-grow">
                     <h2 class="font-bold">{{ auth()->user()->artistProfile->artist_name }}</h2>
                     <span class="text-xs text-gray-400">Artist Dashboard</span>
                 </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="text-sm text-gray-400 hover:text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </button>
+                </form>
             </div>
         </div>
 
