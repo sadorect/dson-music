@@ -2,6 +2,7 @@
 
 namespace App\Http\Kernel;
 
+
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -30,5 +31,8 @@ class Kernel extends HttpKernel
         'PreventImpersonationAccess' => \App\Http\Middleware\PreventImpersonationAccess::class,
     ];
     
+    protected $commands = [
+        \App\Console\Commands\MigrateFilesToS3::class,
+    ];
     
 }

@@ -7,7 +7,7 @@
             <!-- Track Main Info -->
             <div class="md:col-span-2">
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                    <img src="{{ Storage::url($track->cover_art) }}" 
+                    <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-track-cover.jpg') }}" 
                          class="w-full h-96 object-cover" 
                          alt="{{ $track->title }}">
                     
@@ -20,7 +20,7 @@
                         <div class="flex items-center space-x-4 mb-6">
                             <a href="{{ route('artists.show', $track->artist) }}" 
                                class="flex items-center space-x-2 text-gray-600 hover:text-red-600">
-                                <img src="{{ Storage::url($track->artist->profile_image) }}" 
+                                <img src="{{ $track->artist->profile_image ? Storage::disk('s3')->url($track->artist->profile_image) : asset('images/default-artist-image.jpg') }}" 
                                      class="w-10 h-10 rounded-full object-cover">
                                 <span class="font-medium">{{ $track->artist->artist_name }}</span>
                             </a>
@@ -75,7 +75,7 @@
                         @foreach($relatedTracks as $relatedTrack)
                             <a href="{{ route('tracks.show', $relatedTrack) }}" 
                                class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
-                                <img src="{{ Storage::url($relatedTrack->cover_art) }}" 
+                                <img src="{{ $relatedTrack->cover_art ? Storage::disk('s3')->url($relatedTrack->cover_art) : asset('images/default-track-cover.jpg') }}" 
                                      class="w-12 h-12 rounded object-cover">
                                 <div>
                                     <h4 class="font-medium text-sm">{{ $relatedTrack->title }}</h4>
@@ -98,7 +98,7 @@
           ->get() as $artistTrack)
           <a href="{{ route('tracks.show', $artistTrack) }}" 
              class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
-              <img src="{{ Storage::url($artistTrack->cover_art) }}" 
+              <img src="{{ $artistTrack->cover_art ? Storage::disk('s3')->url($artistTrack->cover_art) : asset('images/default-track-cover.jpg') }}" 
                    class="w-12 h-12 rounded object-cover">
               <div>
                   <h4 class="font-medium text-sm">{{ $artistTrack->title }}</h4>

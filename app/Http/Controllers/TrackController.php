@@ -72,7 +72,7 @@ class TrackController extends Controller
             $track->approval_status = 'pending';
 
             if ($request->hasFile('track_file')) {
-                $track->file_path = $request->file('track_file')->store('tracks', 'public');
+                $track->file_path = $request->file('track_file')->store('grinmuzik/tracks', 's3');
                 
                 $getID3 = new getID3;
                 $fileInfo = $getID3->analyze(storage_path('app/public/' . $track->file_path));
@@ -80,7 +80,7 @@ class TrackController extends Controller
             }
     
             if ($request->hasFile('cover_art')) {
-                $track->cover_art = $request->file('cover_art')->store('covers', 'public');
+                $track->cover_art = $request->file('cover_art')->store('grinmuzik/covers', 's3');
             }
     
             $track->save();
@@ -135,22 +135,30 @@ class TrackController extends Controller
         if ($request->hasFile('track_file')) {
             // Delete old file
             if ($track->file_path) {
-                Storage::delete('public/' . $track->file_path);
+                //Storage::delete('public/' . $track->file_path);
+                Storage::disk('s3')->delete($track->file_path);
             }
             
             $validated['file_path'] = $request->file('track_file')->store('tracks', 'public');
             
             // Update duration
             $getID3 = new getID3;
-            $fileInfo = $getID3->analyze(storage_path('app/public/' . $validated['file_path']));
+            //$fileInfo = $getID3->analyze(storage_path('app/public/' . $validated['file_path']));
+            $fileInfo = $getID3->analyze(Storage::disk('s3')->path($validated['file_path']));
             $validated['duration'] = ceil($fileInfo['playtime_seconds']);
         }
 
-        if ($request->hasFile('cover_art')) {
+        /*if ($request->hasFile('cover_art')) {
             if ($track->cover_art) {
                 Storage::delete('public/' . $track->cover_art);
             }
             $validated['cover_art'] = $request->file('cover_art')->store('covers', 'public');
+        }*/
+        if ($request->hasFile('cover_art')) {
+            if ($track->cover_art) {
+                Storage::disk('s3')->delete($track->cover_art);
+            }
+            $validated['cover_art'] = $request->file('cover_art')->store('grinmuzik/covers', 's3');
         }
 
         $track->update($validated);
@@ -168,12 +176,21 @@ class TrackController extends Controller
     public function destroy(Track $track)
     {
         // Delete associated files
-        if ($track->file_path) {
+        /*if ($track->file_path) {
             Storage::delete('public/' . $track->file_path);
         }
         if ($track->cover_art) {
             Storage::delete('public/' . $track->cover_art);
         }
+            */
+            // Delete associated files
+        if ($track->file_path) {
+            Storage::disk('s3')->delete($track->file_path);
+        }
+        if ($track->cover_art) {
+            Storage::disk('s3')->delete($track->cover_art);
+        }
+
 
         $track->delete();
 

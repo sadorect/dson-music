@@ -6,7 +6,14 @@
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition hover:scale-105">
                     <a href="{{ route('tracks.show', $track) }}" class="block">
                         <div class="relative">
-                            <img src="{{ Storage::url($track->cover_art) }}" class="w-full h-48 object-cover">
+                            @if($track->cover_art)
+                 
+
+                            <img src="{{ Storage::disk('s3')->url($track->cover_art) }}" class="w-full h-48 object-cover">
+                        @else
+                         {{-- Add a default image fallback --}}
+        <img src="{{ asset('images/default-cover.jpg') }}" class="w-full h-48 object-cover">
+        @endif
                             <div class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full">
                                 NEW
                             </div>

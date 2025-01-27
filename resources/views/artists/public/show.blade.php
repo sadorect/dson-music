@@ -5,8 +5,9 @@
     <!-- Artist Header -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-48 bg-gradient-to-r from-purple-600 to-blue-600">
-            <img src="{{ Storage::url($artist->profile_image) }}" 
-                 class="absolute bottom-0 left-8 transform translate-y-1/2 w-32 h-32 rounded-full border-4 border-white object-cover">
+            <img src="{{ $artist->profile_image ? Storage::disk('s3')->url($artist->profile_image) : asset('images/default-profile.jpg') }}" 
+                 class="absolute bottom-0 left-8 transform translate-y-1/2 w-32 h-32 rounded-full border-4 border-white object-cover"
+                 onerror="this.src='{{ asset('images/default-profile.jpg') }}'">
         </div>
         
         <div class="pt-20 pb-6 px-8">
@@ -43,7 +44,9 @@
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($artist->tracks as $track)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <img src="{{ Storage::url($track->cover_art) }}" class="w-full h-48 object-cover">
+                <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}" 
+                     class="w-full h-48 object-cover"
+                     onerror="this.src='{{ asset('images/default-cover.jpg') }}'">
                 <div class="p-4">
                     <h3 class="font-bold text-lg mb-2">{{ $track->title }}</h3>
                     <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
