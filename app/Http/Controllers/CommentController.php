@@ -7,6 +7,8 @@ use App\Models\Track;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Models\ArtistProfile;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
@@ -51,15 +53,44 @@ class CommentController extends Controller
     }
 
     public function destroy(Comment $comment)
-    {
+{
+dd([
+        'comment_id' => $comment->id,
+        'user_id' => auth()->id(),
+        'comment_user_id' => $comment->user_id,
+        'commentable_user_id' => $comment->commentable->user_id,
+        'user_type' => auth()->user()->user_type
+    ]);
+    
+    try {
         $this->authorize('delete', $comment);
         
-        $comment->delete();
-
+        DB::beginTransaction();
+        
+        // Force delete any replies first
+        $comment->replies()->delete();
+        
+        // Then delete the comment
+        $deleted = $comment->forceDelete();
+        
+        DB::commit();
+        
         return response()->json([
+            'success' => true,
             'message' => 'Comment deleted successfully'
         ]);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
+}
+
+    
 
     public function pin(Comment $comment)
     {

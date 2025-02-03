@@ -65,10 +65,10 @@ Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.p
 
     // Comment routes
     Route::post('tracks/{track}/comments', [CommentController::class, 'store'])->name('tracks.comments.store');
-    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::delete('/delete/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/tracks/{track}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+   
     Route::post('/comments/{comment}/pin', [CommentController::class, 'pin'])->name('comments.pin');
     
     // Download routes

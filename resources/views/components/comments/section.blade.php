@@ -3,17 +3,24 @@
   
   @auth
 <div class="mb-6">
-    <form onsubmit="submitComment(event, '{{ class_basename($model) }}', {{ $model->id }})" class="space-y-4">
-        @csrf
-        <textarea 
-            name="content" 
-            rows="3" 
-            class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500"
-            placeholder="Add a comment..."></textarea>
-        <div class="flex justify-end">
-            <button type="submit" class="dson-btn">Post Comment</button>
-        </div>
-    </form>
+    <form 
+    onsubmit="submitComment(event, '{{ class_basename($model) }}', {{ $model->id }})" 
+    class="space-y-4"
+>
+    @csrf
+    <textarea 
+        name="content" 
+        rows="3" 
+        class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500"
+        placeholder="Add a comment..."
+        required
+    ></textarea>
+    <div class="flex justify-end">
+        <button type="submit" class="dson-btn">Post Comment</button>
+    </div>
+</form>
+
+
 </div>
 @else
 
@@ -30,5 +37,14 @@
         @include('components.comments.comment', ['comment' => $comment])
     @endforeach
 </div>
+@push('scripts')
+<script type="module">
+    import { deleteComment, editComment, toggleReplyForm } from '{{ Vite::asset('resources/js/comments.js') }}';
+    window.deleteComment = deleteComment;
+    window.editComment = editComment;
+    window.toggleReplyForm = toggleReplyForm;
+</script>
+@endpush
+
 
 </div>

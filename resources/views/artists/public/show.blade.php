@@ -70,7 +70,7 @@
 
                         <button 
                         x-data="{ liked: {{ auth()->check() && auth()->user()->likes()->where('likeable_id', $track->id)->exists() ? 'true' : 'false' }} }"
-                        @click="
+                        @click=" @auth
                             fetch('{{ route('tracks.like', $track) }}', {
                                 method: 'POST',
                                 headers: {
@@ -82,6 +82,9 @@
                                 liked = !liked;
                                 $refs.likeCount.textContent = data.likes_count;
                             })
+                            @else
+                            window.location.href = '{{ route('login') }}'
+                        @endauth
                         "
                         class="flex items-center space-x-1 text-gray-600 hover:text-red-600 transition-colors"
                     >
