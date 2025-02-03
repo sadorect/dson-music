@@ -5,9 +5,9 @@
     <!-- Artist Header -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
         <div class="relative h-48 bg-gradient-to-r from-purple-600 to-blue-600">
-            <img src="{{ $artist->profile_image ? Storage::disk('s3')->url($artist->profile_image) : asset('images/default-profile.jpg') }}" 
+            <img src="{{ $artist->profile_image ? Storage::disk('s3')->url($artist->profile_image) : asset('images/default-profile.webp') }}" 
                  class="absolute bottom-0 left-8 transform translate-y-1/2 w-32 h-32 rounded-full border-4 border-white object-cover"
-                 onerror="this.src='{{ asset('images/default-profile.jpg') }}'">
+                 onerror="this.src='{{ asset('images/default-profile.webp') }}'">
         </div>
         
         <div class="pt-20 pb-6 px-8">
@@ -44,9 +44,9 @@
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($artist->tracks as $track)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}" 
+                <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.webp') }}" 
                      class="w-full h-48 object-cover"
-                     onerror="this.src='{{ asset('images/default-cover.jpg') }}'">
+                     onerror="this.src='{{ asset('images/default-cover.webp') }}'">
                 <div class="p-4">
                     <h3 class="font-bold text-lg mb-2">{{ $track->title }}</h3>
                     <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
@@ -54,7 +54,15 @@
                         <span>{{ $track->likes_count }} likes</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <button onclick="playTrack({{ $track->id }})" class="text-purple-600 hover:text-purple-700">
+                        <button x-data
+                        @click="$dispatch('track:play', {
+                            id: {{ $track->id }},
+                            title: '{{ $track->title }}',
+                            artist: '{{ $track->artist->artist_name }}',
+                            artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/images/default-cover.webp' }}',
+                            audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}',
+                            format: '{{ $track->file_path ? pathinfo($track->file_path, PATHINFO_EXTENSION) : 'mp3' }}'
+                        })"  class="text-purple-600 hover:text-purple-700">
                             <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
                             </svg>

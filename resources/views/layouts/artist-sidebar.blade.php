@@ -1,19 +1,10 @@
 <div class="fixed inset-y-0 left-0 w-64 bg-gray-900 text-white">
-To utilize an Amazon S3 bucket for asset storage, you will need the following parameters:
-    
-    1. AWS Access Key ID: This is your unique identifier that allows you to access your AWS resources.
-    2. AWS Secret Access Key: This is the secret key that, combined with the Access Key ID, allows you to authenticate your AWS requests.
-    3. AWS Region: The AWS region where your S3 bucket is located.
-    4. AWS S3 Bucket Name: The name of the S3 bucket you want to use for asset storage.
-    5. AWS S3 Bucket URL: The URL of your S3 bucket, which is typically in the format "https://s3-[region].amazonaws.com/[bucket-name]".
-    
-    These parameters are typically stored in your application's environment variables or configuration files to keep them secure and easily accessible.
+
         <div class="flex flex-col h-full">
         <!-- Artist Profile Header -->
         <div class="p-4 border-b border-gray-800">
             <div class="flex items-center space-x-3">
-                <img src="{{ Storage::url(auth()->user()->artistProfile->profile_image) }}" 
-                     class="w-10 h-10 rounded-full object-cover">
+                <img src="{{ Storage::disk('s3')->url(auth()->user()->artistProfile->profile_image) }}"                      class="w-10 h-10 rounded-full object-cover">
                 <div class="flex-grow">
                     <h2 class="font-bold">{{ auth()->user()->artistProfile->artist_name }}</h2>
                     <span class="text-xs text-gray-400">Artist Dashboard</span>

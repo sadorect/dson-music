@@ -30,7 +30,7 @@
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <img class="h-10 w-10 rounded-lg object-cover" src="{{ Storage::url($track->cover_art) }}" alt="">
+                                    <img class="h-10 w-10 rounded-lg object-cover" src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}" alt="{{ $track->title }}">
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $track->title }}</div>
                                         <div class="text-sm text-gray-500">{{ $track->release_date->format('M d, Y') }}</div>

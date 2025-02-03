@@ -71,7 +71,7 @@
                     @foreach($artist->tracks()->withCount(['plays', 'likes'])->orderBy('plays_count', 'desc')->take(5)->get() as $track)
                     <div class="flex items-center justify-between mb-4 last:mb-0">
                         <div class="flex items-center space-x-3">
-                            <img src="{{ Storage::url($track->cover_art) }}" class="w-12 h-12 rounded object-cover">
+                            <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}" class="w-12 h-12 rounded object-cover">
                             <div>
                                 <h4 class="font-medium">{{ $track->title }}</h4>
                                 <p class="text-sm text-gray-500">{{ number_format($track->plays_count) }} plays</p>

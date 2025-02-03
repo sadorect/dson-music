@@ -17,6 +17,11 @@ function playerControls() {
         setupEventListeners() {
             window.addEventListener('track:play', (e) => {
                 console.log('Audio URL:', e.detail.audioUrl); // Add this line
+
+                if (window.player) {
+                    window.player.stop();
+                    window.player.unload();
+                }
                 // Initialize Howler with the track
                 window.player = new Howl({
                     src: [e.detail.audioUrl],
