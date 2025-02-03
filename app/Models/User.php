@@ -111,7 +111,7 @@ public function userType()
         return $this->hasMany(Activity::class);
     }
 
-/*
+
     public function likes()
     {
         return $this->hasMany(Like::class);
@@ -129,12 +129,9 @@ public function userType()
         return $this->hasMany(Follow::class, 'follower_id');
     }
 
-    public function following()
-    {
-        return $this->hasMany(Follow::class, 'following_id');
-    }
+   
 
-    public function notifications()
+    /*public function notifications()
     {
         return $this->hasMany(Notification::class);
     }
@@ -147,8 +144,7 @@ public function userType()
     public function conversations()
     {
         return $this->hasMany(Conversation::class);
-    }
-*/
+    }*/
 
 
 }

@@ -67,6 +67,36 @@
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
                             </svg>
                         </button>
+
+                        <button 
+                        x-data="{ liked: {{ auth()->check() && auth()->user()->likes()->where('likeable_id', $track->id)->exists() ? 'true' : 'false' }} }"
+                        @click="
+                            fetch('{{ route('tracks.like', $track) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                liked = !liked;
+                                $refs.likeCount.textContent = data.likes_count;
+                            })
+                        "
+                        class="flex items-center space-x-1 text-gray-600 hover:text-red-600 transition-colors"
+                    >
+                        <svg 
+                            :class="{ 'text-red-600 fill-current': liked }"
+                            class="w-6 h-6" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        <span x-ref="likeCount">{{ $track->likes()->count() }}</span>
+                    </button>
+
                         <a href="{{ route('tracks.download', $track) }}" class="text-gray-600 hover:text-gray-700">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
