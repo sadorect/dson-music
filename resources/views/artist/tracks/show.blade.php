@@ -23,7 +23,15 @@
             <div class="p-6">
                 <div class="flex items-center justify-between mb-8">
                     <div class="flex items-center space-x-6">
-                        <button onclick="playTrack('{{ $track->id }}')" 
+                        <button x-data
+                        @click="$dispatch('track:play', {
+                            id: {{ $track->id }},
+                            title: '{{ $track->title }}',
+                            artist: '{{ $track->artist->artist_name }}',
+                            artwork: '{{ Storage::url($track->cover_art) }}',
+                            audioUrl: '{{ Storage::url($track->file_path) }}',
+                            format: '{{ pathinfo($track->file_path, PATHINFO_EXTENSION) }}'
+                        })"  
                                 class="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>

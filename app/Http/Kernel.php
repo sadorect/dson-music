@@ -20,6 +20,7 @@ class Kernel extends HttpKernel
     protected $middleware = [
         // ... other middleware
         //\App\Http\Middleware\HandlePostSizeErrors::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
         \App\Http\Middleware\CSPMiddleware::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'PreventImpersonationAccess' => \App\Http\Middleware\PreventImpersonationAccess::class,

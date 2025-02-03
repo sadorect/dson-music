@@ -71,9 +71,11 @@ window.tracksGrid = function() {
         togglePlay() {
             if (window.player) {
                 if (window.player.playing()) {
+                    // Store current position before pausing
                     this.currentPosition = window.player.seek();
                     window.player.pause();
                 } else {
+                    // Resume from stored position
                     window.player.seek(this.currentPosition);
                     window.player.play();
                 }
@@ -93,37 +95,17 @@ window.tracksGrid = function() {
         },
         
         seek(percent) {
-            if (window.player) {
+                if (window.player) {
                 const duration = window.player.duration();
                 const seekTime = duration * percent;
                 window.player.seek(seekTime);
+                 // Emit progress event with new position
                 window.dispatchEvent(new CustomEvent('track:progress', { 
-                    detail: { 
-                        currentTime: seekTime,
+                    detail: { currentTime: seekTime,
                         duration: duration,
-                        percent: percent * 100 
-                    } 
+                        percent: percent * 100 } 
                 }));
             }
         }
     }
 }
-
-// Global playTrack function for track-card click handler
-window.playTrack = async (trackId) => {
-  // First find the tracks grid component
-  const tracksGridElement = document.querySelector('[x-data="tracksGrid()"]');
-  
-  if (!tracksGridElement || !tracksGridElement.__x) {
-      console.log('Tracks grid component not initialized');
-      return;
-  }
-
-  const tracksComponent = tracksGridElement.__x.$data;
-  const track = tracksComponent.tracks.find(t => t.id === trackId);
-  
-  if (track) {
-      tracksComponent.playTrack(track);
-  }
-};
-

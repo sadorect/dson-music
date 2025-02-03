@@ -3,13 +3,14 @@ import './tracks.js';
 import Alpine from 'alpinejs';
 import './search';
 import playerControls from './components/player';
-import './comments';
+import { submitComment } from './comments';
 
 window.submitComment = submitComment;
 
-window.playerControls = playerControls;
+// Register playerControls as an Alpine data component
+document.addEventListener('alpine:init', () => {
+    Alpine.data('playerControls', playerControls)
+});
+
 window.Alpine = Alpine;
-
 Alpine.start();
-
-

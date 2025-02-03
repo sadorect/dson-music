@@ -29,7 +29,19 @@
                         </div>
 
                         <div class="flex items-center space-x-4">
-                            <button onclick="playTrack({{ $track->id }})" 
+                            <button x-data
+                            @click="
+                                console.log('Track data:', {
+                                    audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
+                                });
+                                $dispatch('track:play', {
+                                    id: {{ $track->id }},
+                                    title: '{{ $track->title }}',
+                                    artist: '{{ $track->artist->artist_name }}',
+                                    artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
+                                    audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}',
+                                    format: '{{ $track->file_path ? pathinfo($track->file_path, PATHINFO_EXTENSION) : 'mp3' }}'
+                                })"
                                     class="dson-btn flex items-center space-x-2">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>

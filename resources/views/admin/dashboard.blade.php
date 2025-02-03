@@ -56,7 +56,7 @@
             <div class="space-y-4">
                 @foreach($stats['recent_tracks'] as $track)
                 <div class="flex items-center">
-                    <img src="{{ Storage::url($track->cover_art) }}" class="w-12 h-12 rounded object-cover">
+                    <img src="{{ $track->cover_art ? Storage::url($track->cover_art) : '/default-cover.jpg' }}" class="w-12 h-12 rounded object-cover">
                     <div class="ml-4">
                         <h3 class="font-medium">{{ $track->title }}</h3>
                         <p class="text-sm text-gray-500">{{ $track->artist->artist_name }}</p>

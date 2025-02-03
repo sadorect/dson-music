@@ -37,7 +37,7 @@
                 <tr>
                     <td class="px-6 py-4">
                         <div class="flex items-center">
-                            <img src="{{ Storage::url($track->cover_art) }}" class="w-10 h-10 rounded object-cover">
+                            <img src="{{ $track->cover_art ? Storage::url($track->cover_art) : '/default-cover.jpg' }}" class="w-10 h-10 rounded object-cover">
                             <span class="ml-3">{{ $track->title }}</span>
                         </div>
                     </td>

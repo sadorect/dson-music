@@ -1,0 +1,653 @@
+localhost/:183 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/artist-profiles/artist1.jpg 403 (Forbidden)
+localhost/:199 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/artist-profiles/artist3.jpg 403 (Forbidden)
+app.js:8 Uncaught ReferenceError: submitComment is not defined
+    at app.js:8:24
+(anonymous) @ app.js:8
+alpinejs:1 Alpine Expression Error: playerControls is not defined
+
+Expression: "playerControls()"
+
+ div.fixed.bottom-0.w-full.bg-black.text-white.p-4.dson-player
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+R @ alpinejs:5
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: currentTrack is not defined
+
+Expression: "currentTrack?.artwork"
+
+ img.h-12.w-12.rounded.object-cover
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+vn @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: currentTrack is not defined
+
+Expression: "currentTrack"
+
+ img.h-12.w-12.rounded.object-cover
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: currentTrack is not defined
+
+Expression: "currentTrack?.title || 'Select a track'"
+
+ h4.font-bold
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: currentTrack is not defined
+
+Expression: "currentTrack?.artist || ''"
+
+ p.text-sm.opacity-75
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: isPlaying is not defined
+
+Expression: "isPlaying ? '⏸' : '▶'"
+
+ button.dson-btn-player
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: formatTime is not defined
+
+Expression: "formatTime(currentTime)"
+
+ span
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: formatTime is not defined
+
+Expression: "formatTime(duration)"
+
+ span
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: progress is not defined
+
+Expression: "`width: ${progress}%`"
+
+ div.h-1.bg-red-600.rounded.transition-all
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+vn @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: isMuted is not defined
+
+Expression: "!isMuted"
+
+ span
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: isMuted is not defined
+
+Expression: "isMuted"
+
+ span
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:1 Alpine Expression Error: volume is not defined
+
+Expression: "volume"
+
+ input.w-20
+re @ alpinejs:1
+(anonymous) @ alpinejs:5
+Promise.catch
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+c @ alpinejs:5
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+localhost/:215 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/artist-profiles/artist4.jpg 403 (Forbidden)
+localhost/:231 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/artist-profiles/artist6.jpg 403 (Forbidden)
+localhost/:261 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track36.jpg 403 (Forbidden)
+localhost/:278 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track42.jpg 403 (Forbidden)
+alpinejs:5 Uncaught ReferenceError: playerControls is not defined
+    at [Alpine] playerControls(:8000/) (eval at <anonymous> (https://unpkg.com/alpinejs:5:665), <anonymous>:3:16)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at R (alpinejs:5:143)
+    at Function.<anonymous> (alpinejs:5:34273)
+    at r (alpinejs:5:2323)
+    at n (alpinejs:5:2353)
+    at fr (alpinejs:5:2363)
+    at S (alpinejs:5:5131)
+    at alpinejs:5:4561
+[Alpine] playerControls() @ VM766:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+R @ alpinejs:5
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: currentTrack is not defined
+    at [Alpine] currentTrack?.artwork (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33747
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.vn (alpinejs:5:33741)
+    at r (alpinejs:5:2323)
+[Alpine] currentTrack?.artwork @ VM767:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+vn @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: currentTrack is not defined
+    at [Alpine] currentTrack (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:35180
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:35174)
+    at r (alpinejs:5:2323)
+[Alpine] currentTrack @ VM768:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: currentTrack is not defined
+    at [Alpine] currentTrack?.title || 'Select a track' (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33251
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:33244)
+    at r (alpinejs:5:2323)
+[Alpine] currentTrack?.title || 'Select a track' @ VM769:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: currentTrack is not defined
+    at [Alpine] currentTrack?.artist || '' (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33251
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:33244)
+    at r (alpinejs:5:2323)
+[Alpine] currentTrack?.artist || '' @ VM770:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: isPlaying is not defined
+    at [Alpine] isPlaying ? '⏸' : '▶' (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33251
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:33244)
+    at r (alpinejs:5:2323)
+[Alpine] isPlaying ? '⏸' : '▶' @ VM773:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: formatTime is not defined
+    at [Alpine] formatTime(:8000/currentTime) (eval at <anonymous> (https://unpkg.com/alpinejs:5:665), <anonymous>:3:16)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33251
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:33244)
+    at r (alpinejs:5:2323)
+[Alpine] formatTime(currentTime) @ VM775:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: formatTime is not defined
+    at [Alpine] formatTime(:8000/duration) (eval at <anonymous> (https://unpkg.com/alpinejs:5:665), <anonymous>:3:16)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33251
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:33244)
+    at r (alpinejs:5:2323)
+[Alpine] formatTime(duration) @ VM776:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: progress is not defined
+    at [Alpine] `width: ${progress}%` (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:42)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:33747
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.vn (alpinejs:5:33741)
+    at r (alpinejs:5:2323)
+[Alpine] `width: ${progress}%` @ VM778:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+vn @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: isMuted is not defined
+    at [Alpine] !isMuted (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:33)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:35180
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:35174)
+    at r (alpinejs:5:2323)
+[Alpine] !isMuted @ VM780:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: isMuted is not defined
+    at [Alpine] isMuted (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at alpinejs:5:35180
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:35174)
+    at r (alpinejs:5:2323)
+[Alpine] isMuted @ VM781:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+alpinejs:5 Uncaught ReferenceError: volume is not defined
+    at [Alpine] volume (eval at <anonymous> (alpinejs:5:665), <anonymous>:3:32)
+    at alpinejs:5:1068
+    at or (alpinejs:1:4957)
+    at c (alpinejs:5:30780)
+    at alpinejs:5:31752
+    at r (alpinejs:5:18580)
+    at Object.rn [as effect] (alpinejs:5:18368)
+    at N (alpinejs:1:398)
+    at alpinejs:1:511
+    at Function.<anonymous> (alpinejs:5:31739)
+[Alpine] volume @ VM782:3
+(anonymous) @ alpinejs:5
+or @ alpinejs:1
+c @ alpinejs:5
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+rn @ alpinejs:5
+N @ alpinejs:1
+(anonymous) @ alpinejs:1
+(anonymous) @ alpinejs:5
+r @ alpinejs:5
+n @ alpinejs:5
+fr @ alpinejs:5
+S @ alpinejs:5
+(anonymous) @ alpinejs:5
+gr @ alpinejs:5
+(anonymous) @ alpinejs:5
+localhost/:295 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track41.jpg 403 (Forbidden)
+localhost/:312 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track40.jpg 403 (Forbidden)
+localhost/:329 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track39.jpg 403 (Forbidden)
+localhost/:346 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track38.jpg 403 (Forbidden)
+localhost/:363 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track37.jpg 403 (Forbidden)
+localhost/:380 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track31.jpg 403 (Forbidden)
+localhost/:566 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track50.jpg 403 (Forbidden)
+localhost/:592 
+        
+        
+       GET https://casperit-bucket.s3.us-east-1.amazonaws.com/covers/track48.jpg 403 (Forbidden)

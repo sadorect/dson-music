@@ -1,4 +1,5 @@
-<div class="fixed bottom-0 w-full bg-black text-white p-4 dson-player" x-data="playerControls()">
+<div x-data="playerControls()"
+x-init="console.log('Player component mounted')" class="fixed bottom-0 w-full bg-black text-white p-4 dson-player" x-data="playerControls()">
     <div class="container mx-auto flex justify-between items-center">
         <div class="track-info flex items-center space-x-4">
             <img :src="currentTrack?.artwork" class="h-12 w-12 rounded object-cover" x-show="currentTrack">

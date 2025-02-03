@@ -1,4 +1,5 @@
 function playerControls() {
+    console.log('Player controls initialized');
     return {
         currentTrack: null,
         isPlaying: false,
@@ -15,6 +16,36 @@ function playerControls() {
         
         setupEventListeners() {
             window.addEventListener('track:play', (e) => {
+                console.log('Audio URL:', e.detail.audioUrl); // Add this line
+                // Initialize Howler with the track
+                window.player = new Howl({
+                    src: [e.detail.audioUrl],
+                    html5: true,
+                    format: ['mp3','MP3','wav','ogg','WAV','flac','FLAC','aac','AAC','m4a','M4A','m4p','M4P','mp4','MP4','webm','WEBM','weba','WEBA','webm','WEBM'],
+                    volume: this.volume / 100,
+                    xhr: {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'audio/mpeg'
+                        }
+                    },
+                    onload: () => {
+                        console.log('Track loaded:', e.detail.audioUrl);
+                        this.duration = window.player.duration();
+                        window.player.play();
+                    },
+                    onplayerror: (id, error) => {
+                        console.log('Play error:', error);
+                    },
+                    onplay: () => {
+                        console.log('Track playing');
+                        this.isPlaying = true;
+                    },
+                    onloaderror: (id, err) => {
+                        console.log('Loading error:', err);
+                    }
+                });
+
                 this.currentTrack = e.detail;
                 this.isPlaying = true;
                 this.updateDuration();
