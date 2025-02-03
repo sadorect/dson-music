@@ -68,6 +68,28 @@
                             </svg>
                         </button>
 
+                        <button x-data
+                        @click="
+                            console.log('Adding track to queue:', {
+                                id: {{ $track->id }},
+                                title: '{{ $track->title }}',
+                                artist: '{{ $track->artist->artist_name }}',
+                                artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
+                                audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
+                            });
+                            $dispatch('queue:add', {
+                                id: {{ $track->id }},
+                                title: '{{ $track->title }}',
+                                artist: '{{ $track->artist->artist_name }}',
+                                artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
+                                audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
+                            });"
+                        class="dson-btn-secondary">
+                        Add to Queue
+                    </button>
+                    
+
+
                         <button 
                         x-data="{ liked: {{ auth()->check() && auth()->user()->likes()->where('likeable_id', $track->id)->exists() ? 'true' : 'false' }} }"
                         @click=" @auth

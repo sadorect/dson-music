@@ -4,9 +4,9 @@
         <!-- Artist Profile Header -->
         <div class="p-4 border-b border-gray-800">
             <div class="flex items-center space-x-3">
-                <img src="{{ Storage::disk('s3')->url(auth()->user()->artistProfile->profile_image) }}"                      class="w-10 h-10 rounded-full object-cover">
+                <img src="{{ auth()->user()->artistProfile ? Storage::disk('s3')->url(auth()->user()->artistProfile->profile_image) : asset('images/default-profile.jpg') }}" class="w-10 h-10 rounded-full object-cover">
                 <div class="flex-grow">
-                    <h2 class="font-bold">{{ auth()->user()->artistProfile->artist_name }}</h2>
+                    <h2 class="font-bold">{{ auth()->user()->artistProfile ? auth()->user()->artistProfile->artist_name : 'Artist Name'  }}</h2>
                     <span class="text-xs text-gray-400">Artist Dashboard</span>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">

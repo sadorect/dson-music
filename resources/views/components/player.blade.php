@@ -12,6 +12,7 @@ x-init="console.log('Player component mounted')" class="fixed bottom-0 w-full bg
         <div class="flex items-center gap-4">
             <button class="dson-btn-player" @click="previousTrack">⏮</button>
             <button class="dson-btn-player" @click="togglePlay" x-text="isPlaying ? '⏸' : '▶'"></button>
+            <button class="dson-btn-player" @click="stop()">⏹</button>
             <button class="dson-btn-player" @click="nextTrack">⏭</button>
         </div>
         
@@ -21,10 +22,16 @@ x-init="console.log('Player component mounted')" class="fixed bottom-0 w-full bg
                     <span x-text="formatTime(currentTime)">0:00</span>
                     <span>/</span>
                     <span x-text="formatTime(duration)">0:00</span>
+                    <button @click="toggleRepeat" :class="{ 'text-red-600': repeatMode !== 'none' }">🔁</button>
+                    <button @click="toggleShuffle" :class="{ 'text-red-600': isShuffled }">🔀</button>
+                
                 </div>
+                <div class="flex items-center gap-2">
+                    </div>
                 <div class="h-1 bg-gray-700 rounded cursor-pointer" @click="seek($event)">
                     <div class="h-1 bg-red-600 rounded transition-all" :style="`width: ${progress}%`"></div>
                 </div>
+                
             </div>
             
             <div class="flex items-center gap-2">

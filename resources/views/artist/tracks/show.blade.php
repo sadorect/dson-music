@@ -5,7 +5,8 @@
     <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-lg shadow-xl overflow-hidden">
             <div class="relative h-64">
-                <img src="{{ Storage::url($track->cover_art) }}" 
+                <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}
+" 
                      alt="{{ $track->title }}" 
                      class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
@@ -14,7 +15,7 @@
                         <div class="flex items-center space-x-4 text-white">
                             <span>{{ $track->genre }}</span>
                             <span>•</span>
-                            <span>{{ $track->release_date->format('M d, Y') }}</span>
+                            <span>{{ $track->release_date->format("M d, Y") }}</span>
                         </div>
                     </div>
                 </div>
@@ -28,7 +29,7 @@
                             id: {{ $track->id }},
                             title: '{{ $track->title }}',
                             artist: '{{ $track->artist->artist_name }}',
-                            artwork: '{{ Storage::url($track->cover_art) }}',
+                            artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}',
                             audioUrl: '{{ Storage::url($track->file_path) }}',
                             format: '{{ pathinfo($track->file_path, PATHINFO_EXTENSION) }}'
                         })"  

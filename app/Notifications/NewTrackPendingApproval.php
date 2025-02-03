@@ -30,7 +30,7 @@ class NewTrackPendingApproval extends Notification
             ->line('A new track has been uploaded and requires your approval.')
             ->line('Track Title: ' . $this->track->title)
             ->line('Artist: ' . $this->track->artist->artist_name)
-            ->action('Review Track', route('admin.tracks.review', $this->track))
+            ->action('Review Track', route('admin.tracks.review.index', $this->track))
             ->line('Please review the track for quality and content guidelines.');
     }
 

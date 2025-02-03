@@ -42,7 +42,10 @@ class TrackController extends Controller
 
     public function create()
     {
-        $albums = auth()->user()->artistProfile->albums()->pluck('title', 'id');
+        $albums = auth()->user()->artistProfile ? 
+    auth()->user()->artistProfile->albums()->pluck('title', 'id') : 
+    collect();
+
         return view('artist.tracks.create', compact('albums'));
     }
 
@@ -58,7 +61,7 @@ class TrackController extends Controller
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'genre' => 'required|string',
-                'track_file' => 'required|file|mimes:mp3,wav,MP3,WAV|max:' . (int)(ini_get('upload_max_filesize')) * 1024,
+                'track_file' => 'required|file|mimes:mp3,wav,MP3,WAV,aac,flac|max:' . (int)(ini_get('upload_max_filesize')) * 1024,
                 'cover_art' => 'nullable|image|max:2048',
                 'release_date' => 'required|date',
                 'album_id' => 'nullable|exists:albums,id',
@@ -75,9 +78,13 @@ class TrackController extends Controller
                 $track->file_path = $request->file('track_file')->store('grinmuzik/tracks', 's3');
                 
                 $getID3 = new getID3;
-                $fileInfo = $getID3->analyze(storage_path('app/public/' . $track->file_path));
-                $track->duration = ceil($fileInfo['playtime_seconds']);
+                $fileInfo = $getID3->analyze($request->file('track_file'));
+                
+                $track->duration = isset($fileInfo['playtime_seconds']) ? 
+                    ceil($fileInfo['playtime_seconds']) : 
+                    0;
             }
+            
     
             if ($request->hasFile('cover_art')) {
                 $track->cover_art = $request->file('cover_art')->store('grinmuzik/covers', 's3');

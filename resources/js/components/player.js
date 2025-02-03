@@ -14,7 +14,14 @@ function playerControls() {
             this.startProgressTimer();
         },
         
+
         setupEventListeners() {
+            
+            window.addEventListener('queue:add', (e) => {
+                this.addToQueue(e.detail);
+                console.log('Added to queue:', e.detail.audioUrl); // Add this line
+            });
+
             window.addEventListener('track:play', (e) => {
                 console.log('Audio URL:', e.detail.audioUrl); // Add this line
 
@@ -56,7 +63,7 @@ function playerControls() {
                         console.log('Loading error:', err);
                     }
                 });
-
+               
                 this.currentTrack = e.detail;
                 this.isPlaying = true;
                 this.updateDuration();
@@ -86,6 +93,13 @@ function playerControls() {
             }
         },
         
+        stop() {
+            if (window.player) {
+                window.player.stop();
+                this.isPlaying = false;
+            }
+        },
+
         togglePlay() {
             if (window.player) {
                 window.dispatchEvent(new CustomEvent('player:toggle'));
@@ -94,10 +108,18 @@ function playerControls() {
         },
         
         previousTrack() {
+            if (this.playHistory && this.playHistory.length > 0) {
+                const previousTrack = this.playHistory.pop();
+                this.playTrack(previousTrack);
+            }
             window.dispatchEvent(new CustomEvent('player:previous'));
         },
         
         nextTrack() {
+            if (this.queue && this.queue.length > 0) {
+                const nextTrack = this.queue.shift();
+                this.playTrack(nextTrack);
+            }
             window.dispatchEvent(new CustomEvent('player:next'));
         },
         
@@ -132,7 +154,61 @@ function playerControls() {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins}:${secs.toString().padStart(2, '0')}`;
+        },
+
+        data() {
+            return {
+                repeatMode: 'none', // none, single, all
+                isShuffled: false,
+                queue: [],
+                playHistory: []
+            }
+        },
+        
+        toggleRepeat() {
+            const modes = ['none', 'single', 'all'];
+            const currentIndex = modes.indexOf(this.repeatMode);
+            this.repeatMode = modes[(currentIndex + 1) % modes.length];
+        },
+        
+        toggleShuffle() {
+            this.isShuffled = !this.isShuffled;
+            if (this.isShuffled) {
+                this.queue = this.shuffleArray([...this.queue]);
+            }
+        },
+// Queue Management
+        queue: [],
+        currentTrack: null,
+        
+        showQueueNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-20 right-4 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        },
+        addToQueue(track) {
+            this.queue.push(track);
+            this.showQueueNotification('Track added to queue');
+        },
+        
+        removeFromQueue(index) {
+            this.queue.splice(index, 1);
+        },
+        
+        clearQueue() {
+            this.queue = [];
+        },
+        
+        reorderQueue(oldIndex, newIndex) {
+            const track = this.queue.splice(oldIndex, 1)[0];
+            this.queue.splice(newIndex, 0, track);
         }
+        
     }
 }
 
