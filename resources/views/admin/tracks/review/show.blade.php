@@ -15,7 +15,7 @@
 
                 <div class="grid grid-cols-2 gap-6 mb-6">
                     <div>
-                        <img src="{{ Storage::url($track->cover_art) }}" 
+                        <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}" 
                              alt="{{ $track->title }}" 
                              class="w-full h-64 object-cover rounded-lg">
                     </div>
@@ -44,7 +44,7 @@
                 <div class="mb-6">
                     <h3 class="text-sm font-medium text-gray-500 mb-2">Preview Track</h3>
                     <audio controls class="w-full">
-                        <source src="{{ Storage::url($track->file_path) }}" type="audio/mpeg">
+                        <source src="{{ Storage::disk('s3')->url($track->file_path) }}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
