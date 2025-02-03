@@ -39,6 +39,12 @@ function playerControls() {
                     },
                     onplay: () => {
                         console.log('Track playing');
+                        fetch(`/tracks/${this.currentTrack.id}/play`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
                         this.isPlaying = true;
                     },
                     onloaderror: (id, err) => {

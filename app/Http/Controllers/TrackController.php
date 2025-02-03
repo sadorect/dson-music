@@ -206,7 +206,7 @@ class TrackController extends Controller
 
     public function recordPlay(Track $track)
 {
-    $track->incrementPlayCount();
+    $track->incrementPlayCount('play_count');
     return response()->json(['success' => true]);
 }
 
