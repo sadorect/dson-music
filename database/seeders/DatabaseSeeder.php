@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
+/*
         User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'sitemanager@dsonmusic.com',
@@ -23,9 +23,10 @@ class DatabaseSeeder extends Seeder
             'user_type' => 'admin',
 
         ]);
-
+*/
         $this->call([
-            MusicDataSeeder::class
+           // MusicDataSeeder::class
+           GeneralSettingsSeeder::class,
         ]);
     }
 }

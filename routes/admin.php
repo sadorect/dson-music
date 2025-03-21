@@ -28,7 +28,11 @@ Route::post('impersonate/{user}', [ImpersonationController::class, 'impersonate'
 
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports');
-    Route::get('settings', [SettingController::class, 'index'])->name('settings');
+       // Settings routes
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::get('/settings/hero-slides', [SettingController::class, 'heroSlides'])->name('settings.hero-slides');
+    Route::post('/settings/hero-slides', [SettingController::class, 'updateHeroSlides'])->name('settings.hero-slides.update');
 
     Route::prefix('analytics')->name('analytics.')->group(function () {
         Route::get('/', [AnalyticsController::class, 'index'])->name('index');
