@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'DSON Music - Stream Your Favorite Music')
+@section('title', 'GRIN Music - Stream Your Favorite Music')
 
 @section('content')
 <div class="min-h-screen bg-white">
