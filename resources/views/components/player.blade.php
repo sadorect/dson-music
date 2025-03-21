@@ -4,12 +4,12 @@ x-init="console.log('Player component mounted')" class="fixed bottom-0 w-full bg
         <div class="track-info flex items-center space-x-4">
             <img :src="currentTrack?.artwork" class="h-12 w-12 rounded object-cover" x-show="currentTrack">
             <div>
-                <h4 class="font-bold" x-text="currentTrack?.title || 'Select a track'"></h4>
+                <h4 class="font-bold" x-text="currentTrack?.title || 'Track'"></h4>
                 <p class="text-sm opacity-75" x-text="currentTrack?.artist || ''"></p>
             </div>
         </div>
         
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
             <button class="dson-btn-player" @click="previousTrack">⏮</button>
             <button class="dson-btn-player" @click="togglePlay" x-text="isPlaying ? '⏸' : '▶'"></button>
             <button class="dson-btn-player" @click="stop()">⏹</button>
