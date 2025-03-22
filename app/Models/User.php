@@ -59,10 +59,68 @@ public function userType()
         return $this->user_type === 'artist';
     }
 
-    public function isAdmin()
-    {
-        return $this->user_type === 'admin';
+    /**
+ * Check if the user is an admin (any type)
+ *
+ * @return bool
+ */
+public function isAdmin()
+{
+    return $this->user_type === 'admin';
+}
+
+/**
+ * Check if the user is a super admin
+ *
+ * @return bool
+ */
+public function isSuperAdmin()
+{
+    return $this->user_type === 'admin' && $this->is_super_admin;
+}
+
+/**
+ * Check if the user has a specific admin permission
+ *
+ * @param string $permission
+ * @return bool
+ */
+public function hasAdminPermission($permission)
+{
+    // Super admins have all permissions
+    if ($this->isSuperAdmin()) {
+        return true;
     }
+    
+    // Regular admins need to check their permissions
+    if ($this->isAdmin() && $this->admin_permissions) {
+        return in_array($permission, $this->admin_permissions);
+    }
+    
+    return false;
+}
+
+/**
+ * Get the admin permissions as an array
+ *
+ * @return array
+ */
+public function getAdminPermissionsAttribute($value)
+{
+    return $value ? json_decode($value, true) : [];
+}
+
+/**
+ * Set the admin permissions
+ *
+ * @param array $value
+ * @return void
+ */
+public function setAdminPermissionsAttribute($value)
+{
+    $this->attributes['admin_permissions'] = $value ? json_encode($value) : null;
+}
+
 
     public function artistProfile()
     {

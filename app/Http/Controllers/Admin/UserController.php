@@ -12,6 +12,12 @@ class UserController extends Controller
   {
       $query = User::query();
       
+      // Check if the admin has permission to manage users
+    if (!can_admin('users')) {
+        return redirect()->route('admin.dashboard')
+            ->with('error', 'You do not have permission to manage users.');
+    }
+    
       if ($request->filled('type')) {
           $query->where('user_type', $request->type);
       }

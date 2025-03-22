@@ -8,12 +8,23 @@ use App\Http\Controllers\Admin\TrackController;
 use App\Http\Controllers\Admin\ArtistController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TrackReviewController;
 use App\Http\Controllers\Admin\ImpersonationController;
 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Check if user is admin
+    Route::middleware(['auth'], function ($request, $next) {
+        if (!$request->user() || $request->user()->user_type !== 'admin') {
+            return redirect()->route('home')->with('error', 'You do not have permission to access the admin area.');
+        }
+        return $next($request);
+    })->group(function () {
+        // Existing admin routes...
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', UserController::class);
     Route::resource('tracks', TrackController::class);
@@ -55,5 +66,11 @@ Route::get('/tracks/review', [TrackReviewController::class, 'index'])->name('tra
         Route::post('/tracks/review/{track}/approve', [TrackReviewController::class, 'approve'])->name('tracks.review.approve');
         Route::post('/tracks/review/{track}/reject', [TrackReviewController::class, 'reject'])->name('tracks.review.reject');
 
+
+
+// Admin user management (super admin only)
+Route::resource('admins', AdminUserController::class);
+
+});
 
 });
