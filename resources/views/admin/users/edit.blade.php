@@ -30,7 +30,10 @@
                 <select name="user_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                     <option value="user" {{ $user->user_type === 'user' ? 'selected' : '' }}>User</option>
                     <option value="artist" {{ $user->user_type === 'artist' ? 'selected' : '' }}>Artist</option>
+                    
+                    @if(auth()->user()->isSuperAdmin())
                     <option value="admin" {{ $user->user_type === 'admin' ? 'selected' : '' }}>Admin</option>
+                    @endif
                 </select>
             </div>
 

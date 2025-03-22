@@ -41,7 +41,9 @@
                 <select name="user_type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                     <option value="user">User</option>
                     <option value="artist">Artist</option>
+                    @if(auth()->user()->isSuperAdmin())
                     <option value="admin">Admin</option>
+                    @endif
                 </select>
             </div>
 

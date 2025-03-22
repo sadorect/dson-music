@@ -52,7 +52,7 @@
                     <input type="password" name="password_confirmation" id="password_confirmation" required
                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
-
+                @if(auth()->user()->isSuperAdmin() && ($user->user_type ?? old('user_type')) == 'admin')
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2">Admin Type</label>
                     <div class="mt-2">
@@ -90,7 +90,7 @@
                         @endforeach
                     </div>
                 </div>
-
+                @endif
                 <div class="flex items-center justify-end">
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                         Create Admin User
