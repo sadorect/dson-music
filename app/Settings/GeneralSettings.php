@@ -11,6 +11,19 @@ class GeneralSettings extends Settings
     public int $max_upload_size;
     public array $hero_slides;
 
+ // Add your new settings here
+ public string $site_description;
+ public string $contact_email;
+ public array $social_links;
+ public bool $enable_registration;
+ public string $footer_text;
+ // Add any other settings you need
+ public ?string $logo_desktop_path;
+    public ?string $logo_desktop_url;
+    public ?string $logo_mobile_path;
+    public ?string $logo_mobile_url;
+    public ?string $favicon_path;
+    public ?string $favicon_url;
     public static function group(): string
     {
         return 'general';

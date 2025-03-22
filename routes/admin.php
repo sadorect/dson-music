@@ -31,8 +31,12 @@ Route::post('impersonate/{user}', [ImpersonationController::class, 'impersonate'
        // Settings routes
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('/settings/social', [SettingController::class, 'updateSocial'])->name('settings.update-social');
     Route::get('/settings/hero-slides', [SettingController::class, 'heroSlides'])->name('settings.hero-slides');
     Route::post('/settings/hero-slides', [SettingController::class, 'updateHeroSlides'])->name('settings.hero-slides.update');
+// Inside your admin routes group
+Route::post('/settings/update-logo', [SettingController::class, 'updateLogo'])->name('settings.update-logo');
+Route::post('/settings/delete-logo', [SettingController::class, 'deleteLogo'])->name('settings.delete-logo');
 
     Route::prefix('analytics')->name('analytics.')->group(function () {
         Route::get('/', [AnalyticsController::class, 'index'])->name('index');

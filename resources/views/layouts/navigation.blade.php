@@ -5,7 +5,17 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="text-white text-2xl font-bold">
-                        DSON MUSIC
+                        @if(setting('logo_desktop_url'))
+                            <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name') }}" class="h-10 hidden sm:block">
+                        @endif
+                        
+                        @if(setting('logo_mobile_url'))
+                            <img src="{{ setting('logo_mobile_url') }}" alt="{{ setting('site_name') }}" class="h-8 sm:hidden">
+                        @elseif(setting('logo_desktop_url'))
+                            <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name') }}" class="h-8 sm:hidden">
+                        @else
+                            <span class="text-2xl font-bold">{{ setting('site_name', 'GRIN MUSIC') }}</span>
+                        @endif
                     </a>
                 </div>
 

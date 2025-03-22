@@ -20,7 +20,7 @@ if (!function_exists('setting')) {
         } catch (\Spatie\LaravelSettings\Exceptions\MissingSettings $e) {
             // Initialize settings with default values
             $settings = new \App\Settings\GeneralSettings([
-                'site_name' => 'DSON Music',
+                'site_name' => 'GRIN Music',
                 'maintenance_mode' => false,
                 'max_upload_size' => 10,
                 'hero_slides' => [
@@ -35,6 +35,26 @@ if (!function_exists('setting')) {
                     ]
                 ]
             ]);
+
+            // Add default values for your new settings
+        $settings->site_description = 'Stream and download music from emerging artists worldwide';
+        $settings->contact_email = 'contact@grinmusic.com';
+        $settings->social_links = [
+            'facebook' => 'https://facebook.com/grinmusic',
+            'twitter' => 'https://twitter.com/grinmusic',
+            'instagram' => 'https://instagram.com/grinmusic',
+            'tiktok' => 'https://tiktok.com/grinmusic'
+        ];
+        $settings->enable_registration = true;
+        $settings->footer_text = '© ' . date('Y') . ' GRIN Music. All rights reserved.';
+          // Add default values for logo settings
+          $settings->logo_desktop_path = null;
+          $settings->logo_desktop_url = null;
+          $settings->logo_mobile_path = null;
+          $settings->logo_mobile_url = null;
+          $settings->favicon_path = null;
+          $settings->favicon_url = null;
+          
             $settings->save();
         }
         

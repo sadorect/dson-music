@@ -8,7 +8,10 @@ export default defineConfig({
                 'resources/css/dson-theme.css', 
                 'resources/js/app.js',
                 'resources/js/search.js',
-                'resources/js/comments.js'],
+                'resources/js/comments.js',
+            'resources/js/logo-preview.js'
+        ],
+                
             refresh: true,
         }),
     ],

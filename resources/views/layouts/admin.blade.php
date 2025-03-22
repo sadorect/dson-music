@@ -113,5 +113,8 @@
             </div>
         </div>
     </div>
+    <!-- At the end of your body tag -->
+@vite(['resources/js/logo-preview.js'])
+
 </body>
 </html>

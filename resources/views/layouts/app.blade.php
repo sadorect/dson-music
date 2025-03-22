@@ -6,12 +6,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="DSON Music - Your premium music streaming platform">
+    <meta name="description" content="GRIN Music - Your premium music streaming platform">
     <meta name="keywords" content="music, streaming, songs, artists, playlists, audio">
-    <meta name="author" content="DSON Music">
+    <meta name="author" content="GRIN Music">
     
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="DSON Music">
+    <meta property="og:title" content="GRIN Music">
     <meta property="og:description" content="Your premium music streaming platform">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -21,14 +21,16 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="DSON Music">
+    <meta name="twitter:title" content="GRIN Music">
     <meta name="twitter:description" content="Your premium music streaming platform">
     
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
-    <title>@yield('title', config('app.name', 'DSON Music'))</title>
-
+    <title>@yield('title', config('app.name', 'GRIN Music'))</title>
+        @if(setting('favicon_url'))
+        <link rel="icon" type="image/webp" href="{{ setting('favicon_url') }}">
+        @endif
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
