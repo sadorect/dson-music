@@ -50,26 +50,54 @@ class ArtistController extends Controller
     }
 
     // For authenticated artist viewing their own profile
-// For public viewing of artist profiles
-public function show(ArtistProfile $artist)
-{
-    $artist->loadCount(['tracks', 'followers'])
-          ->load(['tracks' => function($query) {
-              $query->withCount(['plays', 'likes', 'downloads']);
-          }]);
 
-    return view('artists.public.show', compact('artist'));
-}
-
-public function index()
-{
-    $artists = ArtistProfile::where('is_verified', true)
-        ->withCount(['tracks', 'followers'])
-        ->latest()
-        ->paginate(12);
+    public function show()
+    {
+        $artist = auth()->user()->artistProfile;
         
-    return view('artists.index', compact('artists'));
-}
+        if (!$artist) {
+            return redirect()->route('artist.profile.create')
+                ->with('message', 'Please create your artist profile first');
+        }
+        
+        $artist->loadCount(['tracks', 'followers'])
+              ->load(['tracks' => function($query) {
+                  $query->withCount(['plays', 'likes', 'downloads']);
+              }]);
+              
+        return view('artist.profile.show', compact('artist'));
+    }
+        // For public viewing of artist profiles
+        public function showPublic(ArtistProfile $artist)
+        {
+            $artist->loadCount(['tracks', 'followers'])
+                ->load(['tracks' => function($query) {
+                    $query->withCount(['plays', 'likes', 'downloads']);
+                }]);
 
-}
+            return view('artists.public.show', compact('artist'));
+        }
 
+        public function index()
+        {
+            $artists = ArtistProfile::where('is_verified', true)
+                ->withCount(['tracks', 'followers'])
+                ->latest()
+                ->paginate(12);
+
+                
+                
+            return view('artists.index', compact('artists'));
+        }
+
+    public function edit(ArtistProfile $artist)
+    {
+        if (!$artist) {
+            return redirect()->route('artist.profile.create')
+                ->with('message', 'Please create your artist profile first');
+        }
+            
+        return view('artist.profile.edit', compact('artist'));
+    }
+    
+}

@@ -14,6 +14,22 @@ class ArtistController extends Controller
         $query = ArtistProfile::with('user')
             ->withCount('tracks');
             
+             // Check if the admin has permission to manage users
+    if (!can_admin('users')) {
+        return redirect()->route('admin.dashboard')
+            ->with('error', 'You do not have permission to manage users.');
+    }
+    
+      if ($request->filled('type')) {
+          $query->where('user_type', $request->type);
+      }
+      
+      if ($request->filled('search')) {
+        $query->where(function($q) use ($request) {
+            $q->where('name', 'like', "%{$request->search}%")
+              ->orWhere('email', 'like', "%{$request->search}%");
+        });
+    }
         if ($request->filled('search')) {
             $query->where('artist_name', 'like', "%{$request->search}%");
         }

@@ -137,7 +137,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'user_type' => 'required|in:user,artist,admin',
-            'status' => 'required|in:active,suspended'
+            'status' => 'required|in:active,suspended',
+            'password' => 'nullable|min:8|confirmed',
         ]);
 
         $user->update($validated);

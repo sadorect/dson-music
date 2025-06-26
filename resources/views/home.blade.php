@@ -5,9 +5,9 @@
 @section('content')
 <div class="min-h-screen bg-white">
     <!-- Hero Section -->
-    <section class="">
+    <!--section class="">
         <x-home.hero />
-    </section>
+    </section-->
     
     <!-- Featured Artists -->
     <section class="py-5">

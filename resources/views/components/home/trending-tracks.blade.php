@@ -1,29 +1,38 @@
-<div class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold">Trending Now</h2>
-            <a href="{{ route('trending') }}" class="text-red-600 hover:text-red-700">View All →</a>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+@props(['trendingTracks'])
+
+<div class="container mx-auto px-4">
+    <h2 class="text-2xl md:text-3xl font-bold mb-6">Trending Now</h2>
+    
+    @if($trendingTracks->isEmpty())
+        <p class="text-gray-500">No trending tracks available at the moment.</p>
+    @else
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach($trendingTracks as $track)
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition hover:scale-105">
-                    <a href="{{ route('tracks.show', $track) }}" class="block">
-                        <img src="{{ Storage::url($track->cover_art) }}" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h3 class="font-bold text-lg mb-2">{{ $track->title }}</h3>
-                            <p class="text-gray-600 text-sm">{{ $track->artist->artist_name }}</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                <span class="text-sm text-gray-500">{{ number_format($track->play_count) }} plays</span>
-                                <button onclick="event.preventDefault(); playTrack({{ $track->id }})" class="text-red-600 hover:text-red-700">
-                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
-                                    </svg>
-                                </button>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                    <div class="h-48 bg-gray-200">
+                        @if($track->cover_path)
+                            <img src="{{ Storage::url($track->cover_path) }}" alt="{{ $track->title }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gray-300">
+                                <span class="text-gray-500">No Cover</span>
                             </div>
+                        @endif
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-1">{{ $track->title }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">{{ $track->artist->name ?? 'Unknown Artist' }}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">{{ $track->plays_count }} plays</span>
+                            <button class="text-indigo-600 hover:text-indigo-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
                         </div>
-                    </a>
+                    </div>
                 </div>
             @endforeach
         </div>
-    </div>
+    @endif
 </div>

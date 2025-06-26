@@ -18,7 +18,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="space-y-6">
                 <div class="flex items-center space-x-4">
-                    <img src="{{ Storage::url($artist->profile_image) }}" alt="{{ $artist->artist_name }}" class="w-32 h-32 rounded-full object-cover">
+                    <img src="{{ $artist->profile_image ? Storage::disk('s3')->url($artist->profile_image) : asset('images/default-profile.jpg') }}" alt="{{ $artist->artist_name }}" class="w-32 h-32 rounded-full object-cover">
                     <div>
                         <h3 class="text-xl font-semibold">{{ $artist->artist_name }}</h3>
                         <p class="text-gray-600">{{ $artist->genre }}</p>

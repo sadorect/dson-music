@@ -1,22 +1,20 @@
-<div class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-8">Explore Genres</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+@props(['genres', 'genreCounts'])
+
+<div class="container mx-auto px-4">
+    <h2 class="text-2xl md:text-3xl font-bold mb-6">Explore Genres</h2>
+    
+    @if($genres->isEmpty())
+        <p class="text-gray-500">No genres available at the moment.</p>
+    @else
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             @foreach($genres as $genre)
-                <div class="relative group overflow-hidden rounded-lg h-48">
-                    <img src="{{ asset('images/genres/' . strtolower($genre) . '.jpg') }}" 
-                         class="w-full h-full object-cover transform transition group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
-                        <div class="absolute bottom-4 left-4">
-                            <h3 class="text-white text-xl font-bold">{{ $genre }}</h3>
-                            <p class="text-gray-200 text-sm">{{ $genreCounts[$genre] ?? 0 }} tracks</p>
-                        </div>
-                    </div>
-                    <a href="" 
-                       class="absolute inset-0 z-10">
+                @if(!empty($genre))
+                    <a href="#" class="block bg-gradient-to-r from-purple-700 to-indigo-800 text-white rounded-lg p-4 text-center hover:from-purple-800 hover:to-indigo-900 transition-all">
+                        <h3 class="font-bold text-lg mb-1">{{ $genre }}</h3>
+                        <p class="text-sm opacity-80">{{ $genreCounts[$genre] ?? 0 }} tracks</p>
                     </a>
-                </div>
+                @endif
             @endforeach
         </div>
-    </div>
+    @endif
 </div>

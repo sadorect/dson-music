@@ -69,6 +69,7 @@ public function getAnalytics($days = 30)
 
 public function followers()
 {
+    //return $this->belongsToMany(User::class, 'follows', 'artist_id', 'user_id');
     return $this->hasMany(Follow::class);
 }
 

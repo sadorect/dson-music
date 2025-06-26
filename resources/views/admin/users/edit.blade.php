@@ -44,6 +44,19 @@
                     <option value="suspended" {{ $user->status === 'suspended' ? 'selected' : '' }}>Suspended</option>
                 </select>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">New Password (leave blank to keep current)</label>
+                <input type="password" name="password" 
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                       placeholder="Enter new password">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                <input type="password" name="password_confirmation" 
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                       placeholder="Confirm new password">
+            </div>
 
             <div class="flex justify-end space-x-4">
                 <a href="{{ route('admin.users.index') }}" class="px-4 py-2 border rounded-md text-gray-700">Cancel</a>

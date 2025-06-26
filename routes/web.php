@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/artist/profile/create', [ArtistController::class, 'create'])->name('artist.profile.create');
 Route::post('/artist/profile', [ArtistController::class, 'store'])->name('artist.profile.store');
 Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('artist.profile.edit');
-Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.profile.show');
+Route::get('/artist/profile', [ArtistController::class, 'showPublic'])->name('artist.profile.show');
     
     Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
      // Track routes
