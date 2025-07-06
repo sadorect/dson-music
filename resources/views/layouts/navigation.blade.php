@@ -1,7 +1,7 @@
-<nav x-data="{ open: false }" class="dson-nav">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
+<nav x-data="{ open: false }" class="bg-bg">
+    <div class="w-full px-4 sm:px-6 lg:px-8 ">
+        <div class="flex justify-between p-4 items-center">
+            <div class="flex items-center gap-4">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="text-white text-2xl font-bold">
@@ -19,8 +19,12 @@
                     </a>
                 </div>
 
+                <div class=" p-3 rounded-full bg-white/10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house text-white"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                </div>
+
                 <!-- Main Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-white">
                         {{ __('Home') }}
                     </x-nav-link>
@@ -37,43 +41,43 @@
                         {{ __('Trending') }}
                     </x-nav-link>
                     @if(session()->has('impersonated_by'))
-    <form action="{{ route('admin.stop-impersonating') }}" method="POST">
-        @csrf
-        <button type="submit" class="text-red-600 hover:text-red-900">
-            Stop Impersonating
-        </button>
-    </form>
-@endif
+                    <form action="{{ route('admin.stop-impersonating') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="text-red-600 hover:text-red-900">
+                            Stop Impersonating
+                        </button>
+                    </form>
+                    @endif
 
-                </div>
-            </div>
-<!-- Mobile Search (Shows in hamburger menu) -->
-<div class="sm:hidden" x-data="{ mobileQuery: '', results: [] }">
-    <div class="px-2 pt-2 pb-3 space-y-1">
-        <div class="relative">
-            <input 
-                type="text" 
-                x-model="mobileQuery"
-                @input.debounce.300ms="performSearch"
-                class="w-full bg-gray-800 text-white rounded-full py-2 px-4 pl-10"
-                placeholder="Search tracks, artists...">
-            <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
-        </div>
-    </div>
-</div>
-            <!-- Search Bar -->
-            <div class="hidden sm:flex sm:items-center">
-                <form action="{{ route('search') }}" method="GET">
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            name="q"
-                            class="bg-gray-800 text-white rounded-full py-2 px-4 pl-10 w-64"
-                            placeholder="Search tracks, artists...">
-                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
-                        <button type="submit" class="hidden">Search</button>
+                </div> -->
+                <!-- Mobile Search (Shows in hamburger menu) -->
+                <div class="sm:hidden" x-data="{ mobileQuery: '', results: [] }">
+                    <div class="px-2 pt-2 pb-3 space-y-1">
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                x-model="mobileQuery"
+                                @input.debounce.300ms="performSearch"
+                                class="w-full bg-gray-800 text-white rounded-full py-2 px-4 pl-10"
+                                placeholder="Search tracks, artists...">
+                            <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                        </div>
                     </div>
-                </form>
+                </div>
+                <!-- Search Bar -->
+                <div class="hidden sm:flex sm:items-center">
+                    <form action="{{ route('search') }}" method="GET">
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                name="q"
+                                class="bg-white/5 text-white placeholder-white/30 rounded-full p-3 w-[400px] border-none text-sm"
+                                placeholder="What do you want to play??">
+                            
+                            <button type="submit" class="absolute right-3 top-0 bottom-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide text-white lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></button>
+                        </div>
+                    </form>
+                </div>
             </div>
             
             
@@ -117,9 +121,10 @@
             @else
                 <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
                     <a href="{{ route('login') }}" class="text-white hover:opacity-75">Login</a>
-                    <a href="{{ route('register') }}" class="dson-btn">Sign Up</a>
+                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-4 py-3 bg-primary-color border border-transparent rounded-full font-semibold text-xs tracking-widest  hover:scale-105 hover:shadow-primary-color transition ease-in-out duration-150">Sign Up</a>
                 </div>
             @endauth
+            
 
             <!-- Mobile menu button -->
             <div class="-me-2 flex items-center sm:hidden">
