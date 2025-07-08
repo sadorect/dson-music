@@ -27,6 +27,9 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
+
+    <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+
     <title>@yield('title', config('app.name', 'GRIN Music'))</title>
         @if(setting('favicon_url'))
         <link rel="icon" type="image/webp" href="{{ setting('favicon_url') }}">
@@ -49,19 +52,24 @@
     <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     @stack('scripts')
 </head>
-<body class="font-sans antialiased">
-    <div class="min-h-screen">
-        @include('layouts.navigation')
+<body class="font-sans antialiased h-screen bg-bg overflow-hidden">
+    <div class="flex flex-col h-screen">
+        <div class="shrink-0">
+            @include('layouts.navigation')
+        </div>
         
         <!-- Page Content -->
-        <main>
+        <main class=" h-[80%]">
             @yield('content')
-            <x-player />
-        <x-footer />
-        
-        @stack('scripts')
         </main>
+
+        <div class="shrink-0">
+            <x-player />
+        </div>
+
         
+        {{-- <x-footer /> --}}
+
       
     </div>
 </body>
