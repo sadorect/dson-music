@@ -3,13 +3,19 @@
 @section('title', 'GRIN Music - Stream Your Favorite Music')
 
 @section('content')
-<div class="min-h-screen bg-white">
-    <!-- Hero Section -->
-    <!--section class="">
-        <x-home.hero />
-    </section-->
+<div class="flex p-3 gap-4 h-full">
+    <div class="w-3/12 bg-white/[5%] rounded-lg ">
+
+    </div>
+
+
+    <div class="w-9/12 bg-white/5 p-6 rounded-lg overflow-y-scroll h-full">
+        <!-- Hero Section -->
+    <section class="">
+        <x-home.trending />
+    </section>
     
-    <!-- Featured Artists -->
+     <!-- Featured Artists -->
     <section class="py-5">
         <x-home.featured-artists :artists="$featuredArtists" />
     </section>
@@ -28,5 +34,6 @@
     <section class="py-5 bg-gray-50">
         <x-home.genres :genres="$genres" :genreCounts="$genreCounts" />
     </section>
+    </div>
 </div>
 @endsection
