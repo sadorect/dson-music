@@ -20,7 +20,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Custom Styles -->
-    <style>
+    <!-- <style>
         .auth-gradient {
             background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
         }
@@ -68,24 +68,26 @@
             color: #4F46E5;
             text-decoration: underline;
         }
-    </style>
+    </style> -->
     @stack('styles')
 
 </head>
-<body class="font-sans antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 auth-gradient">
-        <div class="w-full sm:max-w-md px-6 py-8">
-            <div class="flex justify-center mb-6">
+<body class="font-sans antialiased bg-bg ">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 ">
+        <div class="w-full md:w-[500px]  px-6 py-8">
+            <div class="flex  justify-center gap-6 flex-col items-center">
                 <a href="/" class="flex items-center">
                     @if(setting('logo_desktop_url'))
                         <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name') }}" class="h-16">
                     @else
-                        <span class="text-3xl font-bold text-white">{{ setting('site_name') }}</span>
+                        <span class="text-xl font-bold text-white">{{ setting('site_name') }}</span>
                     @endif
                 </a>
+
+                <!-- <h1 class="text-white text-6xl text-center font-extrabold">Login to GRIN Music </h1> -->
             </div>
             
-            <div class="auth-card w-full rounded-xl p-8">
+            <div class="  w-full rounded-xl p-8">
                 {{ $slot }}
             </div>
             
