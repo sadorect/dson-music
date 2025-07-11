@@ -91,3 +91,6 @@ Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('sea
 
 Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
 Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');
+
+
+Route::post('/toggle-theme', [App\Http\Controllers\ThemeController::class, 'toggle'])->name('toggle-theme');
