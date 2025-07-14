@@ -25,8 +25,19 @@ class DatabaseSeeder extends Seeder
         ]);
 */
         $this->call([
-           // MusicDataSeeder::class
-           GeneralSettingsSeeder::class,
+            UserSeeder::class,
+            ArtistProfileSeeder::class,
+            AlbumSeeder::class,
+            TrackSeeder::class,
+            PlaylistSeeder::class,
+            LikeSeeder::class,
+            CommentSeeder::class,
+            FollowSeeder::class,
+            DownloadSeeder::class,
+            NotificationSeeder::class,
+            ActivitySeeder::class,
+            PlayHistorySeeder::class,
+            GeneralSettingsSeeder::class
         ]);
     }
 }
