@@ -39,9 +39,7 @@
                 <tr>
                     <td class="px-6 py-4">
                         <div class="flex items-center">
-                            <img src="{{ Storage::url($artist->profile_image) }}" 
-                                 alt="{{ $artist->artist_name }}" 
-                                 class="w-10 h-10 rounded-full object-cover">
+                            <x-image-cell image="{{ Storage::url($artist->profile_image) }}" alt="{{ $artist->artist_name }}" gradient="to-br, #{{ str_pad(dechex(rand(0, 16777215)), 6, '0', STR_PAD_LEFT) }}" class="w-10 h-10 rounded-full object-cover" />
                             <div class="ml-4">
                                 <div class="font-medium text-gray-900">{{ $artist->artist_name }}</div>
                                 <div class="text-gray-500">{{ $artist->user->email }}</div>
