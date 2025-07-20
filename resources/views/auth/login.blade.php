@@ -2,12 +2,14 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+   <div class=">
+
+   <form method="POST" action="{{ route('login') }}" >
         @csrf
 
 
         <!-- HEADING -->
-         <h1 class="text-white text-6xl text-center font-extrabold py-6"> Login to <br> GRIN Music </h1>
+         <h1 class="text-white text-3xl text-center  py-6"> Hy 👋, Welcome back </h1>
 
         <!-- Email Address -->
         <div>
@@ -47,11 +49,14 @@
                 {{ __('Log in') }}
             </x-primary-button>
 
-            @if (Route::has('password.request'))
+            @if (Route::has('register'))
                 <a class="underline text-sm text-white/60 text-center rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Dont have an account? Sign Up to GRIN MUSIC') }}
+                    {{ __('Dont have an account? Sign Up') }}
                 </a>
             @endif
         </div>
     </form>
+
+
+   </div>
 </x-guest-layout>

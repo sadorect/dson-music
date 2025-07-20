@@ -75,7 +75,7 @@
 <body class="font-sans antialiased bg-bg ">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 ">
         <div class="w-full md:w-[500px]  px-6 py-8">
-            <div class="flex  justify-center gap-6 flex-col items-center">
+            <div class="flex  justify-center gap-4 flex-col items-center">
                 <a href="/" class="flex items-center">
                     @if(setting('logo_desktop_url'))
                         <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name') }}" class="h-16">
