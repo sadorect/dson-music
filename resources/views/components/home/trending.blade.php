@@ -1,12 +1,12 @@
 
     <div class="w-full">
         <div class="w-full">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold">Trending songs</h2>
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-2xl font-bold text-white">Trending songs</h2>
                 <a href="#" class="text-sm text-gray-400 hover:text-white">Show all</a>
             </div>
 
-            <div class="flex gap-4 overflow-x-scroll w-full">
+            <div class="flex gap-2 overflow-x-scroll scroll-smooth w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
                 <x-song-card 
                     title="Gold" 
                     artist="J Hus, Asake" 
