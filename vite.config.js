@@ -15,4 +15,16 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+     server: {
+    watch: {
+      ignored: [
+        '**/vendor/**',
+        '**/node_modules/**',
+        '**/node_modules/**',
+        '**/.git/**',
+        '**/.gitignore/**',
+        // add other heavy dirs like storage, node_modules, etc.
+      ],
+    },
+  },
 });
