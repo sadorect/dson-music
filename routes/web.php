@@ -14,6 +14,7 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\SongController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
@@ -91,6 +92,6 @@ Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('sea
 
 Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
 Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');
-
+Route::get('songs/{song}', [SongController::class, 'show'])->name('songs.show');
 
 Route::post('/toggle-theme', [App\Http\Controllers\ThemeController::class, 'toggle'])->name('toggle-theme');
