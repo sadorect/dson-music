@@ -11,13 +11,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NewTrackPendingApproval;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Container\Attributes\Log as AttributesLog;
 
 class TrackController extends Controller
 {
     public function apiIndex()
     {
-        $tracks = auth()->user()->artistProfile->tracks()
+        $tracks = Auth::user()->artistProfile->tracks()
             ->select(['id', 'title', 'file_path', 'cover_art'])
             ->with('artist:id,artist_name')
             ->get()
@@ -36,14 +37,14 @@ class TrackController extends Controller
 
     public function index()
     {
-        $tracks = auth()->user()->artistProfile->tracks()->latest()->paginate(10);
+        $tracks = Auth::user()->artistProfile->tracks()->latest()->paginate(10);
         return view('artist.tracks.index', compact('tracks'));
     }
 
     public function create()
     {
-        $albums = auth()->user()->artistProfile ? 
-    auth()->user()->artistProfile->albums()->pluck('title', 'id') : 
+        $albums = Auth::user()->artistProfile ? 
+    Auth::user()->artistProfile->albums()->pluck('title', 'id') : 
     collect();
 
         return view('artist.tracks.create', compact('albums'));
@@ -71,7 +72,7 @@ class TrackController extends Controller
             ]);
     
             $track = new Track($validated);
-            $track->artist_id = auth()->user()->artistProfile->id;
+            $track->artist_id = Auth::user()->artistProfile->id;
             $track->approval_status = 'pending';
 
             if ($request->hasFile('track_file')) {
@@ -94,7 +95,7 @@ class TrackController extends Controller
     
             // Log the activity
             ActivityLogger::log(
-                auth()->id(),
+                Auth::id(),
                 'track_upload',
                 "Uploaded new track: {$track->title}"
             );
@@ -123,7 +124,7 @@ class TrackController extends Controller
 
     public function edit(Track $track)
     {
-        $albums = auth()->user()->artistProfile->albums()->pluck('title', 'id');
+        $albums = Auth::user()->artistProfile->albums()->pluck('title', 'id');
         return view('artist.tracks.edit', compact('track', 'albums'));
     }
 
@@ -171,7 +172,7 @@ class TrackController extends Controller
         $track->update($validated);
 
         ActivityLogger::log(
-            auth()->id(),
+            Auth::id(),
             'track_updated',
             "Updated track: {$track->title}"
         );
@@ -202,7 +203,7 @@ class TrackController extends Controller
         $track->delete();
 
         ActivityLogger::log(
-            auth()->id(),
+            Auth::id(),
             'track_deleted',
             "Deleted track: {$track->title}"
         );
