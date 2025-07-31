@@ -93,5 +93,5 @@ Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('sea
 Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
 Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');
 Route::get('songs/{song}', [SongController::class, 'show'])->name('songs.show');
-
+Route::get('artists/{artist}', [ArtistController::class, 'showPublic'])->name('artists.showPublic');
 Route::post('/toggle-theme', [App\Http\Controllers\ThemeController::class, 'toggle'])->name('toggle-theme');
