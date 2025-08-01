@@ -2,7 +2,7 @@
 <div class="w-full">
         <div class="w-full">
             <div class="flex items-center justify-between mb-2">
-                <h2 class="text-2xl font-bold text-white">Popular Artists</h2>
+                <h2 class="text-2xl font-bold text-white">{{$title}}</h2>
                 <a href="#" class="text-sm text-gray-400 hover:text-white">Show all</a>
             </div>
 
@@ -60,3 +60,5 @@
                     image="https://link-to-image/lighter.jpg" />
             </div>
         </div>
+
+</div>
