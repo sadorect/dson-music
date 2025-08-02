@@ -1,7 +1,7 @@
-@props(['artists'])
+@props(['artists', 'title'])
 
 <div class="container mx-auto px-4">
-    <h2 class="text-xl md:text-2xl font-bold mb-2 text-white">Featured Artists</h2>
+    <h2 class="text-xl md:text-2xl font-bold mb-2 text-white">{{$title}}</h2>
     
     @if($artists->isEmpty())
         <p class="text-gray-500">No featured artists available at the moment.</p>
