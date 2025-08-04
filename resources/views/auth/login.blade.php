@@ -2,7 +2,7 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-   <div class=">
+   <div class='flex flex-col gap-4'>
 
    <form method="POST" action="{{ route('login') }}" >
         @csrf
@@ -50,7 +50,7 @@
             </x-primary-button>
 
             @if (Route::has('register'))
-                <a class="underline text-sm text-white/60 text-center rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                <a class="underline text-sm text-white/60 text-center rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}">
                     {{ __('Dont have an account? Sign Up') }}
                 </a>
             @endif
