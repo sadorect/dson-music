@@ -1,144 +1,348 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-    <!-- Artist Header -->
-    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div class="relative h-48 bg-gradient-to-r from-purple-600 to-blue-600">
-            <img src="{{ $artist->profile_image ? Storage::disk('s3')->url($artist->profile_image) : asset('images/default-profile.webp') }}" 
-                 class="absolute bottom-0 left-8 transform translate-y-1/2 w-32 h-32 rounded-full border-4 border-white object-cover"
-                 onerror="this.src='{{ asset('images/default-profile.webp') }}'">
+
+<div class="w-full">
+    <div class="relative h-[300px] w-full ">
+        <img src="https://media.istockphoto.com/id/994280546/photo/passionate-singer-playing-the-guitar-and-recording-song-in-studio.jpg?s=612x612&w=0&k=20&c=MvAY7l1ZVL8RhQNIsoj4BD-GuWqOOjF411eW2LOMmGU=" alt="" class="w-full h-full object-cover">
+
+        <div class="flex flex-col gap-2 absolute p-8 bottom-0 left-0 ">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" text-white lucide lucide-badge-check-icon lucide-badge-check">
+                    <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                    <path d="m9 12 2 2 4-4" />
+                </svg>
+                <p class="text-white">Verified Arist</p>
+
+            </div>
+            <h1 class="text-7xl font-bold text-white">Artists Name</h1>
+            <p class="text-white/50">2,434,787,000 monthly listeners</p>
         </div>
-        
-        <div class="pt-20 pb-6 px-8">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h1 class="text-3xl font-bold">{{ $artist->artist_name }}</h1>
-                    <p class="text-gray-600">{{ $artist->genre }}</p>
-                    <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{{ $artist->tracks_count }} tracks</span>
-                        <span>{{ $artist->followers_count }} followers</span>
-                    </div>
+    </div>
+
+    <div class="flex gap-4 items-center  p-4">
+        <div class="flex gap-4 items-center">
+            <button class="bg-primary-color rounded-full p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="primary-color lucide lucide-circle-play-icon lucide-circle-play">
+                    <path d="M9 9.003a1 1 0 0 1 1.517-.859l4.997 2.997a1 1 0 0 1 0 1.718l-4.997 2.997A1 1 0 0 1 9 14.996z" />
+                    <circle cx="12" cy="12" r="10" />
+                </svg>
+            </button>
+
+            <button class="text-white/50 text-sm border border-white/50 rounded-full px-4 py-2">
+                Follow
+            </button>
+
+            <button>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" text-white/50 lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical">
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="12" cy="5" r="1" />
+                    <circle cx="12" cy="19" r="1" />
+                </svg>
+            </button>
+        </div>
+
+
+    </div>
+
+    <div class="p-4">
+        <h1 class="font-bold text-white text-lg">Popular</h1>
+
+
+        <div class="flex gap-4 items-center p-2 hover:bg-white/20 rounded-md">
+            <div class="flex items-center justify-center w-1/12 ">
+                <h1 class="text-white/50">1</h1>
+            </div>
+            <div class="w-10/12">
+                <h1 class="text-white">Track Title</h1>
+                <p class="text-white/50 text-sm">Artist Name</p>
+            </div>
+            <div class="w-1/12 flex items-center justify-center">
+                <p class="text-white/50 text-sm">2:53</p>
+            </div>
+        </div>
+        <div class="flex gap-4 items-center p-2 hover:bg-white/20 rounded-md">
+            <div class="flex items-center justify-center w-1/12 ">
+                <h1 class="text-white/50">2</h1>
+            </div>
+            <div class="w-10/12">
+                <h1 class="text-white">Track Title 2</h1>
+                <p class="text-white/50 text-sm">Artist Name</p>
+            </div>
+            <div class="w-1/12 flex items-center justify-center">
+                <p class="text-white/50 text-sm">2:53</p>
+            </div>
+        </div>
+        <div class="flex gap-4 items-center p-2 hover:bg-white/20 rounded-md">
+            <div class="flex items-center justify-center w-1/12 ">
+                <h1 class="text-white/50">3</h1>
+            </div>
+            <div class="w-10/12">
+                <h1 class="text-white">Track Title 3</h1>
+                <p class="text-white/50 text-sm">Artist Name</p>
+            </div>
+            <div class="w-1/12 flex items-center justify-center">
+                <p class="text-white/50 text-sm">2:53</p>
+            </div>
+        </div>
+
+        <button class="text-white/50 text-sm">see more</button>
+
+
+
+    </div>
+
+    <div class="p-4">
+
+        <div class="w-full">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-2xl font-bold text-white">Discography</h2>
+                <a href="#" class="text-sm text-gray-400 hover:text-white">Show all</a>
+            </div>
+
+
+            <div>
+                <button class="text-black text-sm border border-white/50 rounded-full px-4 py-2 bg-white/50">Popular releases</button>
+                <button class="text-white/50 text-sm border border-white/50 rounded-full px-4 py-2">Albums</button>
+                <button class="text-white/50 text-sm border border-white/50 rounded-full px-4 py-2">Singles & EPs</button>
+                <button class="text-white/50 text-sm border border-white/50 rounded-full px-4 py-2">Mixtapes</button>
+            </div>
+
+            <div class="flex gap-2 overflow-x-scroll scroll-smooth w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+                <x-song-card
+                    title="Gold"
+                    artist="J Hus, Asake"
+                    image="https://link-to-image/gold.jpg" />
+
+                <x-song-card
+                    title="Ewo"
+                    artist="Famous Pluto, Shallipopi, Zerrydl"
+                    image="https://link-to-image/ewo.jpg" />
+
+                <x-song-card
+                    title="Don't Let Me Drown"
+                    artist="Burna Boy, F1 The Album"
+                    image="https://link-to-image/drown.jpg" />
+
+                <x-song-card
+                    title="Gang"
+                    artist="Ayo Maff, Seyi Vibez"
+                    image="https://link-to-image/gang.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+
+                <x-song-card
+                    title="Gang"
+                    artist="Ayo Maff, Seyi Vibez"
+                    image="https://link-to-image/gang.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+            </div>
+        </div>
+
+    </div>
+
+    <div class="p-4">
+
+        <div class="w-full">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-2xl font-bold text-white">Featuring the artist</h2>
+                <a href="#" class="text-sm text-gray-400 hover:text-white">Show all</a>
+            </div>
+
+
+
+
+            <div class="flex gap-2 overflow-x-scroll scroll-smooth w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+                <x-song-card
+                    title="Gold"
+                    artist="J Hus, Asake"
+                    image="https://link-to-image/gold.jpg" />
+
+                <x-song-card
+                    title="Ewo"
+                    artist="Famous Pluto, Shallipopi, Zerrydl"
+                    image="https://link-to-image/ewo.jpg" />
+
+                <x-song-card
+                    title="Don't Let Me Drown"
+                    artist="Burna Boy, F1 The Album"
+                    image="https://link-to-image/drown.jpg" />
+
+                <x-song-card
+                    title="Gang"
+                    artist="Ayo Maff, Seyi Vibez"
+                    image="https://link-to-image/gang.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+
+                <x-song-card
+                    title="Gang"
+                    artist="Ayo Maff, Seyi Vibez"
+                    image="https://link-to-image/gang.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+            </div>
+        </div>
+
+    </div>
+
+    <div class="p-4">
+        <h1 class="text-2xl font-bold text-white">About the artist</h1>
+        <div class="relative h-[300px] w-full rounded-lg py-4">
+            <img src="https://media.istockphoto.com/id/994280546/photo/passionate-singer-playing-the-guitar-and-recording-song-in-studio.jpg?s=612x612&w=0&k=20&c=MvAY7l1ZVL8RhQNIsoj4BD-GuWqOOjF411eW2LOMmGU=" alt="" class="w-full h-full object-cover">
+
+            <div class="flex flex-col gap-2 absolute p-8 bottom-0 left-0 ">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" text-white lucide lucide-badge-check-icon lucide-badge-check">
+                        <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                        <path d="m9 12 2 2 4-4" />
+                    </svg>
+                    <p class="text-white">2,434,787,000 monthly listeners</p>
+
                 </div>
-                
-                @auth
-                    @if(auth()->user()->id !== $artist->user_id)
-                        <form action="{{ auth()->user()->isFollowing($artist) ? route('artists.unfollow', $artist) : route('artists.follow', $artist) }}" 
-                              method="POST">
-                            @csrf
-                            @if(auth()->user()->isFollowing($artist))
-                                @method('DELETE')
-                            @endif
-                            <button type="submit" 
-                                    class="px-6 py-2 rounded-full {{ auth()->user()->isFollowing($artist) ? 'bg-gray-200 hover:bg-gray-300' : 'bg-purple-600 text-white hover:bg-purple-700' }}">
-                                {{ auth()->user()->isFollowing($artist) ? 'Following' : 'Follow' }}
-                            </button>
-                        </form>
-                    @endif
-                @endauth
+
+                <p class="text-white/50 text-sm">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Incidunt aspernatur, accusamus ea mollitia, ipsa dicta pariatur architecto voluptate labore illo recusandae officiis vel porro, dolorum cum temporibus unde? Totam quos laudantium error. Incidunt molestias eveniet ducimus quaerat laboriosam doloribus iure ea labore dolorem, corrupti quam ratione, dolorum, ullam nesciunt nulla!</p>
             </div>
         </div>
     </div>
 
-    <!-- Tracks Section -->
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach($artist->tracks as $track)
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <img src="{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.webp') }}" 
-                     class="w-full h-48 object-cover"
-                     onerror="this.src='{{ asset('images/default-cover.webp') }}'">
-                <div class="p-4">
-                    <h3 class="font-bold text-lg mb-2">{{ $track->title }}</h3>
-                    <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
-                        <span>{{ $track->plays_count }} plays</span>
-                        <span>{{ $track->likes_count }} likes</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <button x-data
-                        @click="$dispatch('track:play', {
-                            id: {{ $track->id }},
-                            title: '{{ $track->title }}',
-                            artist: '{{ $track->artist->artist_name }}',
-                            artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/images/default-cover.webp' }}',
-                            audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}',
-                            format: '{{ $track->file_path ? pathinfo($track->file_path, PATHINFO_EXTENSION) : 'mp3' }}'
-                        })"  class="text-purple-600 hover:text-purple-700">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
 
-                        <button x-data
-                        @click="
-                            console.log('Adding track to queue:', {
-                                id: {{ $track->id }},
-                                title: '{{ $track->title }}',
-                                artist: '{{ $track->artist->artist_name }}',
-                                artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
-                                audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
-                            });
-                            $dispatch('queue:add', {
-                                id: {{ $track->id }},
-                                title: '{{ $track->title }}',
-                                artist: '{{ $track->artist->artist_name }}',
-                                artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
-                                audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
-                            });"
-                        class="dson-btn-secondary">
-                        Add to Queue
-                    </button>
-                    
+    <div class="px-4 py-8">
+    <x-home.popular-artists title="Fans also like" />
+    </div>
 
 
-                        <button 
-                        x-data="{ liked: {{ auth()->check() && auth()->user()->likes()->where('likeable_id', $track->id)->exists() ? 'true' : 'false' }} }"
-                        @click=" @auth
-                            fetch('{{ route('tracks.like', $track) }}', {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                liked = !liked;
-                                $refs.likeCount.textContent = data.likes_count;
-                            })
-                            @else
-                            window.location.href = '{{ route('login') }}'
-                        @endauth
-                        "
-                        class="flex items-center space-x-1 text-gray-600 hover:text-red-600 transition-colors"
-                    >
-                        <svg 
-                            :class="{ 'text-red-600 fill-current': liked }"
-                            class="w-6 h-6" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
-                        >
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                        <span x-ref="likeCount">{{ $track->likes()->count() }}</span>
-                    </button>
+    <div class="px-4 py-8">
 
-                        <a href="{{ route('tracks.download', $track) }}" class="text-gray-600 hover:text-gray-700">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+        <div class="w-full">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-2xl font-bold text-white">Appears on</h2>
+                <a href="#" class="text-sm text-gray-400 hover:text-white">Show all</a>
             </div>
-        @endforeach
+
+
+
+
+            <div class="flex gap-2 overflow-x-scroll scroll-smooth w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+                <x-song-card
+                    title="Gold"
+                    artist="J Hus, Asake"
+                    image="https://link-to-image/gold.jpg" />
+
+                <x-song-card
+                    title="Ewo"
+                    artist="Famous Pluto, Shallipopi, Zerrydl"
+                    image="https://link-to-image/ewo.jpg" />
+
+                <x-song-card
+                    title="Don't Let Me Drown"
+                    artist="Burna Boy, F1 The Album"
+                    image="https://link-to-image/drown.jpg" />
+
+                <x-song-card
+                    title="Gang"
+                    artist="Ayo Maff, Seyi Vibez"
+                    image="https://link-to-image/gang.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+
+                <x-song-card
+                    title="Gang"
+                    artist="Ayo Maff, Seyi Vibez"
+                    image="https://link-to-image/gang.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+
+                <x-song-card
+                    title="Lighter"
+                    artist="A7S, David Guetta, Wizkid"
+                    image="https://link-to-image/lighter.jpg" />
+            </div>
+        </div>
+
     </div>
 </div>
 
-@push('scripts')
-<script>
-function playTrack(trackId) {
-    // Implement audio player functionality
-}
-</script>
-@endpush
+
+
+
+
+
 @endsection
