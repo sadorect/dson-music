@@ -3,20 +3,20 @@
 @section('title', 'GRIN Music - Stream Your Favorite Music')
 
 @section('content')
-<div>
+<div class="p-6">
     <!-- Hero Section -->
     <section class="">
-        <x-home.trending />
+        <x-home.trending :tracks="$trendingTracks" title="Trending Songs" />
     </section>
 
     <!-- Featured Artists -->
     <section class="my-8">
-        <x-home.featured-artists :artists="$featuredArtists" />
+        <x-home.featured-artists title="Popular Albums" :artists="$featuredArtists" />
     </section>
 
 
     <section class="">
-        <x-home.popular-artists />
+        <x-home.popular-artists title="Popular Artists" />
     </section>
 
     <!-- Trending Tracks -->
@@ -33,5 +33,8 @@
     <section class="my-8">
         <x-home.genres :genres="$genres" :genreCounts="$genreCounts" />
     </section>
+
+
+   
 </div>
 @endsection
