@@ -18,6 +18,8 @@ class Track extends Model
         'album_id',
         'genre',
         'duration',
+        'gradient_start_color',
+        'gradient_end_color',
         'file_path',
         'cover_art',
         'release_date',
@@ -49,6 +51,8 @@ class Track extends Model
     {
         return $this->belongsTo(Album::class);
     }
+
+
 
 
     public function scopeTrending($query)
