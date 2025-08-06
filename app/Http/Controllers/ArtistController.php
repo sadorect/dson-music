@@ -24,11 +24,11 @@ class ArtistController extends Controller
         ]);
 
         $artistProfile = new ArtistProfile($validated);
-        
+
         if ($request->hasFile('profile_image')) {
             $artistProfile->profile_image = $request->file('profile_image')->store('artist-profiles', 'public');
         }
-        
+
         if ($request->hasFile('cover_image')) {
             $artistProfile->cover_image = $request->file('cover_image')->store('artist-covers', 'public');
         }
@@ -44,7 +44,7 @@ class ArtistController extends Controller
             return redirect()->route('artist.register.form')
                 ->with('message', 'Please complete your artist profile first');
         }
-    
+
         $artist = auth()->user()->artistProfile;
         return view('artist.dashboard', compact('artist'));
     }
@@ -54,41 +54,42 @@ class ArtistController extends Controller
     public function show()
     {
         $artist = auth()->user()->artistProfile;
-        
+
         if (!$artist) {
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please create your artist profile first');
         }
-        
+
         $artist->loadCount(['tracks', 'followers'])
-              ->load(['tracks' => function($query) {
-                  $query->withCount(['plays', 'likes', 'downloads']);
-              }]);
-              
+            ->load(['tracks' => function ($query) {
+                $query->withCount(['plays', 'likes', 'downloads']);
+            }]);
+
         return view('artist.profile.show', compact('artist'));
     }
-        // For public viewing of artist profiles
-        public function showPublic(ArtistProfile $artist)
-        {
-            $artist->loadCount(['tracks', 'followers'])
-                ->load(['tracks' => function($query) {
-                    $query->withCount(['plays', 'likes', 'downloads']);
-                }]);
 
-            return view('artists.public.show', compact('artist'));
-        }
+    // For public viewing of artist profiles
+    public function showPublic()
+    {
+        // $artist->loadCount(['tracks', 'followers'])
+        //     ->load(['tracks' => function ($query) {
+        //         $query->withCount(['plays', 'likes', 'downloads']);
+        //     }]);
 
-        public function index()
-        {
-            $artists = ArtistProfile::where('is_verified', true)
-                ->withCount(['tracks', 'followers'])
-                ->latest()
-                ->paginate(12);
+        return view('artists.public.show');
+    }
 
-                
-                
-            return view('artists.index', compact('artists'));
-        }
+    public function index()
+    {
+        $artists = ArtistProfile::where('is_verified', true)
+            ->withCount(['tracks', 'followers'])
+            ->latest()
+            ->paginate(12);
+
+
+
+        return view('artists.index', compact('artists'));
+    }
 
     public function edit(ArtistProfile $artist)
     {
@@ -96,8 +97,7 @@ class ArtistController extends Controller
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please create your artist profile first');
         }
-            
+
         return view('artist.profile.edit', compact('artist'));
     }
-    
 }
