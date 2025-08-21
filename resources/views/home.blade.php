@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="p-6">
+    
     <!-- Hero Section -->
     <section class="">
         <x-home.trending :tracks="$trendingTracks" title="Trending Songs" />
