@@ -38,8 +38,9 @@ class HomeController extends Controller
 
             return view('home', $data);
         } catch (\Exception $e) {
+            dd($e->getMessage());
             return response()->view('errors.general', [
-            'message' => 'An error occurred while loading the homepage: ' . $e->getMessage()
+                'message' => 'An error occurred while loading the homepage: ' . $e->getMessage()
             ], 500);
         }
     }

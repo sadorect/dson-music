@@ -6,13 +6,13 @@
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home') }}" class="text-white text-2xl font-bold">
                         @if(setting('logo_desktop_url'))
-                            <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name') }}" class="h-10 hidden sm:block">
+                            <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name', 'GRIN MUSIC') }}" class="h-10 hidden sm:block">
                         @endif
                         
                         @if(setting('logo_mobile_url'))
-                            <img src="{{ setting('logo_mobile_url') }}" alt="{{ setting('site_name') }}" class="h-8 sm:hidden">
+                            <img src="{{ setting('logo_mobile_url') }}" alt="{{ setting('site_name', 'GRIN MUSIC') }}" class="h-8 sm:hidden">
                         @elseif(setting('logo_desktop_url'))
-                            <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name') }}" class="h-8 sm:hidden">
+                            <img src="{{ setting('logo_desktop_url') }}" alt="{{ setting('site_name', 'GRIN MUSIC') }}" class="h-8 sm:hidden">
                         @else
                             <span class="text-2xl font-bold">{{ setting('site_name', 'GRIN MUSIC') }}</span>
                         @endif
@@ -24,32 +24,7 @@
                 </div>
 
                 <!-- Main Navigation Links -->
-                <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')" class="text-white">
-                        {{ __('Home') }}
-                    </x-nav-link>
-                    <x-nav-link href="#" class="text-white">
-                        {{ __('Browse') }}
-                    </x-nav-link>
-                    <x-nav-link href="#" class="text-white">
-                        {{ __('Library') }}
-                    </x-nav-link>
-                    <x-nav-link href="#" class="text-white">
-                        {{ __('Radio') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('trending')" :active="request()->routeIs('trending')">
-                        {{ __('Trending') }}
-                    </x-nav-link>
-                    @if(session()->has('impersonated_by'))
-                    <form action="{{ route('admin.stop-impersonating') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="text-red-600 hover:text-red-900">
-                            Stop Impersonating
-                        </button>
-                    </form>
-                    @endif
-
-                </div> -->
+                <!-- ... -->
                 <!-- Mobile Search (Shows in hamburger menu) -->
                 <div class="sm:hidden" x-data="{ mobileQuery: '', results: [] }">
                     <div class="px-2 pt-2 pb-3 space-y-1">
@@ -80,17 +55,13 @@
                 </div>
             </div>
             
-            
-            
-               
-
             <!-- User Menu -->
             @auth
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="flex items-center text-white hover:opacity-75">
-                                <div>{{ Auth::user()->name }}</div>
+                                <div>{{ Auth::user()?->name ?? 'User' }}</div>
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -103,10 +74,11 @@
                             <x-dropdown-link :href="route('artist.dashboard')">
                                 {{ __('Dashboard') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('artist.profile.edit', Auth::user()->artist->id)">
-                                {{ __('Edit Profile') }}
-                               
-                            </x-dropdown-link>
+                            @if(optional(Auth::user())->artist)
+                                <x-dropdown-link :href="route('artist.profile.edit', Auth::user()->artist->id)">
+                                    {{ __('Edit Profile') }}
+                                </x-dropdown-link>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
@@ -157,8 +129,6 @@
     </div>
 </nav>
 
-
-
 @push('scripts')
 <script>
 function searchBar() {
@@ -166,17 +136,24 @@ function searchBar() {
         query: '',
         results: [],
         async search() {
-            if (this.query.length < 2) {
+            if (!this.query || this.query.length < 2) {
                 this.results = [];
                 return;
             }
             
             try {
-                const response = await fetch(`/search?q=${this.query}`);
+                const response = await fetch(`/search?q=${encodeURIComponent(this.query)}`);
+                if (!response.ok) {
+                    this.results = [];
+                    return;
+                }
                 const data = await response.json();
-                this.results = [...data.tracks, ...data.artists].slice(0, 5);
+                const tracks = Array.isArray(data.tracks) ? data.tracks : [];
+                const artists = Array.isArray(data.artists) ? data.artists : [];
+                this.results = [...tracks, ...artists].slice(0, 5);
             } catch (error) {
                 console.error('Search failed:', error);
+                this.results = [];
             }
         }
     }
