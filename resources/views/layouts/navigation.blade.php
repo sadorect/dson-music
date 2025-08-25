@@ -24,7 +24,16 @@
                 </div>
 
                 <!-- Main Navigation Links -->
-                <!-- ... -->
+                <!-- Impersonation Banner -->
+                @if(session()->has('impersonated_by'))
+                    <div class="bg-yellow-400 text-black px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-2">
+                        <span>Impersonating: {{ Auth::user()?->name ?? 'Unknown User' }}</span>
+                        <form action="{{ route('admin.stop-impersonating') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="underline hover:text-red-600 ml-2">Stop Impersonating</button>
+                        </form>
+                    </div>
+                @endif
                 <!-- Mobile Search (Shows in hamburger menu) -->
                 <div class="sm:hidden" x-data="{ mobileQuery: '', results: [] }">
                     <div class="px-2 pt-2 pb-3 space-y-1">
