@@ -6,6 +6,8 @@
 -   Consolidated duplicate route declarations in `routes/web.php`, ensuring unique artist/profile/comment endpoints and cleaner auth grouping.
 -   `TrackController::recordPlay` now persists detailed `PlayHistory` entries (user, IP, agent, timestamp) so analytics dashboards have real data instead of just incremented counters.
 -   Navigation search (desktop + mobile) now consumes the `/search/quick` JSON endpoint with Alpine-driven suggestions, matching the new contract and preventing 500s from the Blade view response.
+-   Download metrics now persist via a `downloads:sync-counts` artisan command, status-aware download logging, and proper `downloads_count` casting/fillables on `Track`.
+-   Comment abuse protections added: spam detection rule, targeted rate limiter, and new feature tests guarding both behaviors.
 
 ## Overview
 
@@ -39,15 +41,13 @@
 
 ## Gaps & Risks
 
-| Area                  | Issue                                                                                                                                                                               | Impact                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| Download metrics      | `DownloadController` increments `downloads_count` on `Track`, but the column isn’t defined on the model fillables/migrations; metrics likely never persist.                         | Medium.                                      |
-| Comments & moderation | No throttling, rate limiting, or abuse protections around comment create/update endpoints; moderation queue remains manual-only.                                                    | Medium.                                      |
-| Playlist ecosystem    | `Playlist` model exists but no controllers, policies, or UI ("Your Library" sidebar is static).                                                                                     | Medium – core streaming expectation missing. |
-| Controller stubs      | `MusicController` and `SongController` are placeholders; `PublicTrackController::show` only loads Blade view without shareable metadata; `ThemeController` toggle isn’t consumed.   | Low/Medium depending on scope.               |
-| Admin/Report views    | `Admin\ReportController@index` references `admin.reports.index` view that doesn't exist. Also admin middleware nesting in `routes/admin.php` is non-standard, may skip guard logic. | Medium.                                      |
-| Front-end polish      | `components/player.blade.php` duplicates `x-data`, queue UI absent, mobile responsiveness limited. Navigation references `Auth::user()->artist` (non-existent relation).            | Low/Medium.                                  |
-| Testing & CI          | No feature/unit tests around upload, approvals, or playback; PHPUnit scaffolding only.                                                                                              | Medium – regressions likely.                 |
+| Area               | Issue                                                                                                                                                                               | Impact                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Playlist ecosystem | `Playlist` model exists but no controllers, policies, or UI ("Your Library" sidebar is static).                                                                                     | Medium – core streaming expectation missing. |
+| Controller stubs   | `MusicController` and `SongController` are placeholders; `PublicTrackController::show` only loads Blade view without shareable metadata; `ThemeController` toggle isn’t consumed.   | Low/Medium depending on scope.               |
+| Admin/Report views | `Admin\ReportController@index` references `admin.reports.index` view that doesn't exist. Also admin middleware nesting in `routes/admin.php` is non-standard, may skip guard logic. | Medium.                                      |
+| Front-end polish   | `components/player.blade.php` duplicates `x-data`, queue UI absent, mobile responsiveness limited. Navigation references `Auth::user()->artist` (non-existent relation).            | Low/Medium.                                  |
+| Testing & CI       | No feature/unit tests around upload, approvals, or playback; PHPUnit scaffolding only.                                                                                              | Medium – regressions likely.                 |
 
 ## Enhancement Recommendations
 

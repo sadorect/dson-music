@@ -10,13 +10,14 @@ use App\Models\ArtistProfile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Rules\SpamFree;
 
 class CommentController extends Controller
 {
     public function store(Request $request)
 {
     $validated = $request->validate([
-        'content' => 'required|string|max:1000',
+        'content' => ['required', 'string', 'max:1000', new SpamFree()],
         'parent_id' => 'nullable|exists:comments,id',
         'commentable_type' => 'required|string',
         'commentable_id' => 'required|integer'
@@ -42,7 +43,7 @@ class CommentController extends Controller
         $this->authorize('update', $comment);
 
         $validated = $request->validate([
-            'content' => 'required|string|max:1000'
+            'content' => ['required', 'string', 'max:1000', new SpamFree()]
         ]);
 
         $comment->update($validated);

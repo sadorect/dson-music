@@ -6,11 +6,12 @@ use App\Models\Like;
 use App\Models\Comment;
 use App\Models\PlayHistory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasComments;
 
 class Track extends Model
 {
-    use HasComments;
+    use HasFactory, HasComments;
     
     protected $fillable = [
         'title',
@@ -31,14 +32,16 @@ class Track extends Model
         'download_type',
         'minimum_donation',
         'approved_at',
-        'approved_by'
+        'approved_by',
+        'downloads_count'
     ];
 
     protected $casts = [
         'release_date' => 'datetime',
         'is_featured' => 'boolean',
         'play_count' => 'integer',
-         'approved_at' => 'datetime',
+        'downloads_count' => 'integer',
+        'approved_at' => 'datetime',
         'minimum_donation' => 'decimal:2'
     ];
 
@@ -65,6 +68,11 @@ class Track extends Model
     public function incrementPlayCount()
     {
         $this->increment('play_count');
+    }
+
+    public function incrementDownloadCount()
+    {
+        $this->increment('downloads_count');
     }
     
     public function plays()

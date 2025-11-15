@@ -9,9 +9,12 @@ use App\Models\Follow;
 use App\Models\PlayHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ArtistProfile extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'artist_name',
         'genre',

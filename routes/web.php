@@ -59,10 +59,18 @@ Route::middleware('auth')->group(function () {
     Route::post('tracks/{track}/like', [LikeController::class, 'toggleLike'])->name('tracks.like');
 
     // Comment routes
-    Route::post('tracks/{track}/comments', [CommentController::class, 'store'])->name('tracks.comments.store');
-    Route::delete('/delete/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
-    Route::post('/comments/{comment}/pin', [CommentController::class, 'pin'])->name('comments.pin');
+    Route::post('tracks/{track}/comments', [CommentController::class, 'store'])
+        ->middleware('throttle:comment-actions')
+        ->name('tracks.comments.store');
+    Route::delete('/delete/comments/{comment}', [CommentController::class, 'destroy'])
+        ->middleware('throttle:comment-actions')
+        ->name('comments.destroy');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])
+        ->middleware('throttle:comment-actions')
+        ->name('comments.update');
+    Route::post('/comments/{comment}/pin', [CommentController::class, 'pin'])
+        ->middleware('throttle:comment-actions')
+        ->name('comments.pin');
 
     // Downloads
     Route::get('tracks/{track}/download', [DownloadController::class, 'download'])->name('tracks.download');

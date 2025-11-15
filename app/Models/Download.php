@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Download extends Model
 {
-    protected $fillable = ['user_id', 'track_id', 'ip_address', 'user_agent'];
+    protected $fillable = [
+        'user_id',
+        'track_id',
+        'ip_address',
+        'user_agent',
+        'status',
+    ];
 
     public function user()
     {

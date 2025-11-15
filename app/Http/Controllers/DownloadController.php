@@ -10,26 +10,31 @@ class DownloadController extends Controller
 {
     public function download(Track $track, Request $request)
     {
-        // Record the download attempt
+    /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+    $disk = Storage::disk('s3');
+
+    $fileExists = $disk->exists($track->file_path);
+
         $download = $track->downloads()->create([
-            'user_id' => auth()->id(),
+            'user_id' => $request->user()->id,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'status' => Storage::disk('s3')->exists($track->file_path) ? 'completed' : 'attempted'
+            'status' => $fileExists ? 'completed' : 'failed',
         ]);
-    
-        $track->increment('downloads_count');
-    
-        // Return response based on file existence in S3
-        if (Storage::disk('s3')->exists($track->file_path)) {
-            return redirect(Storage::disk('s3')->temporaryUrl(
-                $track->file_path,
-                now()->addMinutes(5),
-                ['ResponseContentDisposition' => 'attachment']
-            ));
+
+        if (! $fileExists) {
+            return back()->with('error', 'Track file is temporarily unavailable. Please try again later.');
         }
-    
-        return back()->with('info', 'Track download recorded for metrics testing');
+
+        if ($download->status === 'completed') {
+            $track->incrementDownloadCount();
+        }
+
+        return redirect($disk->temporaryUrl(
+            $track->file_path,
+            now()->addMinutes(5),
+            ['ResponseContentDisposition' => 'attachment']
+        ));
     }
     
 

@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use AWS\CRT\HTTP\Request;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,8 +26,18 @@ class AppServiceProvider extends ServiceProvider
         if (!empty( env('NGROK_URL') ) && $request->server->has('HTTP_X_ORIGINAL_HOST')) {
             $this->app['url']->forceRootUrl(env('NGROK_URL'));
         }
-        
 
-        
+        RateLimiter::for('comment-actions', function ($request) {
+            $key = optional($request->user())->id ?: $request->ip();
+
+            return [
+                Limit::perMinute(5)->by($key)->response(function () {
+                    return response()->json([
+                        'message' => 'You are commenting too quickly. Please slow down and try again shortly.'
+                    ], 429);
+                }),
+                Limit::perHour(20)->by($key),
+            ];
+        });
     }
 }
