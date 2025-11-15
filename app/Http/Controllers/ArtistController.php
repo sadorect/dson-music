@@ -40,12 +40,12 @@ class ArtistController extends Controller
 
     public function dashboard()
     {
-        if (!auth()->user()->artistProfile) {
+        if (!Auth::user()?->artistProfile) {
             return redirect()->route('artist.register.form')
                 ->with('message', 'Please complete your artist profile first');
         }
 
-        $artist = auth()->user()->artistProfile;
+        $artist = Auth::user()->artistProfile;
         return view('artist.dashboard', compact('artist'));
     }
 
@@ -53,7 +53,7 @@ class ArtistController extends Controller
 
     public function show()
     {
-        $artist = auth()->user()->artistProfile;
+        $artist = Auth::user()->artistProfile;
 
         if (!$artist) {
             return redirect()->route('artist.profile.create')
@@ -68,15 +68,77 @@ class ArtistController extends Controller
         return view('artist.profile.show', compact('artist'));
     }
 
-    // For public viewing of artist profiles
-    public function showPublic()
+    // For public viewing of artist profiles via route model binding
+    public function showPublicProfile(ArtistProfile $artist)
     {
-        // $artist->loadCount(['tracks', 'followers'])
-        //     ->load(['tracks' => function ($query) {
-        //         $query->withCount(['plays', 'likes', 'downloads']);
-        //     }]);
+        return $this->renderPublicProfile($artist);
+    }
 
-        return view('artists.public.show');
+    public function showPublicBySlug(string $slug)
+    {
+        $artist = $this->findArtistBySlug($slug);
+
+        if (!$artist) {
+            abort(404);
+        }
+
+        return $this->renderPublicProfile($artist);
+    }
+
+    protected function renderPublicProfile(ArtistProfile $artist)
+    {
+        $artist->loadCount(['tracks', 'followers']);
+
+        $popularTracks = $artist->tracks()
+            ->with('artist')
+            ->withCount('plays')
+            ->orderByDesc('plays_count')
+            ->take(5)
+            ->get();
+
+        $featuredTracks = $artist->tracks()
+            ->with('artist')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $latestAlbums = $artist->albums()
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $appearsOn = $artist->tracks()
+            ->whereNotNull('album_id')
+            ->with('artist')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $relatedArtists = ArtistProfile::where('id', '!=', $artist->id)
+            ->when($artist->genre, function ($query) use ($artist) {
+                $query->where('genre', $artist->genre);
+            })
+            ->inRandomOrder()
+            ->take(8)
+            ->get();
+
+        return view('artists.public.show', [
+            'artist' => $artist,
+            'popularTracks' => $popularTracks,
+            'featuredTracks' => $featuredTracks,
+            'latestAlbums' => $latestAlbums,
+            'appearsOn' => $appearsOn,
+            'relatedArtists' => $relatedArtists,
+        ]);
+    }
+
+    protected function findArtistBySlug(string $slug): ?ArtistProfile
+    {
+        $normalized = \Illuminate\Support\Str::of($slug)->replace('-', ' ')->lower()->value();
+        
+        return ArtistProfile::where('custom_url', $slug)
+            ->orWhereRaw('LOWER(artist_name) = ?', [$normalized])
+            ->first();
     }
 
     public function index()

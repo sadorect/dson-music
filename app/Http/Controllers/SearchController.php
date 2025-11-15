@@ -29,41 +29,53 @@ class SearchController extends Controller
 
     public function quickSearch(Request $request)
     { 
-        dd('Quick search request', ['query' => $request->get('q')]);
-        Log::info('Quick search request', ['query' => $request->get('q')]);
-        $query = $request->get('q');
-       
+        $query = trim($request->get('q', ''));
+
+        if ($query === '') {
+            return response()->json([
+                'tracks' => [],
+                'artists' => []
+            ]);
+        }
+
         $tracks = Track::where('status', 'published')
             ->where('title', 'like', "%{$query}%")
             ->with('artist')
-            ->take(3)
+            ->take(5)
             ->get()
-            ->map(function($track) {
+            ->map(function ($track) {
                 return [
                     'id' => $track->id,
                     'title' => $track->title,
                     'subtitle' => $track->artist->artist_name,
-                    'image' => Storage::url($track->cover_art),
-                    'url' => "/tracks/{$track->id}"
+                    'image' => $track->cover_art ? Storage::url($track->cover_art) : null,
+                    'url' => route('tracks.show', $track)
                 ];
             });
-            Log::info('Search results', ['tracks' => $tracks]);
+
         $artists = ArtistProfile::where('artist_name', 'like', "%{$query}%")
-            ->take(3)
+            ->take(5)
             ->get()
-            ->map(function($artist) {
+            ->map(function ($artist) {
                 return [
                     'id' => $artist->id,
                     'title' => $artist->artist_name,
                     'subtitle' => 'Artist',
-                    'image' => Storage::url($artist->profile_image),
-                    'url' => "/artists/{$artist->id}"
+                    'image' => $artist->profile_image ? Storage::url($artist->profile_image) : null,
+                    'url' => route('artists.show', $artist)
                 ];
             });
-    
-        $results = $tracks->merge($artists);
+
+        Log::info('Quick search results', [
+            'query' => $query,
+            'tracks_count' => $tracks->count(),
+            'artists_count' => $artists->count()
+        ]);
         
-        return response()->json($results->values());
+        return response()->json([
+            'tracks' => $tracks->values(),
+            'artists' => $artists->values()
+        ]);
     }
     
 }

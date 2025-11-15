@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use getID3;
 use App\Models\User;
 use App\Models\Track;
+use App\Models\PlayHistory;
 use Illuminate\Http\Request;
 use App\Services\ActivityLogger;
 use Illuminate\Support\Facades\Log;
@@ -212,10 +213,33 @@ class TrackController extends Controller
             ->with('success', 'Track deleted successfully');
     }
 
-    public function recordPlay(Track $track)
-{
-    $track->incrementPlayCount('play_count');
-    return response()->json(['success' => true]);
-}
+    public function recordPlay(Request $request, Track $track)
+    {
+        try {
+            $track->incrementPlayCount();
+
+            PlayHistory::create([
+                'user_id' => Auth::id(),
+                'track_id' => $track->id,
+                'played_at' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'location' => $request->header('CF-IPCountry')
+            ]);
+
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            Log::error('Failed to record track play', [
+                'track_id' => $track->id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to record play right now.'
+            ], 500);
+        }
+    }
 
 }

@@ -35,30 +35,70 @@
                     </div>
                 @endif
                 <!-- Mobile Search (Shows in hamburger menu) -->
-                <div class="sm:hidden" x-data="{ mobileQuery: '', results: [] }">
+                <div class="sm:hidden" x-data="searchBar()" @click.outside="results = []">
                     <div class="px-2 pt-2 pb-3 space-y-1">
                         <div class="relative">
                             <input 
                                 type="text" 
-                                x-model="mobileQuery"
-                                @input.debounce.300ms="performSearch"
+                                x-model="query"
+                                @input.debounce.300ms="search"
                                 class="w-full bg-gray-800 text-white rounded-full py-2 px-4 pl-10"
                                 placeholder="Search tracks, artists...">
                             <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+
+                            <div class="absolute left-0 right-0 mt-2 bg-white text-black rounded-lg shadow-xl z-20"
+                                 x-show="results.length"
+                                 x-cloak>
+                                <template x-for="result in results" :key="result.type + '-' + result.id">
+                                    <a :href="result.url"
+                                       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                                        <div class="w-10 h-10 rounded overflow-hidden bg-gray-200 flex items-center justify-center">
+                                            <img x-show="result.image" :src="result.image" alt="" class="w-full h-full object-cover">
+                                            <span x-show="!result.image" class="text-xs font-semibold uppercase" x-text="result.type"></span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-900" x-text="result.title"></p>
+                                            <p class="text-sm text-gray-500" x-text="result.subtitle"></p>
+                                        </div>
+                                        <span class="text-xs text-gray-400 uppercase" x-text="result.type"></span>
+                                    </a>
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <!-- Search Bar -->
-                <div class="hidden sm:flex sm:items-center">
-                    <form action="{{ route('search') }}" method="GET">
-                        <div class="relative">
+                <div class="hidden sm:flex sm:items-center" x-data="searchBar()" @click.outside="results = []">
+                    <form action="{{ route('search') }}" method="GET" class="w-full">
+                        <div class="relative w-full max-w-xl">
                             <input 
                                 type="text" 
                                 name="q"
-                                class="bg-white/5 text-white placeholder-white/30 rounded-full p-3 w-[400px] border-none text-sm"
-                                placeholder="What do you want to play??">
+                                x-model="query"
+                                @input.debounce.300ms="search"
+                                class="bg-white/5 text-white placeholder-white/30 rounded-full p-3 w-full border-none text-sm"
+                                placeholder="What do you want to play?">
                             
                             <button type="submit" class="absolute right-3 top-0 bottom-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide text-white lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg></button>
+
+                            <div class="absolute left-0 right-0 mt-2 bg-white text-gray-900 rounded-lg shadow-2xl z-20"
+                                 x-show="results.length"
+                                 x-cloak>
+                                <template x-for="result in results" :key="result.type + '-' + result.id">
+                                    <a :href="result.url"
+                                       class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100">
+                                        <div class="w-10 h-10 rounded overflow-hidden bg-gray-200 flex items-center justify-center">
+                                            <img x-show="result.image" :src="result.image" alt="" class="w-full h-full object-cover">
+                                            <span x-show="!result.image" class="text-xs font-semibold uppercase" x-text="result.type"></span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-medium" x-text="result.title"></p>
+                                            <p class="text-sm text-gray-500" x-text="result.subtitle"></p>
+                                        </div>
+                                        <span class="text-xs text-gray-400 uppercase" x-text="result.type"></span>
+                                    </a>
+                                </template>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -145,20 +185,31 @@ function searchBar() {
         query: '',
         results: [],
         async search() {
-            if (!this.query || this.query.length < 2) {
+            const trimmed = this.query.trim();
+            if (trimmed.length < 2) {
                 this.results = [];
                 return;
             }
             
             try {
-                const response = await fetch(`/search?q=${encodeURIComponent(this.query)}`);
+                const response = await fetch(`/search/quick?q=${encodeURIComponent(trimmed)}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 if (!response.ok) {
                     this.results = [];
                     return;
                 }
                 const data = await response.json();
-                const tracks = Array.isArray(data.tracks) ? data.tracks : [];
-                const artists = Array.isArray(data.artists) ? data.artists : [];
+                const tracks = Array.isArray(data.tracks) ? data.tracks.map(track => ({
+                    ...track,
+                    type: 'track'
+                })) : [];
+                const artists = Array.isArray(data.artists) ? data.artists.map(artist => ({
+                    ...artist,
+                    type: 'artist'
+                })) : [];
                 this.results = [...tracks, ...artists].slice(0, 5);
             } catch (error) {
                 console.error('Search failed:', error);

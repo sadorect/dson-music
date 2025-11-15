@@ -1,6 +1,11 @@
-@props(['title', 'artist', 'image'])
+@props(['title', 'artist', 'image', 'url' => null])
 
-<a href="{{ route('artists.showPublic', $title) }}" class="w-[200px] p-3 hover:bg-black/10 rounded-md cursor-pointer flex-shrink-0">
+@php
+    $defaultSlug = \Illuminate\Support\Str::slug($title);
+    $artistUrl = $url ?? route('artists.showPublic', ['slug' => $defaultSlug]);
+@endphp
+
+<a href="{{ $artistUrl }}" class="w-[200px] p-3 hover:bg-black/10 rounded-md cursor-pointer flex-shrink-0">
     <div class="w-full h-48 rounded-full overflow-hidden shadow-md mb-2">
         <img src="{{ $image }}" 
              alt="{{ $title }}" 

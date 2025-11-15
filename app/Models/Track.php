@@ -65,7 +65,6 @@ class Track extends Model
     public function incrementPlayCount()
     {
         $this->increment('play_count');
-        return response()->json(['success' => true]);
     }
     
     public function plays()
