@@ -9,8 +9,9 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!auth()->user()->isAdmin) {
-            return redirect()->route('admin.dashboard');
+        if (!auth()->check() || !auth()->user()->isAdmin()) {
+            return redirect()->route('home')
+                ->with('error', 'You do not have permission to access the admin area.');
         }
 
         return $next($request);

@@ -4,18 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureArtistProfileComplete
 {
     public function handle(Request $request, Closure $next): Response
     {
-        dd(
-        auth()->user()->user_type,
-        auth()->user()->isArtist(),
-        auth()->user()->artistProfile
-    );
         if (auth()->user()->isArtist() && !auth()->user()->artistProfile) {
+            Log::info('Incomplete artist profile detected', [
+                'user_id' => auth()->id(),
+                'user_type' => auth()->user()->user_type
+            ]);
+            
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please complete your artist profile to continue.');
         }
