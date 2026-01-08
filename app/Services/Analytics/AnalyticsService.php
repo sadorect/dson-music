@@ -20,10 +20,9 @@ class AnalyticsService
 
     public function getPlaysByDay($days = 7)
     {
-        return PlayHistory::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('count(*) as count')
-        )
+        return PlayHistory::query()
+            ->selectRaw('DATE(created_at) as date')
+            ->selectRaw('COUNT(*) as count')
             ->groupBy('date')
             ->orderBy('date', 'desc')
             ->take($days)

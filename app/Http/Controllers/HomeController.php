@@ -32,7 +32,9 @@ class HomeController extends Controller
                     ->distinct()
                     ->pluck('genre'),
                     
-            'genreCounts' => Track::select('genre', DB::raw('count(*) as count'))
+            'genreCounts' => Track::query()
+                         ->select('genre')
+                         ->selectRaw('COUNT(*) as count')
                          ->groupBy('genre')
                          ->pluck('count', 'genre')
             ];

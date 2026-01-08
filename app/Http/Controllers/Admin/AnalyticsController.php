@@ -25,8 +25,9 @@ class AnalyticsController extends Controller
                                  ->orderBy('plays_count', 'desc')
                                  ->take(5)
                                  ->get(),
-            'plays_by_day' => PlayHistory::select(DB::raw('DATE(created_at) as date'), 
-            DB::raw('count(*) as count'))
+            'plays_by_day' => PlayHistory::query()
+                                        ->selectRaw('DATE(created_at) as date')
+                                        ->selectRaw('COUNT(*) as count')
                                         ->groupBy('date')
                                         ->orderBy('date', 'desc')
                                         ->take(30)
@@ -66,24 +67,24 @@ class AnalyticsController extends Controller
     public function export()
     {
         $data = [
-            'plays_by_month' => PlayHistory::select(
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('count(*) as total_plays')
-            )
+            'plays_by_month' => PlayHistory::query()
+                ->selectRaw('YEAR(created_at) as year')
+                ->selectRaw('MONTH(created_at) as month')
+                ->selectRaw('COUNT(*) as total_plays')
                 ->groupBy('year', 'month')
                 ->orderBy('year', 'desc')
                 ->orderBy('month', 'desc')
                 ->get(),
                 
-            'genre_distribution' => Track::select('genre', DB::raw('count(*) as count'))
+            'genre_distribution' => Track::query()
+                ->select('genre')
+                ->selectRaw('COUNT(*) as count')
                 ->groupBy('genre')
                 ->get(),
                 
-            'user_engagement' => User::select(
-                DB::raw('DATE(created_at) as registration_date'),
-                DB::raw('count(*) as new_users')
-            )
+            'user_engagement' => User::query()
+                ->selectRaw('DATE(created_at) as registration_date')
+                ->selectRaw('COUNT(*) as new_users')
                 ->groupBy('registration_date')
                 ->orderBy('registration_date', 'desc')
                 ->take(30)
@@ -105,7 +106,9 @@ class AnalyticsController extends Controller
     
     public function getGeographicStats()
     {
-        $locationStats = PlayHistory::select('location', DB::raw('count(*) as play_count'))
+        $locationStats = PlayHistory::query()
+            ->select('location')
+            ->selectRaw('COUNT(*) as play_count')
             ->join('users', 'play_histories.user_id', '=', 'users.id')
             ->groupBy('location')
             ->orderBy('play_count', 'desc')

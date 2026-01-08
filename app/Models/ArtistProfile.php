@@ -62,7 +62,8 @@ public function getAnalytics($days = 30)
         'total_plays' => $this->plays()->count(),
         'unique_listeners' => $this->plays()->distinct('user_id')->count(),
         'plays_by_day' => $this->plays()
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as count'))
+            ->selectRaw('DATE(created_at) as date')
+            ->selectRaw('COUNT(*) as count')
             ->groupBy('date')
             ->orderBy('date', 'desc')
             ->take($days)
