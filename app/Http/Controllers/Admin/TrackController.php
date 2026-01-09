@@ -10,7 +10,7 @@ class TrackController extends Controller
 {
     public function index()
     {
-        $tracks = Track::with(['artist', 'album'])
+        $tracks = Track::with(['artist.user', 'album'])
             ->withCount('plays')
             ->latest()
             ->paginate(20);
@@ -19,9 +19,10 @@ class TrackController extends Controller
     }
 
     public function show(Track $track)
-{
-    return view('admin.tracks.show', compact('track'));
-}
+    {
+        $track->load(['artist.user', 'album', 'plays', 'likes', 'comments']);
+        return view('admin.tracks.show', compact('track'));
+    }
 
 
     public function edit(Track $track)

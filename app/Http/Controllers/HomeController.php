@@ -4,39 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Track;
 use App\Models\ArtistProfile;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
+    protected $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     public function index()
     {
-    try {
+        try {
             $data = [
-            'featuredArtists' => ArtistProfile::where('is_verified', true)
-                            ->withCount(['tracks', 'followers'])
-                            ->take(4)
-                            ->get(),
-                            
-            'trendingTracks' => Track::withCount('plays')
-                        ->orderBy('plays_count', 'desc')
-                        ->take(8)
-                        ->get(),
-                        
-            'newReleases' => Track::with('artist')
-                         ->latest()
-                         ->take(8)
-                         ->get(),
-                         
-            'genres' => Track::select('genre')
-                    ->distinct()
-                    ->pluck('genre'),
-                    
-            'genreCounts' => Track::query()
-                         ->select('genre')
-                         ->selectRaw('COUNT(*) as count')
-                         ->groupBy('genre')
-                         ->pluck('count', 'genre')
+                'featuredArtists' => $this->cacheService->getFeaturedArtists(4),
+                'trendingTracks' => $this->cacheService->getTrendingTracks(8),
+                'newReleases' => $this->cacheService->getNewReleases(8),
+                'genres' => Track::select('genre')->distinct()->pluck('genre'),
+                'genreCounts' => $this->cacheService->getGenreCounts(),
+                'stats' => $this->cacheService->getHomeStats(),
             ];
 
             return view('home', $data);

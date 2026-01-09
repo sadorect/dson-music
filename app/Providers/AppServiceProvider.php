@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Track;
+use App\Models\PlayHistory;
+use App\Models\ArtistProfile;
+use App\Observers\TrackObserver;
+use App\Observers\PlayHistoryObserver;
+use App\Observers\ArtistProfileObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +29,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(\Illuminate\Http\Request $request): void
     {
+        // Register model observers for cache invalidation
+        Track::observe(TrackObserver::class);
+        PlayHistory::observe(PlayHistoryObserver::class);
+        ArtistProfile::observe(ArtistProfileObserver::class);
+        
         if (!empty( env('NGROK_URL') ) && $request->server->has('HTTP_X_ORIGINAL_HOST')) {
             $this->app['url']->forceRootUrl(env('NGROK_URL'));
         }

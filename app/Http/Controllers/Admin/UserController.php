@@ -31,15 +31,18 @@ class UserController extends Controller
       
       // For super admins, show all users
     if (auth()->user()->isSuperAdmin()) {
-        $users = User::orderBy('name')->paginate(15);
+        $users = User::with('artistProfile')
+            ->orderBy('name')
+            ->paginate(15);
     } else {
         // For delegated admins, hide super admin accounts
-        $users = User::where(function($query) {
-            $query->where('user_type', '!=', 'admin')
-                  ->orWhere('is_super_admin', false);
-        })
-        ->orderBy('name')
-        ->paginate(20);
+        $users = User::with('artistProfile')
+            ->where(function($query) {
+                $query->where('user_type', '!=', 'admin')
+                      ->orWhere('is_super_admin', false);
+            })
+            ->orderBy('name')
+            ->paginate(20);
     }
      // $users = $query->latest()->paginate(20);
       

@@ -20,7 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'artist.profile.complete' => \App\Http\Middleware\EnsureArtistProfileComplete::class,
             'recaptcha' => \App\Http\Middleware\VerifyReCaptcha::class,
             'PreventImpersonationAccess' => \App\Http\Middleware\PreventImpersonationAccess::class,
+            'query.monitor' => \App\Http\Middleware\QueryMonitoring::class,
         ]);
+        
+        // Add QueryMonitoring to web middleware group in development
+        if (env('APP_DEBUG', false)) {
+            $middleware->web(append: [
+                \App\Http\Middleware\QueryMonitoring::class,
+            ]);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
