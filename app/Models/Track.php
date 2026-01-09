@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Models\Like;
 use App\Models\Comment;
 use App\Models\PlayHistory;
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasComments;
 
 class Track extends Model
 {
-    use HasFactory, HasComments;
+    use HasFactory, HasComments, Searchable;
     
     protected $fillable = [
         'title',
@@ -129,6 +130,32 @@ class Track extends Model
     public function approvedBy()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'genre' => $this->genre,
+            'artist_name' => $this->artist ? $this->artist->stage_name : null,
+            'album_title' => $this->album ? $this->album->title : null,
+        ];
+    }
+
+    /**
+     * Get the name of the index associated with the model.
+     *
+     * @return string
+     */
+    public function searchableAs()
+    {
+        return 'tracks_index';
     }
 
         

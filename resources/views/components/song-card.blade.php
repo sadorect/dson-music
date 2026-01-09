@@ -1,6 +1,6 @@
-@props(['title', 'artist', 'image'])
+@props(['title', 'artist', 'image', 'track' => null])
 
-<a href="{{ route('songs.show', $title) }}" class="w-[200px] p-3 hover:bg-black/10 rounded-md cursor-pointer flex-shrink-0">
+<a href="{{ $track ? route('tracks.show', $track) : '#' }}" class="w-[200px] p-3 hover:bg-black/10 rounded-md cursor-pointer flex-shrink-0">
     <div class="w-full h-48 rounded-xl overflow-hidden shadow-md mb-2">
         <img src="{{ $image }}" 
              alt="{{ $title }}" 

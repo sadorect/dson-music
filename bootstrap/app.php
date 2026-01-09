@@ -15,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         BackfillDownloadCounts::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'artist.profile.complete' => \App\Http\Middleware\EnsureArtistProfileComplete::class,
+            'recaptcha' => \App\Http\Middleware\VerifyReCaptcha::class,
+            'PreventImpersonationAccess' => \App\Http\Middleware\PreventImpersonationAccess::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

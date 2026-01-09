@@ -12,19 +12,27 @@ use Illuminate\Support\Facades\Storage;
 class SearchController extends Controller
 {
     public function index(Request $request)
-{
-    $query = $request->get('q');
-    
-    $tracks = Track::where('status', 'published')
-        ->where('title', 'like', "%{$query}%")
-        ->with('artist')
-        ->get();
+    {
+        $query = $request->get('q');
         
-    $artists = ArtistProfile::where('artist_name', 'like', "%{$query}%")
-        ->get();
+        if (empty($query)) {
+            return view('search.index', [
+                'tracks' => collect(),
+                'artists' => collect(),
+                'query' => $query
+            ]);
+        }
+        
+        // Use Scout search for better results
+        $tracks = Track::search($query)
+            ->where('status', 'published')
+            ->query(fn ($builder) => $builder->with('artist'))
+            ->get();
+            
+        $artists = ArtistProfile::search($query)->get();
 
-    return view('search.index', compact('tracks', 'artists', 'query'));
-}
+        return view('search.index', compact('tracks', 'artists', 'query'));
+    }
 
 
     public function quickSearch(Request $request)
@@ -38,22 +46,23 @@ class SearchController extends Controller
             ]);
         }
 
-        $tracks = Track::where('status', 'published')
-            ->where('title', 'like', "%{$query}%")
-            ->with('artist')
+        // Use Scout search for better relevance
+        $tracks = Track::search($query)
+            ->where('status', 'published')
+            ->query(fn ($builder) => $builder->with('artist'))
             ->take(5)
             ->get()
             ->map(function ($track) {
                 return [
                     'id' => $track->id,
                     'title' => $track->title,
-                    'subtitle' => $track->artist->artist_name,
+                    'subtitle' => $track->artist ? $track->artist->artist_name : 'Unknown Artist',
                     'image' => $track->cover_art ? Storage::url($track->cover_art) : null,
                     'url' => route('tracks.show', $track)
                 ];
             });
 
-        $artists = ArtistProfile::where('artist_name', 'like', "%{$query}%")
+        $artists = ArtistProfile::search($query)
             ->take(5)
             ->get()
             ->map(function ($artist) {

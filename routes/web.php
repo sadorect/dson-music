@@ -14,7 +14,7 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\SongController;
+use App\Http\Controllers\PlaylistController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
@@ -74,6 +74,13 @@ Route::middleware('auth')->group(function () {
 
     // Downloads
     Route::get('tracks/{track}/download', [DownloadController::class, 'download'])->name('tracks.download');
+
+    // Playlists
+    Route::get('/my-playlists', [PlaylistController::class, 'myPlaylists'])->name('playlists.my-playlists');
+    Route::resource('playlists', PlaylistController::class);
+    Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.add-track');
+    Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.remove-track');
+    Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks'])->name('playlists.reorder');
 });
 
 
@@ -81,6 +88,10 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
+
+// Public Playlist Routes (outside auth middleware)
+Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.index');
+Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->name('playlists.show');
 
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
 Route::get('/tracks/{track}', [PublicTrackController::class, 'show'])->name('tracks.show');
@@ -90,5 +101,4 @@ Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('sea
 
 Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
 Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');
-Route::get('songs/{song}', [SongController::class, 'show'])->name('songs.show');
 Route::post('/toggle-theme', [App\Http\Controllers\ThemeController::class, 'toggle'])->name('toggle-theme');

@@ -7,13 +7,14 @@ use App\Models\Album;
 use App\Models\Track;
 use App\Models\Follow;
 use App\Models\PlayHistory;
+use Laravel\Scout\Searchable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ArtistProfile extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = [
         'artist_name',
@@ -80,6 +81,32 @@ public function followers()
 public function followersCount()
 {
     return $this->followers()->count();
+}
+
+/**
+ * Get the indexable data array for the model.
+ *
+ * @return array
+ */
+public function toSearchableArray()
+{
+    return [
+        'id' => $this->id,
+        'stage_name' => $this->stage_name ?? $this->artist_name,
+        'artist_name' => $this->artist_name,
+        'genre' => $this->genre,
+        'bio' => $this->bio,
+    ];
+}
+
+/**
+ * Get the name of the index associated with the model.
+ *
+ * @return string
+ */
+public function searchableAs()
+{
+    return 'artists_index';
 }
 
 }
