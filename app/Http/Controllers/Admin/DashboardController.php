@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Track;
 use App\Models\ArtistProfile;
+use App\Models\Track;
+use App\Models\User;
 
 class DashboardController extends Controller
 {

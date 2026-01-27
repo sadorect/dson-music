@@ -11,10 +11,10 @@ class TrackUploadRequest extends FormRequest
      * Allowed genres whitelist
      */
     protected const ALLOWED_GENRES = [
-        'hip-hop', 'rap', 'pop', 'rock', 'r&b', 'soul', 
-        'jazz', 'blues', 'country', 'electronic', 'edm', 
+        'hip-hop', 'rap', 'pop', 'rock', 'r&b', 'soul',
+        'jazz', 'blues', 'country', 'electronic', 'edm',
         'house', 'techno', 'dubstep', 'reggae', 'afrobeat',
-        'gospel', 'classical', 'indie', 'alternative', 'metal'
+        'gospel', 'classical', 'indie', 'alternative', 'metal',
     ];
 
     /**
@@ -36,7 +36,7 @@ class TrackUploadRequest extends FormRequest
             'title' => 'required|string|max:255|min:1',
             'album_id' => 'nullable|exists:albums,id',
             'genre' => ['required', 'string', Rule::in(self::ALLOWED_GENRES)],
-            
+
             // Audio file validation
             'track_file' => [
                 'required',
@@ -45,7 +45,7 @@ class TrackUploadRequest extends FormRequest
                 'max:51200', // 50MB max
                 'mimetypes:audio/mpeg,audio/x-wav,audio/flac,audio/mp4,audio/aac',
             ],
-            
+
             // Cover image validation
             'cover_image' => [
                 'nullable',
@@ -56,7 +56,7 @@ class TrackUploadRequest extends FormRequest
                 'mimetypes:image/jpeg,image/png,image/webp',
                 'dimensions:min_width=300,min_height=300,max_width=5000,max_height=5000',
             ],
-            
+
             // Optional metadata
             'lyrics' => 'nullable|string|max:10000',
             'description' => 'nullable|string|max:500',
@@ -98,12 +98,12 @@ class TrackUploadRequest extends FormRequest
             if ($this->hasFile('track_file')) {
                 try {
                     $file = $this->file('track_file');
-                    $getId3 = new \getID3();
+                    $getId3 = new \getID3;
                     $fileInfo = $getId3->analyze($file->getPathname());
-                    
+
                     // Verify it's actually an audio file
-                    if (!isset($fileInfo['fileformat']) || $fileInfo['fileformat'] !== 'mp3') {
-                        if (!in_array($fileInfo['fileformat'] ?? '', ['mp3', 'flac', 'aac', 'wav', 'm4a'])) {
+                    if (! isset($fileInfo['fileformat']) || $fileInfo['fileformat'] !== 'mp3') {
+                        if (! in_array($fileInfo['fileformat'] ?? '', ['mp3', 'flac', 'aac', 'wav', 'm4a'])) {
                             $validator->errors()->add('track_file', 'The uploaded file is not a valid audio file.');
                         }
                     }

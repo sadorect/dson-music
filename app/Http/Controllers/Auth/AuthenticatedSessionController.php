@@ -31,13 +31,13 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         if ($user->isArtist()) {
-            
+
             return redirect()->route('artist.dashboard');
         }
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
-        
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

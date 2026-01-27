@@ -14,16 +14,16 @@ class TrackController extends Controller
             ->withCount('plays')
             ->latest()
             ->paginate(20);
-            
+
         return view('admin.tracks.index', compact('tracks'));
     }
 
     public function show(Track $track)
     {
         $track->load(['artist.user', 'album', 'plays', 'likes', 'comments']);
+
         return view('admin.tracks.show', compact('track'));
     }
-
 
     public function edit(Track $track)
     {
@@ -35,11 +35,11 @@ class TrackController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'status' => 'required|in:published,draft,private',
-            'is_featured' => 'boolean'
+            'is_featured' => 'boolean',
         ]);
 
         $track->update($validated);
-        
+
         return redirect()->route('admin.tracks.index')
             ->with('success', 'Track updated successfully');
     }

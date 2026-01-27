@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Track;
-use App\Models\ArtistProfile;
 use Illuminate\Database\Eloquent\Model;
 
 class Album extends Model
@@ -16,12 +14,12 @@ class Album extends Model
         'description',
         'type', // album, EP, single
         'status',
-        'play_count'
+        'play_count',
     ];
 
     protected $casts = [
         'release_date' => 'datetime',
-        'play_count' => 'integer'
+        'play_count' => 'integer',
     ];
 
     public function artist()

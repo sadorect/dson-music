@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Track;
 use App\Models\ArtistProfile;
+use App\Models\Track;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -13,20 +13,24 @@ class CacheService
      * Cache duration constants (in seconds)
      */
     const TRENDING_TTL = 3600; // 1 hour
+
     const GENRE_COUNTS_TTL = 7200; // 2 hours
+
     const FEATURED_ARTISTS_TTL = 3600; // 1 hour
+
     const NEW_RELEASES_TTL = 1800; // 30 minutes
+
     const ANALYTICS_TTL = 86400; // 24 hours
 
     /**
      * Get trending tracks with caching
      *
-     * @param int $limit
+     * @param  int  $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getTrendingTracks($limit = 10)
     {
-        return Cache::remember('trending_tracks_' . $limit, self::TRENDING_TTL, function () use ($limit) {
+        return Cache::remember('trending_tracks_'.$limit, self::TRENDING_TTL, function () use ($limit) {
             return Track::where('status', 'published')
                 ->with(['artist.user', 'album'])
                 ->orderBy('play_count', 'desc')
@@ -55,12 +59,12 @@ class CacheService
     /**
      * Get featured/verified artists with caching
      *
-     * @param int $limit
+     * @param  int  $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getFeaturedArtists($limit = 12)
     {
-        return Cache::remember('featured_artists_' . $limit, self::FEATURED_ARTISTS_TTL, function () use ($limit) {
+        return Cache::remember('featured_artists_'.$limit, self::FEATURED_ARTISTS_TTL, function () use ($limit) {
             return ArtistProfile::where('is_verified', true)
                 ->with('user')
                 ->withCount(['tracks' => function ($query) {
@@ -75,12 +79,12 @@ class CacheService
     /**
      * Get new releases with caching
      *
-     * @param int $limit
+     * @param  int  $limit
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getNewReleases($limit = 12)
     {
-        return Cache::remember('new_releases_' . $limit, self::NEW_RELEASES_TTL, function () use ($limit) {
+        return Cache::remember('new_releases_'.$limit, self::NEW_RELEASES_TTL, function () use ($limit) {
             return Track::where('status', 'published')
                 ->with(['artist.user', 'album'])
                 ->orderBy('created_at', 'desc')
@@ -109,12 +113,12 @@ class CacheService
     /**
      * Get popular genres for homepage
      *
-     * @param int $limit
+     * @param  int  $limit
      * @return \Illuminate\Support\Collection
      */
     public function getPopularGenres($limit = 6)
     {
-        return Cache::remember('popular_genres_' . $limit, self::GENRE_COUNTS_TTL, function () use ($limit) {
+        return Cache::remember('popular_genres_'.$limit, self::GENRE_COUNTS_TTL, function () use ($limit) {
             return Track::where('status', 'published')
                 ->select('genre')
                 ->selectRaw('COUNT(*) as track_count')
@@ -129,12 +133,12 @@ class CacheService
     /**
      * Get artist dashboard stats with caching
      *
-     * @param int $artistId
+     * @param  int  $artistId
      * @return array
      */
     public function getArtistStats($artistId)
     {
-        return Cache::remember('artist_stats_' . $artistId, self::ANALYTICS_TTL, function () use ($artistId) {
+        return Cache::remember('artist_stats_'.$artistId, self::ANALYTICS_TTL, function () use ($artistId) {
             $tracks = Track::where('artist_id', $artistId)->pluck('id');
 
             return [
@@ -209,12 +213,12 @@ class CacheService
     /**
      * Clear artist-specific cache
      *
-     * @param int $artistId
+     * @param  int  $artistId
      * @return void
      */
     public function clearArtistCache($artistId)
     {
-        Cache::forget('artist_stats_' . $artistId);
+        Cache::forget('artist_stats_'.$artistId);
     }
 
     /**

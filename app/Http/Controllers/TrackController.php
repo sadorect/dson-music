@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use getID3;
-use App\Models\User;
-use App\Models\Track;
 use App\Models\PlayHistory;
-use Illuminate\Http\Request;
-use App\Services\ActivityLogger;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Notification;
+use App\Models\Track;
+use App\Models\User;
 use App\Notifications\NewTrackPendingApproval;
+use App\Services\ActivityLogger;
+use getID3;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Container\Attributes\Log as AttributesLog;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 
 class TrackController extends Controller
 {
@@ -29,7 +28,7 @@ class TrackController extends Controller
                     'title' => $track->title,
                     'artist' => $track->artist->artist_name,
                     'artwork' => Storage::url($track->cover_art),
-                    'audioUrl' => Storage::url($track->file_path)
+                    'audioUrl' => Storage::url($track->file_path),
                 ];
             });
 
@@ -39,13 +38,14 @@ class TrackController extends Controller
     public function index()
     {
         $tracks = Auth::user()->artistProfile->tracks()->latest()->paginate(10);
+
         return view('artist.tracks.index', compact('tracks'));
     }
 
     public function create()
     {
-        $albums = Auth::user()->artistProfile ? 
-    Auth::user()->artistProfile->albums()->pluck('title', 'id') : 
+        $albums = Auth::user()->artistProfile ?
+    Auth::user()->artistProfile->albums()->pluck('title', 'id') :
     collect();
 
         return view('artist.tracks.create', compact('albums'));
@@ -56,67 +56,67 @@ class TrackController extends Controller
         // Check for POST size limit exceeded
         if (empty($request->all())) {
             return redirect()->back()
-                ->with('error', 'Upload failed. File size exceeds the maximum allowed size of ' . ini_get('post_max_size'));
+                ->with('error', 'Upload failed. File size exceeds the maximum allowed size of '.ini_get('post_max_size'));
         }
-    
+
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'genre' => 'required|string',
-                'track_file' => 'required|file|mimes:mp3,wav,MP3,WAV,aac,flac|max:' . (int)(ini_get('upload_max_filesize')) * 1024,
+                'track_file' => 'required|file|mimes:mp3,wav,MP3,WAV,aac,flac|max:'.(int) (ini_get('upload_max_filesize')) * 1024,
                 'cover_art' => 'nullable|image|max:2048',
                 'release_date' => 'required|date',
                 'album_id' => 'nullable|exists:albums,id',
                 'status' => 'required|in:draft,published,private',
                 'download_type' => 'required|in:free,donate',
-        'minimum_donation' => 'required_if:download_type,donate|nullable|numeric|min:0.01'
+                'minimum_donation' => 'required_if:download_type,donate|nullable|numeric|min:0.01',
             ]);
-    
+
             $track = new Track($validated);
             $track->artist_id = Auth::user()->artistProfile->id;
             $track->approval_status = 'pending';
 
             if ($request->hasFile('track_file')) {
                 $track->file_path = $request->file('track_file')->store('grinmuzik/tracks', 's3');
-                
+
                 $getID3 = new getID3;
                 $fileInfo = $getID3->analyze($request->file('track_file'));
-                
-                $track->duration = isset($fileInfo['playtime_seconds']) ? 
-                    ceil($fileInfo['playtime_seconds']) : 
+
+                $track->duration = isset($fileInfo['playtime_seconds']) ?
+                    ceil($fileInfo['playtime_seconds']) :
                     0;
             }
-            
-    
+
             if ($request->hasFile('cover_art')) {
                 $track->cover_art = $request->file('cover_art')->store('grinmuzik/covers', 's3');
             }
-    
+
             $track->save();
-    
+
             // Log the activity
             ActivityLogger::log(
                 Auth::id(),
                 'track_upload',
                 "Uploaded new track: {$track->title}"
             );
-    
+
             // Notify admins about new track pending approval
-    Notification::send(
-        User::where('user_type', 'admin')->get(),
-        new NewTrackPendingApproval($track)
-    );
+            Notification::send(
+                User::where('user_type', 'admin')->get(),
+                new NewTrackPendingApproval($track)
+            );
+
             return redirect()->route('artist.tracks.index')
-                ->with('success', 'Track "' . $track->title . '" uploaded successfully and pending approval');
-    
+                ->with('success', 'Track "'.$track->title.'" uploaded successfully and pending approval');
+
         } catch (\Exception $e) {
-            Log::error($e->getMessage()); 
-               return redirect()->back()
-                ->with('error', 'Upload failed: ' . $e->getMessage())
+            Log::error($e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Upload failed: '.$e->getMessage())
                 ->withInput();
         }
     }
-    
 
     public function show(Track $track)
     {
@@ -126,6 +126,7 @@ class TrackController extends Controller
     public function edit(Track $track)
     {
         $albums = Auth::user()->artistProfile->albums()->pluck('title', 'id');
+
         return view('artist.tracks.edit', compact('track', 'albums'));
     }
 
@@ -138,21 +139,21 @@ class TrackController extends Controller
             'cover_art' => 'nullable|image|max:2048',
             'release_date' => 'required|date',
             'album_id' => 'nullable|exists:albums,id',
-            'status' => 'required|in:draft,published,private'
+            'status' => 'required|in:draft,published,private',
         ]);
 
         if ($request->hasFile('track_file')) {
             // Delete old file
             if ($track->file_path) {
-                //Storage::delete('public/' . $track->file_path);
+                // Storage::delete('public/' . $track->file_path);
                 Storage::disk('s3')->delete($track->file_path);
             }
-            
+
             $validated['file_path'] = $request->file('track_file')->store('tracks', 'public');
-            
+
             // Update duration
             $getID3 = new getID3;
-            //$fileInfo = $getID3->analyze(storage_path('app/public/' . $validated['file_path']));
+            // $fileInfo = $getID3->analyze(storage_path('app/public/' . $validated['file_path']));
             $fileInfo = $getID3->analyze(Storage::disk('s3')->path($validated['file_path']));
             $validated['duration'] = ceil($fileInfo['playtime_seconds']);
         }
@@ -192,14 +193,13 @@ class TrackController extends Controller
             Storage::delete('public/' . $track->cover_art);
         }
             */
-            // Delete associated files
+        // Delete associated files
         if ($track->file_path) {
             Storage::disk('s3')->delete($track->file_path);
         }
         if ($track->cover_art) {
             Storage::disk('s3')->delete($track->cover_art);
         }
-
 
         $track->delete();
 
@@ -224,7 +224,7 @@ class TrackController extends Controller
                 'played_at' => now(),
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'location' => $request->header('CF-IPCountry')
+                'location' => $request->header('CF-IPCountry'),
             ]);
 
             return response()->json(['success' => true]);
@@ -232,14 +232,13 @@ class TrackController extends Controller
             Log::error('Failed to record track play', [
                 'track_id' => $track->id,
                 'user_id' => Auth::id(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Unable to record play right now.'
+                'message' => 'Unable to record play right now.',
             ], 500);
         }
     }
-
 }

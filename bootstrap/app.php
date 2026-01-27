@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'PreventImpersonationAccess' => \App\Http\Middleware\PreventImpersonationAccess::class,
             'query.monitor' => \App\Http\Middleware\QueryMonitoring::class,
         ]);
-        
+
         // Add QueryMonitoring to web middleware group in development
         if (env('APP_DEBUG', false)) {
             $middleware->web(append: [

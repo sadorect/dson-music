@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -14,11 +13,11 @@ class Comment extends Model
         'user_id',
         'content',
         'parent_id',
-        'is_pinned'
+        'is_pinned',
     ];
 
     protected $casts = [
-        'is_pinned' => 'boolean'
+        'is_pinned' => 'boolean',
     ];
 
     public function commentable()
@@ -40,6 +39,4 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'parent_id');
     }
-
-   
 }

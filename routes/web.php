@@ -1,20 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\TrackController;
-use App\Http\Controllers\ArtistController;
-use App\Http\Controllers\FollowController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\TrendingController;
-use App\Http\Controllers\PublicTrackController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicTrackController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\TrendingController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
@@ -25,14 +25,12 @@ Route::get('/artists/public/{slug}', [ArtistController::class, 'showPublicBySlug
 Route::get('/artists/{artist}', [ArtistController::class, 'showPublicProfile'])->name('artists.show');
 Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index');
 
-
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::post('register', [RegisteredUserController::class, 'store'])
-        ->name('register');
+    ->name('register');
 
 Route::middleware('auth')->group(function () {
     // User profile
@@ -82,9 +80,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.remove-track');
     Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks'])->name('playlists.reorder');
 });
-
-
-
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';

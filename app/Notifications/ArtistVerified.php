@@ -4,8 +4,8 @@ namespace App\Notifications;
 
 use App\Models\ArtistProfile;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ArtistVerified extends Notification
 {
@@ -37,7 +37,7 @@ class ArtistVerified extends Notification
     {
         return [
             'artist_id' => $this->artist->id,
-            'message' => 'Your artist profile has been verified'
+            'message' => 'Your artist profile has been verified',
         ];
     }
 }

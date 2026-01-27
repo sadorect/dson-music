@@ -11,7 +11,7 @@ class HandlePostSizeErrors
     {
         if ($request->server('CONTENT_LENGTH') > $this->getPostMaxSize()) {
             return redirect()->back()->withErrors([
-                'track_file' => 'Upload size limit exceeded. Maximum allowed size is ' . ini_get('post_max_size')
+                'track_file' => 'Upload size limit exceeded. Maximum allowed size is '.ini_get('post_max_size'),
             ]);
         }
 

@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\TrackController;
+use App\Http\Controllers\HealthCheckController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,9 @@ use App\Http\Controllers\Api\TrackController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+// Health check endpoint (no authentication required)
+Route::get('/health', HealthCheckController::class);
 
 // Public API routes
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -28,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Auth routes
     Route::get('/user', [AuthController::class, 'user']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-    
+
     // Track management
     Route::post('/tracks', [TrackController::class, 'store']);
     Route::put('/tracks/{track}', [TrackController::class, 'update']);

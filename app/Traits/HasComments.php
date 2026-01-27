@@ -21,7 +21,7 @@ trait HasComments
         return $this->comments()->create([
             'content' => $content,
             'user_id' => $userId,
-            'parent_id' => $parentId
+            'parent_id' => $parentId,
         ]);
     }
 }

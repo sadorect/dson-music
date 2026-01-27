@@ -8,8 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SendNotificationEmail implements ShouldQueue
 {
@@ -59,15 +59,15 @@ class SendNotificationEmail implements ShouldQueue
 
             Log::info('Notification email sent', [
                 'user_id' => $this->user->id,
-                'subject' => $this->subject
+                'subject' => $this->subject,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send notification email', [
                 'user_id' => $this->user->id,
                 'subject' => $this->subject,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             // Retry the job up to 3 times
             if ($this->attempts() < 3) {
                 $this->release(60); // Retry after 60 seconds

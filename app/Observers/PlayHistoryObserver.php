@@ -23,7 +23,7 @@ class PlayHistoryObserver
         $this->cacheService->clearTrending();
         $this->cacheService->clearHomeStats();
         $this->cacheService->clearGenreCounts();
-        
+
         // Clear artist stats if available
         if ($playHistory->track && $playHistory->track->artist_id) {
             $this->cacheService->clearArtistCache($playHistory->track->artist_id);

@@ -2,9 +2,8 @@
 
 namespace App\Services\Analytics;
 
-use App\Models\Track;
 use App\Models\PlayHistory;
-use Illuminate\Support\Facades\DB;
+use App\Models\Track;
 
 class AnalyticsService
 {
@@ -14,7 +13,7 @@ class AnalyticsService
             'total_plays' => PlayHistory::count(),
             'monthly_plays' => PlayHistory::whereMonth('created_at', now()->month)->count(),
             'daily_average' => PlayHistory::where('created_at', '>=', now()->subDays(30))
-                ->count() / 30
+                ->count() / 30,
         ];
     }
 

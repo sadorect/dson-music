@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-use App\Models\ArtistProfile;
 use App\Http\Controllers\Controller;
+use App\Models\ArtistProfile;
 use App\Notifications\ArtistVerified;
+use Illuminate\Http\Request;
 
 class ArtistController extends Controller
 {
@@ -13,33 +13,33 @@ class ArtistController extends Controller
     {
         $query = ArtistProfile::with('user')
             ->withCount('tracks');
-            
-             // Check if the admin has permission to manage users
-    if (!can_admin('users')) {
-        return redirect()->route('admin.dashboard')
-            ->with('error', 'You do not have permission to manage users.');
-    }
-    
-      if ($request->filled('type')) {
-          $query->where('user_type', $request->type);
-      }
-      
-      if ($request->filled('search')) {
-        $query->where(function($q) use ($request) {
-            $q->where('name', 'like', "%{$request->search}%")
-              ->orWhere('email', 'like', "%{$request->search}%");
-        });
-    }
+
+        // Check if the admin has permission to manage users
+        if (! can_admin('users')) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'You do not have permission to manage users.');
+        }
+
+        if ($request->filled('type')) {
+            $query->where('user_type', $request->type);
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                    ->orWhere('email', 'like', "%{$request->search}%");
+            });
+        }
         if ($request->filled('search')) {
             $query->where('artist_name', 'like', "%{$request->search}%");
         }
-        
+
         if ($request->filled('status')) {
             $query->where('is_verified', $request->status === 'verified');
         }
-        
+
         $artists = $query->latest()->paginate(20);
-        
+
         return view('admin.artists.index', compact('artists'));
     }
 
@@ -56,7 +56,7 @@ class ArtistController extends Controller
             'bio' => 'nullable|string',
             'is_verified' => 'boolean',
             'profile_image' => 'nullable|image|max:2048',
-            'cover_image' => 'nullable|image|max:2048'
+            'cover_image' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('profile_image')) {
@@ -76,30 +76,30 @@ class ArtistController extends Controller
     public function show(ArtistProfile $artist)
     {
         $artist->load(['tracks', 'albums']);
+
         return view('admin.artists.show', compact('artist'));
     }
 
     public function verify(ArtistProfile $artist)
-{
-    $artist->update([
-        'is_verified' => true,
-        'verified_at' => now()
-    ]);
+    {
+        $artist->update([
+            'is_verified' => true,
+            'verified_at' => now(),
+        ]);
 
-    // Send notification to artist
-    $artist->user->notify(new ArtistVerified($artist));
+        // Send notification to artist
+        $artist->user->notify(new ArtistVerified($artist));
 
-    return redirect()->back()->with('success', 'Artist verified successfully');
-}
+        return redirect()->back()->with('success', 'Artist verified successfully');
+    }
 
-public function unverify(ArtistProfile $artist)
-{
-    $artist->update([
-        'is_verified' => false,
-        'verified_at' => null
-    ]);
+    public function unverify(ArtistProfile $artist)
+    {
+        $artist->update([
+            'is_verified' => false,
+            'verified_at' => null,
+        ]);
 
-    return redirect()->back()->with('success', 'Artist verification removed');
-}
-
+        return redirect()->back()->with('success', 'Artist verification removed');
+    }
 }

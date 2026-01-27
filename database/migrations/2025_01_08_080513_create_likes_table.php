@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->morphs('likeable');  // This allows likes on different types (tracks, albums, etc)
             $table->timestamps();
-            
+
             // Prevent duplicate likes
             $table->unique(['user_id', 'likeable_id', 'likeable_type']);
         });

@@ -47,7 +47,7 @@ class TrackObserver
         $this->cacheService->clearGenreCounts();
         $this->cacheService->clearNewReleases();
         $this->cacheService->clearHomeStats();
-        
+
         if ($track->artist_id) {
             $this->cacheService->clearArtistCache($track->artist_id);
         }

@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Track;
-use App\Models\ArtistProfile;
 use Illuminate\Database\Seeder;
 
 class TrackSeeder extends Seeder
@@ -12,7 +10,7 @@ class TrackSeeder extends Seeder
     {
         $genres = ['Hip Hop', 'R&B', 'Pop', 'Rock', 'Electronic'];
         $statuses = ['draft', 'published', 'private'];
-        
+
         // Create trending tracks
         for ($i = 0; $i < 8; $i++) {
             $artist = \App\Models\ArtistProfile::inRandomOrder()->first();
@@ -26,7 +24,7 @@ class TrackSeeder extends Seeder
                 'release_date' => now()->subDays(rand(1, 30)),
                 'is_featured' => true,
                 'play_count' => rand(1000, 10000),
-                'status' => $statuses[array_rand($statuses)]
+                'status' => $statuses[array_rand($statuses)],
             ]);
         }
 
@@ -43,7 +41,7 @@ class TrackSeeder extends Seeder
                 'release_date' => now(),
                 'is_featured' => false,
                 'play_count' => rand(100, 500),
-                'status' => $statuses[array_rand($statuses)]
+                'status' => $statuses[array_rand($statuses)],
             ]);
         }
     }

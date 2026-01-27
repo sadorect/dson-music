@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Track;
 use App\Models\PlayHistory;
+use App\Models\Track;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -59,13 +59,13 @@ class RecordPlayHistory implements ShouldQueue
 
             Log::info('Play history recorded', [
                 'track_id' => $this->trackId,
-                'user_id' => $this->userId
+                'user_id' => $this->userId,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to record play history', [
                 'track_id' => $this->trackId,
                 'user_id' => $this->userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

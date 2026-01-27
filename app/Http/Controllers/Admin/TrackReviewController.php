@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Track;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Track;
 use App\Notifications\TrackApproved;
 use App\Notifications\TrackRejected;
+use Illuminate\Http\Request;
 
 class TrackReviewController extends Controller
 {
@@ -16,7 +16,7 @@ class TrackReviewController extends Controller
             ->with('artist')
             ->latest()
             ->paginate(10);
-            
+
         return view('admin.tracks.review.index', compact('pendingTracks'));
     }
 
@@ -31,7 +31,7 @@ class TrackReviewController extends Controller
             'approval_status' => 'approved',
             'approved_at' => now(),
             'approved_by' => auth()->id(),
-            'status' => 'published'
+            'status' => 'published',
         ]);
 
         $track->artist->user->notify(new TrackApproved($track));
@@ -43,13 +43,13 @@ class TrackReviewController extends Controller
     public function reject(Request $request, Track $track)
     {
         $request->validate([
-            'rejection_reason' => 'required|string|min:10'
+            'rejection_reason' => 'required|string|min:10',
         ]);
 
         $track->update([
             'approval_status' => 'rejected',
             'rejection_reason' => $request->rejection_reason,
-            'status' => 'draft'
+            'status' => 'draft',
         ]);
 
         $track->artist->user->notify(new TrackRejected($track));

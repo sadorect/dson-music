@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Track;
 use App\Models\ArtistProfile;
+use App\Models\Track;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

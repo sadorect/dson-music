@@ -28,7 +28,7 @@ class QueryMonitoring
     public function handle(Request $request, Closure $next): Response
     {
         // Only monitor in non-production or when explicitly enabled
-        if (!config('app.debug') && !env('ENABLE_QUERY_MONITORING', false)) {
+        if (! config('app.debug') && ! env('ENABLE_QUERY_MONITORING', false)) {
             return $next($request);
         }
 
@@ -80,7 +80,7 @@ class QueryMonitoring
         // Add debug headers in development
         if (config('app.debug')) {
             $response->headers->set('X-Query-Count', $queryCount);
-            $response->headers->set('X-Execution-Time', round($executionTime, 2) . 'ms');
+            $response->headers->set('X-Execution-Time', round($executionTime, 2).'ms');
         }
 
         return $response;
@@ -88,10 +88,6 @@ class QueryMonitoring
 
     /**
      * Get the top N slowest queries
-     *
-     * @param array $queries
-     * @param int $limit
-     * @return array
      */
     protected function getTopSlowQueries(array $queries, int $limit = 5): array
     {

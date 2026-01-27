@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Track;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 
 class TrackController extends Controller
@@ -29,7 +29,7 @@ class TrackController extends Controller
     {
         if ($track->approval_status !== 'approved') {
             return response()->json([
-                'message' => 'Track not found or not available'
+                'message' => 'Track not found or not available',
             ], 404);
         }
 
@@ -53,9 +53,9 @@ class TrackController extends Controller
         ]);
 
         // Ensure user is an artist
-        if (!$request->user()->isArtist()) {
+        if (! $request->user()->isArtist()) {
             return response()->json([
-                'message' => 'Only artists can upload tracks'
+                'message' => 'Only artists can upload tracks',
             ], 403);
         }
 
@@ -79,9 +79,9 @@ class TrackController extends Controller
     public function update(Request $request, Track $track)
     {
         // Check authorization
-        if (!Gate::allows('update', $track)) {
+        if (! Gate::allows('update', $track)) {
             return response()->json([
-                'message' => 'You are not authorized to update this track'
+                'message' => 'You are not authorized to update this track',
             ], 403);
         }
 
@@ -102,16 +102,16 @@ class TrackController extends Controller
     public function destroy(Track $track)
     {
         // Check authorization
-        if (!Gate::allows('delete', $track)) {
+        if (! Gate::allows('delete', $track)) {
             return response()->json([
-                'message' => 'You are not authorized to delete this track'
+                'message' => 'You are not authorized to delete this track',
             ], 403);
         }
 
         $track->delete();
 
         return response()->json([
-            'message' => 'Track deleted successfully'
+            'message' => 'Track deleted successfully',
         ], 200);
     }
 }

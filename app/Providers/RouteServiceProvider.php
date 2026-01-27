@@ -35,7 +35,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->response(function () {
                     return response()->json([
                         'message' => 'Upload limit exceeded. Please try again later.',
-                        'retry_after' => 3600
+                        'retry_after' => 3600,
                     ], 429);
                 });
         });
@@ -67,7 +67,7 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
-                
+
             Route::middleware('web')
                 ->group(base_path('routes/admin.php'));
         });

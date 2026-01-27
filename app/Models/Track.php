@@ -2,18 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\Like;
-use App\Models\Comment;
-use App\Models\PlayHistory;
-use Laravel\Scout\Searchable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasComments;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Track extends Model
 {
-    use HasFactory, HasComments, Searchable;
-    
+    use HasComments, HasFactory, Searchable;
+
     protected $fillable = [
         'title',
         'artist_id',
@@ -34,7 +31,7 @@ class Track extends Model
         'minimum_donation',
         'approved_at',
         'approved_by',
-        'downloads_count'
+        'downloads_count',
     ];
 
     protected $casts = [
@@ -43,7 +40,7 @@ class Track extends Model
         'play_count' => 'integer',
         'downloads_count' => 'integer',
         'approved_at' => 'datetime',
-        'minimum_donation' => 'decimal:2'
+        'minimum_donation' => 'decimal:2',
     ];
 
     public function artist()
@@ -55,9 +52,6 @@ class Track extends Model
     {
         return $this->belongsTo(Album::class);
     }
-
-
-
 
     public function scopeTrending($query)
     {
@@ -75,37 +69,38 @@ class Track extends Model
     {
         $this->increment('downloads_count');
     }
-    
+
     public function plays()
-        {
-            return $this->hasMany(PlayHistory::class);
-        }
-        public function likes()
-        {
-            return $this->morphMany(Like::class, 'likeable');
-        }
-        
-        public function likesCount()
-        {
-            return $this->likes()->count();
-        }
+    {
+        return $this->hasMany(PlayHistory::class);
+    }
 
-        public function comments()
-        {
-            return $this->morphMany(Comment::class, 'commentable');
-        }
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
 
-        public function downloads()
-        {
-            return $this->hasMany(Download::class);
-        }
+    public function likesCount()
+    {
+        return $this->likes()->count();
+    }
 
-        public function downloadsCount()
-        {
-            return $this->downloads()->count();
-        }
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 
-        // New status checking methods
+    public function downloads()
+    {
+        return $this->hasMany(Download::class);
+    }
+
+    public function downloadsCount()
+    {
+        return $this->downloads()->count();
+    }
+
+    // New status checking methods
     public function isApproved()
     {
         return $this->approval_status === 'approved';
@@ -157,6 +152,4 @@ class Track extends Model
     {
         return 'tracks_index';
     }
-
-        
 }

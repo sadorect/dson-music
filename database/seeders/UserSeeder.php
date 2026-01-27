@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'user_type' => 'admin',
             'is_super_admin' => true,
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         // Create regular admin user
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'user_type' => 'admin',
             'is_super_admin' => false,
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         // Create artist users

@@ -12,7 +12,7 @@ class ActivityLogger
             'user_id' => $user_id,
             'type' => $type,
             'description' => $description,
-            'ip_address' => request()->ip()
+            'ip_address' => request()->ip(),
         ]);
     }
 }

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Track;
-use App\Models\ArtistProfile;
 use App\Services\CacheService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
@@ -33,11 +31,11 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to render home page', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->view('errors.general', [
-                'message' => 'An unexpected error occurred while loading the homepage. Please try again later.'
+                'message' => 'An unexpected error occurred while loading the homepage. Please try again later.',
             ], 500);
         }
     }

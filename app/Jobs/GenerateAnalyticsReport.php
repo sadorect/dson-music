@@ -2,17 +2,16 @@
 
 namespace App\Jobs;
 
-use App\Models\Track;
-use App\Models\PlayHistory;
 use App\Models\ArtistProfile;
+use App\Models\PlayHistory;
+use App\Models\Track;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class GenerateAnalyticsReport implements ShouldQueue
 {
@@ -44,7 +43,7 @@ class GenerateAnalyticsReport implements ShouldQueue
     {
         try {
             $cacheKey = "analytics_report_{$this->reportType}_{$this->date}";
-            
+
             // Generate analytics data
             $analytics = [
                 'total_plays' => PlayHistory::whereDate('created_at', $this->date)->count(),
@@ -76,13 +75,13 @@ class GenerateAnalyticsReport implements ShouldQueue
             Log::info('Analytics report generated', [
                 'report_type' => $this->reportType,
                 'date' => $this->date,
-                'total_plays' => $analytics['total_plays']
+                'total_plays' => $analytics['total_plays'],
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to generate analytics report', [
                 'report_type' => $this->reportType,
                 'date' => $this->date,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

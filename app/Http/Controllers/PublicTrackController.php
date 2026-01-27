@@ -20,9 +20,10 @@ class PublicTrackController extends Controller
                     'title' => $track->title,
                     'artist' => $track->artist->artist_name,
                     'artwork' => $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : null,
-                    'audioUrl' => Storage::disk('s3')->url($track->file_path)
+                    'audioUrl' => Storage::disk('s3')->url($track->file_path),
                 ];
             });
+
         return response()->json($tracks);
     }
 
@@ -35,5 +36,4 @@ class PublicTrackController extends Controller
 
         return view('tracks.show', compact('track', 'relatedTracks'));
     }
-
 }

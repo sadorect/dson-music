@@ -4,8 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Track;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class NewTrackPendingApproval extends Notification
 {
@@ -28,8 +28,8 @@ class NewTrackPendingApproval extends Notification
         return (new MailMessage)
             ->subject('New Track Pending Approval')
             ->line('A new track has been uploaded and requires your approval.')
-            ->line('Track Title: ' . $this->track->title)
-            ->line('Artist: ' . $this->track->artist->artist_name)
+            ->line('Track Title: '.$this->track->title)
+            ->line('Artist: '.$this->track->artist->artist_name)
             ->action('Review Track', route('admin.tracks.review.index', $this->track))
             ->line('Please review the track for quality and content guidelines.');
     }
@@ -40,7 +40,7 @@ class NewTrackPendingApproval extends Notification
             'track_id' => $this->track->id,
             'track_title' => $this->track->title,
             'artist_name' => $this->track->artist->artist_name,
-            'uploaded_at' => $this->track->created_at
+            'uploaded_at' => $this->track->created_at,
         ];
     }
 }

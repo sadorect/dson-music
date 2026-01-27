@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ArtistProfile;
 use App\Services\CacheService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ArtistController extends Controller
@@ -21,7 +21,7 @@ class ArtistController extends Controller
             'genre' => 'required',
             'bio' => 'nullable|string',
             'profile_image' => 'nullable|image|max:2048',
-            'cover_image' => 'nullable|image|max:2048'
+            'cover_image' => 'nullable|image|max:2048',
         ]);
 
         $artistProfile = new ArtistProfile($validated);
@@ -41,14 +41,14 @@ class ArtistController extends Controller
 
     public function dashboard(CacheService $cacheService)
     {
-        if (!Auth::user()?->artistProfile) {
+        if (! Auth::user()?->artistProfile) {
             return redirect()->route('artist.register.form')
                 ->with('message', 'Please complete your artist profile first');
         }
 
         $artist = Auth::user()->artistProfile;
         $stats = $cacheService->getArtistStats($artist->id);
-        
+
         return view('artist.dashboard', compact('artist', 'stats'));
     }
 
@@ -58,7 +58,7 @@ class ArtistController extends Controller
     {
         $artist = Auth::user()->artistProfile;
 
-        if (!$artist) {
+        if (! $artist) {
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please create your artist profile first');
         }
@@ -81,7 +81,7 @@ class ArtistController extends Controller
     {
         $artist = $this->findArtistBySlug($slug);
 
-        if (!$artist) {
+        if (! $artist) {
             abort(404);
         }
 
@@ -141,7 +141,7 @@ class ArtistController extends Controller
     protected function findArtistBySlug(string $slug): ?ArtistProfile
     {
         $normalized = \Illuminate\Support\Str::of($slug)->replace('-', ' ')->lower()->value();
-        
+
         return ArtistProfile::where('custom_url', $slug)
             ->orWhereRaw('LOWER(artist_name) = ?', [$normalized])
             ->first();
@@ -160,7 +160,7 @@ class ArtistController extends Controller
 
     public function edit(ArtistProfile $artist)
     {
-        if (!$artist) {
+        if (! $artist) {
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please create your artist profile first');
         }

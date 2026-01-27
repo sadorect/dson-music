@@ -21,3 +21,28 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Backup files
+*.blade-back.php
+*.blade-bak.php
+*.bak
+*.swp
+*.swo
+*~
+
+# Build artifacts
+/dist
+/build
+
+# Log files
+*.log
+nohup.out
+
+# Database
+database/database.sqlite
+database/*.sqlite
+
+# Temporary files
+/tmp
+.DS_Store
+Thumbs.db

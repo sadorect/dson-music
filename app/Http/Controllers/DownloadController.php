@@ -10,10 +10,10 @@ class DownloadController extends Controller
 {
     public function download(Track $track, Request $request)
     {
-    /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-    $disk = Storage::disk('s3');
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('s3');
 
-    $fileExists = $disk->exists($track->file_path);
+        $fileExists = $disk->exists($track->file_path);
 
         $download = $track->downloads()->create([
             'user_id' => $request->user()->id,
@@ -36,6 +36,4 @@ class DownloadController extends Controller
             ['ResponseContentDisposition' => 'attachment']
         ));
     }
-    
-
 }

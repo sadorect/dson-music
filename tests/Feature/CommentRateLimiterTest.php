@@ -33,7 +33,7 @@ class CommentRateLimiterTest extends TestCase
             ->postJson(route('tracks.comments.store', $track), $payload)
             ->assertStatus(429)
             ->assertJson([
-                'message' => 'You are commenting too quickly. Please slow down and try again shortly.'
+                'message' => 'You are commenting too quickly. Please slow down and try again shortly.',
             ]);
     }
 }

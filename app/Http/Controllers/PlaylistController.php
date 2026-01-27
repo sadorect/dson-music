@@ -59,13 +59,13 @@ class PlaylistController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'is_public' => 'boolean'
+            'is_public' => 'boolean',
         ]);
 
         $playlist = Auth::user()->playlists()->create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
-            'is_public' => $validated['is_public'] ?? true
+            'is_public' => $validated['is_public'] ?? true,
         ]);
 
         return redirect()
@@ -79,7 +79,7 @@ class PlaylistController extends Controller
     public function show(Playlist $playlist)
     {
         // Check if playlist is accessible
-        if (!$playlist->is_public && (!Auth::check() || Auth::id() !== $playlist->user_id)) {
+        if (! $playlist->is_public && (! Auth::check() || Auth::id() !== $playlist->user_id)) {
             abort(403, 'This playlist is private.');
         }
 
@@ -108,13 +108,13 @@ class PlaylistController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'is_public' => 'boolean'
+            'is_public' => 'boolean',
         ]);
 
         $playlist->update([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
-            'is_public' => $validated['is_public'] ?? $playlist->is_public
+            'is_public' => $validated['is_public'] ?? $playlist->is_public,
         ]);
 
         return redirect()
@@ -144,7 +144,7 @@ class PlaylistController extends Controller
         $this->authorize('update', $playlist);
 
         $request->validate([
-            'track_id' => 'required|exists:tracks,id'
+            'track_id' => 'required|exists:tracks,id',
         ]);
 
         // Check if track already exists in playlist
@@ -158,7 +158,7 @@ class PlaylistController extends Controller
         $playlist->tracks()->attach($request->track_id, [
             'position' => $position,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         return back()->with('success', 'Track added to playlist!');
@@ -191,7 +191,7 @@ class PlaylistController extends Controller
 
         $request->validate([
             'track_ids' => 'required|array',
-            'track_ids.*' => 'exists:tracks,id'
+            'track_ids.*' => 'exists:tracks,id',
         ]);
 
         foreach ($request->track_ids as $position => $trackId) {

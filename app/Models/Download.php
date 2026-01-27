@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Track;
 use Illuminate\Database\Eloquent\Model;
 
 class Download extends Model

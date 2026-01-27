@@ -3,13 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Track;
+use getID3;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use getID3;
 
 class ProcessTrackUpload implements ShouldQueue
 {
@@ -35,19 +35,20 @@ class ProcessTrackUpload implements ShouldQueue
     {
         try {
             // Extract metadata from audio file
-            $filePath = storage_path('app/' . $this->track->file_path);
-            
-            if (!file_exists($filePath)) {
+            $filePath = storage_path('app/'.$this->track->file_path);
+
+            if (! file_exists($filePath)) {
                 Log::error('Track file not found for metadata extraction', [
                     'track_id' => $this->track->id,
-                    'file_path' => $filePath
+                    'file_path' => $filePath,
                 ]);
+
                 return;
             }
 
             // Use getID3 library if available, otherwise skip metadata extraction
             if (class_exists('getID3')) {
-                $getID3 = new getID3();
+                $getID3 = new getID3;
                 $fileInfo = $getID3->analyze($filePath);
 
                 // Update track with metadata
@@ -57,15 +58,15 @@ class ProcessTrackUpload implements ShouldQueue
 
                 Log::info('Track metadata extracted successfully', [
                     'track_id' => $this->track->id,
-                    'duration' => $this->track->duration
+                    'duration' => $this->track->duration,
                 ]);
             }
         } catch (\Exception $e) {
             Log::error('Failed to process track upload', [
                 'track_id' => $this->track->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             // Optionally, you can rethrow the exception to retry the job
             // throw $e;
         }

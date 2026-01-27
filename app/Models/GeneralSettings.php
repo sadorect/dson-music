@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class GeneralSettings extends Model
 {
     protected $table = 'general_settings';
-    
+
     protected $casts = [
         'maintenance_mode' => 'boolean',
         'enable_registration' => 'boolean',

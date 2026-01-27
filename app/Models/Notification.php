@@ -11,12 +11,12 @@ class Notification extends Model
         'notifiable_type',
         'type',
         'data',
-        'read_at'
+        'read_at',
     ];
 
     protected $casts = [
         'data' => 'array',
-        'read_at' => 'datetime'
+        'read_at' => 'datetime',
     ];
 
     public function notifiable()
