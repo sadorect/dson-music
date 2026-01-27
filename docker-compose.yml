@@ -7,29 +7,19 @@ services:
       dockerfile: Dockerfile
     container_name: dson-music-app
     restart: unless-stopped
-    working_dir: /var/www
+    working_dir: /var/www/html
+    ports:
+      - "8000:80"
     volumes:
-      - ./:/var/www
-      - ./storage:/var/www/storage
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
     networks:
       - dson-music-network
     depends_on:
       - mysql
       - redis
-
-  nginx:
-    image: nginx:alpine
-    container_name: dson-music-nginx
-    restart: unless-stopped
-    ports:
-      - "8000:80"
-    volumes:
-      - ./:/var/www
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
-    networks:
-      - dson-music-network
-    depends_on:
-      - app
 
   mysql:
     image: mysql:8.0
@@ -65,8 +55,9 @@ services:
     container_name: dson-music-queue
     restart: unless-stopped
     command: php artisan queue:work --tries=3
+    working_dir: /var/www/html
     volumes:
-      - ./:/var/www
+      - ./:/var/www/html
     networks:
       - dson-music-network
     depends_on:
