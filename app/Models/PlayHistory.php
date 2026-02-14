@@ -12,11 +12,11 @@ class PlayHistory extends Model
         'played_at',
         'ip_address',
         'user_agent',
-        'location'
+        'location',
     ];
 
     protected $casts = [
-        'played_at' => 'datetime'
+        'played_at' => 'datetime',
     ];
 
     public function user()

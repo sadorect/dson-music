@@ -10,14 +10,33 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Create admin user
+        // Create super admin user
+        User::create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@grinmusic.com',
+            'password' => Hash::make('password'),
+            'user_type' => 'admin',
+            'is_super_admin' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        // Create regular admin user
         User::create([
             'name' => 'Admin',
             'email' => 'admin@grinmusic.com',
             'password' => Hash::make('password'),
             'user_type' => 'admin',
-            'email_verified_at' => now()
+            'is_super_admin' => false,
+            'email_verified_at' => now(),
         ]);
+
+        // Create artist users
+        User::factory()
+            ->count(5)
+            ->create()
+            ->each(function ($user) {
+                $user->update(['user_type' => 'artist']);
+            });
 
         // Create regular users
         User::factory()

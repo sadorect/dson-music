@@ -1,20 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\AlbumController;
-use App\Http\Controllers\TrackController;
-use App\Http\Controllers\ArtistController;
-use App\Http\Controllers\FollowController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\TrendingController;
 use App\Http\Controllers\PublicTrackController;
-use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\SongController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\TrendingController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
@@ -25,14 +25,12 @@ Route::get('/artists/public/{slug}', [ArtistController::class, 'showPublicBySlug
 Route::get('/artists/{artist}', [ArtistController::class, 'showPublicProfile'])->name('artists.show');
 Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index');
 
-
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::post('register', [RegisteredUserController::class, 'store'])
-        ->name('register');
+    ->name('register');
 
 Route::middleware('auth')->group(function () {
     // User profile
@@ -51,7 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.profile.show');
 
     Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
-    Route::resource('artist/tracks', TrackController::class, ['as' => 'artist']);
+    Route::resource('artist/tracks', TrackController::class, ['as' => 'artist'])->except(['store']);
+    Route::post('artist/tracks', [TrackController::class, 'store'])
+        ->middleware('throttle:uploads')
+        ->name('artist.tracks.store');
 
     // Social interactions
     Route::post('artists/{artist}/follow', [FollowController::class, 'follow'])->name('artists.follow');
@@ -73,22 +74,36 @@ Route::middleware('auth')->group(function () {
         ->name('comments.pin');
 
     // Downloads
-    Route::get('tracks/{track}/download', [DownloadController::class, 'download'])->name('tracks.download');
+    Route::get('tracks/{track}/download', [DownloadController::class, 'download'])
+        ->middleware('throttle:downloads')
+        ->name('tracks.download');
+
+    // Playlists
+    Route::get('/my-playlists', [PlaylistController::class, 'myPlaylists'])->name('playlists.my-playlists');
+    Route::resource('playlists', PlaylistController::class);
+    Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.add-track');
+    Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.remove-track');
+    Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks'])->name('playlists.reorder');
 });
-
-
-
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
 
+// Public Playlist Routes (outside auth middleware)
+Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.index');
+Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->name('playlists.show');
+
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
+Route::get('/tracks/{track}/stream', [PublicTrackController::class, 'stream'])->name('tracks.stream');
 Route::get('/tracks/{track}', [PublicTrackController::class, 'show'])->name('tracks.show');
 
-Route::get('/search', [SearchController::class, 'index'])->name('search');
-Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('search.quick');
+Route::get('/search', [SearchController::class, 'index'])
+    ->middleware('throttle:search')
+    ->name('search');
+Route::get('/search/quick', [SearchController::class, 'quickSearch'])
+    ->middleware('throttle:search')
+    ->name('search.quick');
 
 Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
 Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');
-Route::get('songs/{song}', [SongController::class, 'show'])->name('songs.show');
 Route::post('/toggle-theme', [App\Http\Controllers\ThemeController::class, 'toggle'])->name('toggle-theme');

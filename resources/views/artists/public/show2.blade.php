@@ -60,7 +60,7 @@
                             title: '{{ $track->title }}',
                             artist: '{{ $track->artist->artist_name }}',
                             artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/images/default-cover.webp' }}',
-                            audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}',
+                            audioUrl: '{{ route('tracks.stream', $track) }}',
                             format: '{{ $track->file_path ? pathinfo($track->file_path, PATHINFO_EXTENSION) : 'mp3' }}'
                         })"  class="text-purple-600 hover:text-purple-700">
                             <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
@@ -75,14 +75,14 @@
                                 title: '{{ $track->title }}',
                                 artist: '{{ $track->artist->artist_name }}',
                                 artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
-                                audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
+                                audioUrl: '{{ route('tracks.stream', $track) }}'
                             });
                             $dispatch('queue:add', {
                                 id: {{ $track->id }},
                                 title: '{{ $track->title }}',
                                 artist: '{{ $track->artist->artist_name }}',
                                 artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
-                                audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
+                                audioUrl: '{{ route('tracks.stream', $track) }}'
                             });"
                         class="dson-btn-secondary">
                         Add to Queue

@@ -23,12 +23,14 @@ class SpamFree implements ValidationRule
         foreach ($this->blockedPhrases as $phrase) {
             if (str_contains($content, $phrase)) {
                 $fail('Your comment looks like spam. Please edit and try again.');
+
                 return;
             }
         }
 
         if ($this->hasRepeatedCharacters($content)) {
             $fail('Please avoid using excessive repeated characters in comments.');
+
             return;
         }
 
@@ -45,6 +47,7 @@ class SpamFree implements ValidationRule
     protected function hasExcessiveMentions(string $content): bool
     {
         preg_match_all('/@/u', $content, $matches);
+
         return count($matches[0]) > 5;
     }
 }

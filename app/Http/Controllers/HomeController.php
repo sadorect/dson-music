@@ -3,49 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Track;
-use App\Models\ArtistProfile;
-use Illuminate\Support\Facades\DB;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
+    protected $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     public function index()
     {
-    try {
+        try {
             $data = [
-            'featuredArtists' => ArtistProfile::where('is_verified', true)
-                            ->withCount(['tracks', 'followers'])
-                            ->take(4)
-                            ->get(),
-                            
-            'trendingTracks' => Track::withCount('plays')
-                        ->orderBy('plays_count', 'desc')
-                        ->take(8)
-                        ->get(),
-                        
-            'newReleases' => Track::with('artist')
-                         ->latest()
-                         ->take(8)
-                         ->get(),
-                         
-            'genres' => Track::select('genre')
-                    ->distinct()
-                    ->pluck('genre'),
-                    
-            'genreCounts' => Track::select('genre', DB::raw('count(*) as count'))
-                         ->groupBy('genre')
-                         ->pluck('count', 'genre')
+                'featuredArtists' => $this->cacheService->getFeaturedArtists(4),
+                'trendingTracks' => $this->cacheService->getTrendingTracks(8),
+                'newReleases' => $this->cacheService->getNewReleases(8),
+                'genres' => Track::select('genre')->distinct()->pluck('genre'),
+                'genreCounts' => $this->cacheService->getGenreCounts(),
+                'stats' => $this->cacheService->getHomeStats(),
             ];
 
             return view('home', $data);
         } catch (\Exception $e) {
             Log::error('Failed to render home page', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->view('errors.general', [
-                'message' => 'An unexpected error occurred while loading the homepage. Please try again later.'
+                'message' => 'An unexpected error occurred while loading the homepage. Please try again later.',
             ], 500);
         }
     }

@@ -3,18 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Activity;
-use App\Models\Playlist;
-use App\Models\PlayHistory;
-use App\Models\ArtistProfile;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -25,7 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'user_type'
+        'user_type',
+        'is_super_admin',
     ];
 
     /**
@@ -48,79 +46,81 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_super_admin' => 'boolean',
         ];
     }
-public function userType()
+
+    public function userType()
     {
         return $this->user_type;
     }
+
     public function isArtist()
-    { 
+    {
         return $this->user_type === 'artist';
     }
 
     /**
- * Check if the user is an admin (any type)
- *
- * @return bool
- */
-public function isAdmin()
-{
-    return $this->user_type === 'admin';
-}
-
-/**
- * Check if the user is a super admin
- *
- * @return bool
- */
-public function isSuperAdmin()
-{
-    return $this->user_type === 'admin' && $this->is_super_admin;
-}
-
-/**
- * Check if the user has a specific admin permission
- *
- * @param string $permission
- * @return bool
- */
-public function hasAdminPermission($permission)
-{
-    // Super admins have all permissions
-    if ($this->isSuperAdmin()) {
-        return true;
+     * Check if the user is an admin (any type)
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->user_type === 'admin';
     }
-    
-    // Regular admins need to check their permissions
-    if ($this->isAdmin() && $this->admin_permissions) {
-        return in_array($permission, $this->admin_permissions);
+
+    /**
+     * Check if the user is a super admin
+     *
+     * @return bool
+     */
+    public function isSuperAdmin()
+    {
+        return $this->user_type === 'admin' && $this->is_super_admin;
     }
-    
-    return false;
-}
 
-/**
- * Get the admin permissions as an array
- *
- * @return array
- */
-public function getAdminPermissionsAttribute($value)
-{
-    return $value ? json_decode($value, true) : [];
-}
+    /**
+     * Check if the user has a specific admin permission
+     *
+     * @param  string  $permission
+     * @return bool
+     */
+    public function hasAdminPermission($permission)
+    {
+        // Super admins have all permissions
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
 
-/**
- * Set the admin permissions
- *
- * @param array $value
- * @return void
- */
-public function setAdminPermissionsAttribute($value)
-{
-    $this->attributes['admin_permissions'] = $value ? json_encode($value) : null;
-}
+        // Regular admins need to check their permissions
+        if ($this->isAdmin() && $this->admin_permissions) {
+            return in_array($permission, $this->admin_permissions);
+        }
 
+        return false;
+    }
+
+    /**
+     * Get the admin permissions as an array
+     *
+     * @return array
+     */
+    public function getAdminPermissionsAttribute($value)
+    {
+        return $value ? json_decode($value, true) : [];
+    }
+
+    /**
+     * Set the admin permissions
+     *
+     * @param  array  $value
+     * @return void
+     */
+    public function setAdminPermissionsAttribute($value)
+    {
+        $this->attributes['admin_permissions'] = $value ? json_encode($value) : null;
+    }
 
     public function artistProfile()
     {
@@ -169,7 +169,6 @@ public function setAdminPermissionsAttribute($value)
         return $this->hasMany(Activity::class);
     }
 
-
     public function likes()
     {
         return $this->hasMany(Like::class);
@@ -180,14 +179,10 @@ public function setAdminPermissionsAttribute($value)
         return $this->hasMany(Comment::class);
     }
 
-    
-
     public function followers()
     {
         return $this->hasMany(Follow::class, 'follower_id');
     }
-
-   
 
     /*public function notifications()
     {
@@ -204,6 +199,4 @@ public function setAdminPermissionsAttribute($value)
         return $this->hasMany(Conversation::class);
     }*/
 
-
 }
-

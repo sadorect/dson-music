@@ -4,8 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Track;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class TrackApproved extends Notification
 {
@@ -28,7 +28,7 @@ class TrackApproved extends Notification
         return (new MailMessage)
             ->subject('Your Track Has Been Approved!')
             ->greeting('Great news!')
-            ->line('Your track "' . $this->track->title . '" has been approved.')
+            ->line('Your track "'.$this->track->title.'" has been approved.')
             ->line('It is now available for public access.')
             ->action('View Track', route('artist.tracks.show', $this->track))
             ->line('Keep creating amazing music!');
@@ -40,7 +40,7 @@ class TrackApproved extends Notification
             'track_id' => $this->track->id,
             'track_title' => $this->track->title,
             'approved_at' => $this->track->approved_at,
-            'approved_by' => $this->track->approved_by
+            'approved_by' => $this->track->approved_by,
         ];
     }
 }

@@ -30,7 +30,7 @@
                             title: '{{ $track->title }}',
                             artist: '{{ $track->artist->artist_name }}',
                             artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-cover.jpg') }}',
-                            audioUrl: '{{ Storage::url($track->file_path) }}',
+                            audioUrl: '{{ route('tracks.stream', $track) }}',
                             format: '{{ pathinfo($track->file_path, PATHINFO_EXTENSION) }}'
                         })"  
                                 class="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700">

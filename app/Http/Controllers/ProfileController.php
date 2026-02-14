@@ -59,15 +59,14 @@ class ProfileController extends Controller
     }
 
     // For authenticated artist viewing their own profile
-public function show()
-{
-    $artist = auth()->user()->artistProfile;
-    $artist->loadCount(['tracks', 'followers'])
-          ->load(['tracks' => function($query) {
-              $query->withCount(['plays', 'likes', 'downloads']);
-          }]);
+    public function show()
+    {
+        $artist = auth()->user()->artistProfile;
+        $artist->loadCount(['tracks', 'followers'])
+            ->load(['tracks' => function ($query) {
+                $query->withCount(['plays', 'likes', 'downloads']);
+            }]);
 
-    return view('artists.show', compact('artist'));
-}
-
+        return view('artists.show', compact('artist'));
+    }
 }

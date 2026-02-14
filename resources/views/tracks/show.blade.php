@@ -32,14 +32,14 @@
                             <button x-data
                             @click="
                                 console.log('Track data:', {
-                                    audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}'
+                                    audioUrl: '{{ route('tracks.stream', $track) }}'
                                 });
                                 $dispatch('track:play', {
                                     id: {{ $track->id }},
                                     title: '{{ $track->title }}',
                                     artist: '{{ $track->artist->artist_name }}',
                                     artwork: '{{ $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : '/default-cover.jpg' }}',
-                                    audioUrl: '{{ $track->file_path ? Storage::disk('s3')->url($track->file_path) : '' }}',
+                                    audioUrl: '{{ route('tracks.stream', $track) }}',
                                     format: '{{ $track->file_path ? pathinfo($track->file_path, PATHINFO_EXTENSION) : 'mp3' }}'
                                 })"
                                     class="dson-btn flex items-center space-x-2">

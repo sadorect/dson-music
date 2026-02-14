@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\ArtistProfile;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class ArtistProfileSeeder extends Seeder
 {
@@ -20,9 +18,9 @@ class ArtistProfileSeeder extends Seeder
                 'bio' => fake()->paragraph(),
                 'profile_image' => null,
                 'cover_image' => null,
-                'location' => fake()->city() . ', ' . fake()->state(),
+                'location' => fake()->city().', '.fake()->state(),
                 'website' => fake()->url(),
-                'is_verified' => true
+                'is_verified' => true,
             ]);
         }
 
@@ -36,9 +34,9 @@ class ArtistProfileSeeder extends Seeder
                 'bio' => fake()->paragraph(),
                 'profile_image' => null,
                 'cover_image' => null,
-                'location' => fake()->city() . ', ' . fake()->state(),
+                'location' => fake()->city().', '.fake()->state(),
                 'website' => fake()->url(),
-                'is_verified' => false
+                'is_verified' => false,
             ]);
         }
     }

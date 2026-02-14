@@ -1,17 +1,27 @@
 @props(['trendingTracks'])
 
-<div class="container mx-auto px-4">
+<div class="container mx-auto px-4" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 120)">
     <h2 class="text-xl md:text-2xl font-bold mb-2 text-white">Play Again</h2>
+
+    <div x-show="!ready" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-4">
+        @for($i = 0; $i < 8; $i++)
+            <div class="rounded-lg p-3 bg-black/10">
+                <div class="module-skeleton h-40 sm:h-48 rounded mb-3"></div>
+                <div class="module-skeleton h-4 w-4/5 rounded mb-2"></div>
+                <div class="module-skeleton h-3 w-2/3 rounded"></div>
+            </div>
+        @endfor
+    </div>
     
     @if($trendingTracks->isEmpty())
         <p class="text-gray-500">No trending tracks available at the moment.</p>
     @else
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div x-show="ready" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             @foreach($trendingTracks as $track)
                 <div class="bg-black/10 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
                     <div class="h-48 relative">
-                        @if($track->cover_path)
-                            <img src="{{ Storage::url($track->cover_path) }}" 
+                        @if($track->cover_art)
+                            <img src="{{ Storage::disk('s3')->url($track->cover_art) }}" 
                                  alt="{{ $track->title }}" 
                                  class="w-full h-full object-cover"
                                  onerror="this.style.display='none';
@@ -25,10 +35,20 @@
                     </div>
                     <div class="p-4 flex flex-col ">
                         <h3 class="font-bold text-lg text-white">{{ $track->title }}</h3>
-                        <p class="text-sm text-gray-600 ">{{ $track->artist->name ?? 'Unknown Artist' }}</p>
+                        <p class="text-sm text-gray-600 ">{{ $track->artist->artist_name ?? $track->artist?->user?->name ?? 'Unknown Artist' }}</p>
                         <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-500">{{ $track->plays_count }} plays</span>
-                            <button class="text-primary-color hover:text-primary/80">
+                            <span class="text-xs text-gray-500">{{ number_format($track->play_count ?? 0) }} plays</span>
+                            <button
+                                x-data
+                                @click="$dispatch('track:play', {
+                                    id: {{ $track->id }},
+                                    title: @js($track->title),
+                                    artist: @js($track->artist->artist_name ?? $track->artist?->user?->name ?? 'Unknown Artist'),
+                                    artwork: @js($track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-track-cover.jpg')),
+                                    audioUrl: @js(route('tracks.stream', $track))
+                                })"
+                                class="text-primary-color hover:text-primary/80"
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

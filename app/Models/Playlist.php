@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use App\Models\Track;
 use Illuminate\Database\Eloquent\Model;
 
 class Playlist extends Model
@@ -12,11 +10,11 @@ class Playlist extends Model
         'name',
         'user_id',
         'description',
-        'is_public'
+        'is_public',
     ];
 
     protected $casts = [
-        'is_public' => 'boolean'
+        'is_public' => 'boolean',
     ];
 
     public function user()

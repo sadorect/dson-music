@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Track;
 use App\Models\ArtistProfile;
-use Illuminate\Support\Str;
+use App\Models\Track;
+use Illuminate\Database\Seeder;
 
 class GradientSeeder extends Seeder
 {
@@ -34,7 +33,7 @@ class GradientSeeder extends Seeder
     private function generateColor($seed)
     {
         // Generate consistent colors based on seed
-        $hash = hash('sha256', $seed . config('app.key'));
+        $hash = hash('sha256', $seed.config('app.key'));
         $r = hexdec(substr($hash, 0, 2));
         $g = hexdec(substr($hash, 2, 2));
         $b = hexdec(substr($hash, 4, 2));

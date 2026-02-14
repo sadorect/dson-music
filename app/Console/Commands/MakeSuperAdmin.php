@@ -14,7 +14,6 @@ class MakeSuperAdmin extends Command
      */
     protected $signature = 'admin:make-super {email}';
 
-   
     /**
      * The console command description.
      *
@@ -28,21 +27,22 @@ class MakeSuperAdmin extends Command
     public function handle()
     {
         $email = $this->argument('email');
-        
+
         $user = User::where('email', $email)->first();
-        
-        if (!$user) {
+
+        if (! $user) {
             $this->error("User with email {$email} not found.");
+
             return 1;
         }
-        
+
         $user->user_type = 'admin';
         $user->is_super_admin = true;
         $user->admin_permissions = null;
         $user->save();
-        
+
         $this->info("User {$user->name} ({$user->email}) is now a super admin.");
-        
+
         return 0;
     }
 }

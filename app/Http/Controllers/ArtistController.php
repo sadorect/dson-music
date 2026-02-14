@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ArtistProfile;
+use App\Services\CacheService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ArtistController extends Controller
@@ -20,7 +21,7 @@ class ArtistController extends Controller
             'genre' => 'required',
             'bio' => 'nullable|string',
             'profile_image' => 'nullable|image|max:2048',
-            'cover_image' => 'nullable|image|max:2048'
+            'cover_image' => 'nullable|image|max:2048',
         ]);
 
         $artistProfile = new ArtistProfile($validated);
@@ -38,15 +39,17 @@ class ArtistController extends Controller
         return redirect()->route('artist.dashboard')->with('success', 'Artist profile created successfully!');
     }
 
-    public function dashboard()
+    public function dashboard(CacheService $cacheService)
     {
-        if (!Auth::user()?->artistProfile) {
+        if (! Auth::user()?->artistProfile) {
             return redirect()->route('artist.register.form')
                 ->with('message', 'Please complete your artist profile first');
         }
 
         $artist = Auth::user()->artistProfile;
-        return view('artist.dashboard', compact('artist'));
+        $stats = $cacheService->getArtistStats($artist->id);
+
+        return view('artist.dashboard', compact('artist', 'stats'));
     }
 
     // For authenticated artist viewing their own profile
@@ -55,7 +58,7 @@ class ArtistController extends Controller
     {
         $artist = Auth::user()->artistProfile;
 
-        if (!$artist) {
+        if (! $artist) {
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please create your artist profile first');
         }
@@ -78,7 +81,7 @@ class ArtistController extends Controller
     {
         $artist = $this->findArtistBySlug($slug);
 
-        if (!$artist) {
+        if (! $artist) {
             abort(404);
         }
 
@@ -90,26 +93,27 @@ class ArtistController extends Controller
         $artist->loadCount(['tracks', 'followers']);
 
         $popularTracks = $artist->tracks()
-            ->with('artist')
+            ->with(['artist.user', 'album'])
             ->withCount('plays')
-            ->orderByDesc('plays_count')
+            ->orderByDesc('play_count')
             ->take(5)
             ->get();
 
         $featuredTracks = $artist->tracks()
-            ->with('artist')
+            ->with(['artist.user', 'album'])
             ->latest()
             ->take(6)
             ->get();
 
         $latestAlbums = $artist->albums()
+            ->with('tracks')
             ->latest()
             ->take(6)
             ->get();
 
         $appearsOn = $artist->tracks()
             ->whereNotNull('album_id')
-            ->with('artist')
+            ->with(['artist.user', 'album'])
             ->latest()
             ->take(6)
             ->get();
@@ -118,6 +122,8 @@ class ArtistController extends Controller
             ->when($artist->genre, function ($query) use ($artist) {
                 $query->where('genre', $artist->genre);
             })
+            ->with('user')
+            ->withCount('tracks')
             ->inRandomOrder()
             ->take(8)
             ->get();
@@ -135,7 +141,7 @@ class ArtistController extends Controller
     protected function findArtistBySlug(string $slug): ?ArtistProfile
     {
         $normalized = \Illuminate\Support\Str::of($slug)->replace('-', ' ')->lower()->value();
-        
+
         return ArtistProfile::where('custom_url', $slug)
             ->orWhereRaw('LOWER(artist_name) = ?', [$normalized])
             ->first();
@@ -144,18 +150,17 @@ class ArtistController extends Controller
     public function index()
     {
         $artists = ArtistProfile::where('is_verified', true)
+            ->with('user')
             ->withCount(['tracks', 'followers'])
             ->latest()
             ->paginate(12);
-
-
 
         return view('artists.index', compact('artists'));
     }
 
     public function edit(ArtistProfile $artist)
     {
-        if (!$artist) {
+        if (! $artist) {
             return redirect()->route('artist.profile.create')
                 ->with('message', 'Please create your artist profile first');
         }

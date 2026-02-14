@@ -7,21 +7,17 @@
             <span>{{ $track->likes_count ?? 0 }} likes</span>
         </div>
         <div class="flex justify-between items-center">
-            <button onclick="window.player = new Howl({
-                src: ['{{ Storage::url($track->audio_file) }}'],
-                html5: true,
-                onload: () => {
-                    window.dispatchEvent(new CustomEvent('track:play', { 
-                        detail: {
-                            id: {{ $track->id }},
-                            title: '{{ $track->title }}',
-                            artist: '{{ $track->artist->artist_name }}',
-                            artwork: '{{ Storage::url($track->cover_art) }}'
-                        }
-                    }));
-                    window.player.play();
-                }
-            })" class="text-purple-600 hover:text-purple-700">
+            <button
+                x-data
+                @click="$dispatch('track:play', {
+                    id: {{ $track->id }},
+                    title: @js($track->title),
+                    artist: @js($track->artist->artist_name ?? $track->artist?->user?->name ?? 'Unknown Artist'),
+                    artwork: @js($track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-track-cover.jpg')),
+                    audioUrl: @js(route('tracks.stream', $track))
+                })"
+                class="text-primary-color hover:text-primary-color/80"
+            >
                 <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/>
                 </svg>
@@ -37,7 +33,7 @@
         title: '{{ $track->title }}',
         artist: '{{ $track->artist->artist_name }}',
         artwork: '{{ Storage::disk('s3')->url($track->cover_art) }}',
-        audioUrl: '{{ Storage::disk('s3')->url($track->file_path) }}'
+        audioUrl: '{{ route('tracks.stream', $track) }}'
     })"
     class="dson-btn-secondary">
     Add to Queue
