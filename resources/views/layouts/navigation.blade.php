@@ -35,7 +35,7 @@
                     </div>
                 @endif
                 <!-- Mobile Search (Shows in hamburger menu) -->
-                <div class="sm:hidden" x-data="searchBar()" @click.outside="results = []">
+                <div class="sm:hidden" x-data="searchBar" @click.outside="results = []">
                     <div class="px-2 pt-2 pb-3 space-y-1">
                         <div class="relative">
                             <input 
@@ -68,7 +68,7 @@
                     </div>
                 </div>
                 <!-- Search Bar -->
-                <div class="hidden sm:flex sm:items-center" x-data="searchBar()" @click.outside="results = []">
+                <div class="hidden sm:flex sm:items-center" x-data="searchBar" @click.outside="results = []">
                     <form action="{{ route('search') }}" method="GET" class="w-full">
                         <div class="relative w-full max-w-xl">
                             <input 
@@ -123,8 +123,8 @@
                             <x-dropdown-link :href="route('artist.dashboard')">
                                 {{ __('Dashboard') }}
                             </x-dropdown-link>
-                            @if(optional(Auth::user())->artist)
-                                <x-dropdown-link :href="route('artist.profile.edit', Auth::user()->artist->id)">
+                            @if(optional(Auth::user())->artistProfile)
+                                <x-dropdown-link :href="route('artist.profile.edit')">
                                     {{ __('Edit Profile') }}
                                 </x-dropdown-link>
                             @endif
@@ -178,45 +178,4 @@
     </div>
 </nav>
 
-@push('scripts')
-<script>
-function searchBar() {
-    return {
-        query: '',
-        results: [],
-        async search() {
-            const trimmed = this.query.trim();
-            if (trimmed.length < 2) {
-                this.results = [];
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/search/quick?q=${encodeURIComponent(trimmed)}`, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    this.results = [];
-                    return;
-                }
-                const data = await response.json();
-                const tracks = Array.isArray(data.tracks) ? data.tracks.map(track => ({
-                    ...track,
-                    type: 'track'
-                })) : [];
-                const artists = Array.isArray(data.artists) ? data.artists.map(artist => ({
-                    ...artist,
-                    type: 'artist'
-                })) : [];
-                this.results = [...tracks, ...artists].slice(0, 5);
-            } catch (error) {
-                console.error('Search failed:', error);
-                this.results = [];
-            }
-        }
-    }
-}
-</script>
-@endpush
+

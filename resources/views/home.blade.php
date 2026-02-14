@@ -17,7 +17,7 @@
 
 
     <section class="">
-        <x-home.popular-artists title="Popular Artists" />
+        <x-home.popular-artists title="Popular Artists" :artists="$featuredArtists" />
     </section>
 
     <!-- Trending Tracks -->

@@ -45,51 +45,73 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     @vite(['resources/css/app.css', 'resources/css/dson-theme.css', 'resources/js/app.js'])
-    <script src="https://unpkg.com/alpinejs" defer></script>
 
     <script>
         window.recaptchaSiteKey = "{{ config('services.recaptcha.site_key') }}";
     </script>
     <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
-    @stack('scripts')
 </head>
 
-<body class="font-sans antialiased h-screen bg-bg overflow-hidden">
-    <div class="flex flex-col h-screen">
+<body class="font-sans antialiased min-h-screen bg-bg overflow-x-hidden">
+    <div class="flex flex-col min-h-screen">
         <div class="shrink-0">
             @include('layouts.navigation')
         </div>
 
         <!-- Page Content -->
-        <main class=" h-[80%]">
-            <div class="flex p-3 gap-8 h-full">
-                <div class="w-9/12 bg-white/5 rounded-lg overflow-y-scroll h-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+        <main class="flex-1 overflow-hidden pb-24 lg:pb-28">
+            <div class="flex h-full flex-col md:flex-row p-3 gap-3 md:gap-6">
+                <div class="w-full md:w-8/12 lg:w-9/12 bg-white/5 rounded-lg overflow-y-auto h-full pb-6 [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
                     @yield('content')
 
                     <x-footer />
                 </div>
 
-                <div class="w-3/12 bg-white/[5%] rounded-lg p-6 flex flex-col gap-4 justify-between">
+                <div class="w-full md:w-4/12 lg:w-3/12 bg-white/[5%] rounded-lg p-4 sm:p-6 flex flex-col gap-4 justify-between overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
 
 
                     <div class="flex flex-col gap-6">
                         <h1 class="text-white font-semibold text-lg">Your Library</h1>
-                        <div class="bg-black/10 p-6 rounded-lg">
-                            <h1 class="text-white font-semibold text-lg">Create your first playlist</h1>
-                            <p class="text-gray-400">Start creating your first playlist</p>
-                            <button class="bg-white my-2 text-black px-4 py-2 rounded-full">Create Playlist</button>
-                        </div>
+                        @auth
+                            @php
+                                $recentPlaylists = auth()->user()->playlists()->withCount('tracks')->latest()->take(5)->get();
+                            @endphp
 
-                        <div class="bg-black/10 p-6 rounded-lg">
-                            <h1 class="text-white font-semibold text-lg">Let's find some podcasts to follow</h1>
-                            <p class="text-gray-400">We'll keep you updated on the latest episodes</p>
-                            <button class="bg-white my-2 text-black px-4 py-2 rounded-full">Find Podcasts</button>
-                        </div>
+                            @if($recentPlaylists->isEmpty())
+                                <div class="bg-black/10 p-5 rounded-lg">
+                                    <h2 class="text-white font-semibold text-base">Create your first playlist</h2>
+                                    <p class="text-gray-400 text-sm mt-1">Start organizing your favorite tracks.</p>
+                                    <a href="{{ route('playlists.create') }}" class="inline-flex mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-medium">Create Playlist</a>
+                                </div>
+                            @else
+                                <div class="bg-black/10 p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h2 class="text-white font-semibold">Recent Playlists</h2>
+                                        <a href="{{ route('playlists.my-playlists') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                    </div>
+                                    <div class="space-y-2">
+                                        @foreach($recentPlaylists as $playlist)
+                                            <a href="{{ route('playlists.show', $playlist) }}" class="flex items-center justify-between p-2 rounded-md hover:bg-white/10">
+                                                <span class="text-sm text-white truncate">{{ $playlist->name }}</span>
+                                                <span class="text-xs text-white/50">{{ $playlist->tracks_count }}</span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                    <a href="{{ route('playlists.create') }}" class="inline-flex mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-medium">New Playlist</a>
+                                </div>
+                            @endif
+                        @else
+                            <div class="bg-black/10 p-5 rounded-lg">
+                                <h2 class="text-white font-semibold text-base">Save tracks to your library</h2>
+                                <p class="text-gray-400 text-sm mt-1">Sign in to create playlists and manage your listening history.</p>
+                                <a href="{{ route('login') }}" class="inline-flex mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-medium">Sign In</a>
+                            </div>
+                        @endauth
                     </div>
 
 
                     <div class=" flex flex-col gap-4">
-                        <div class="flex flex-wrap items-center gap-4 ">
+                        <div class="flex flex-wrap items-center gap-3 ">
                             <a href="" class="text-xs text-white/50">Legal</a>
                             <a href="" class="text-xs text-white/50">Safety and Privacy center</a>
                             <a href="" class="text-xs text-white/50">Privacy Policy</a>
@@ -118,6 +140,8 @@
 
 
     </div>
+
+    @stack('scripts')
 </body>
 
 </html>

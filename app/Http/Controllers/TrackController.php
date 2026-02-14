@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TrackUploadRequest;
 use App\Models\PlayHistory;
 use App\Models\Track;
 use App\Models\User;
@@ -51,26 +52,10 @@ class TrackController extends Controller
         return view('artist.tracks.create', compact('albums'));
     }
 
-    public function store(Request $request)
+    public function store(TrackUploadRequest $request)
     {
-        // Check for POST size limit exceeded
-        if (empty($request->all())) {
-            return redirect()->back()
-                ->with('error', 'Upload failed. File size exceeds the maximum allowed size of '.ini_get('post_max_size'));
-        }
-
         try {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'genre' => 'required|string',
-                'track_file' => 'required|file|mimes:mp3,wav,MP3,WAV,aac,flac|max:'.(int) (ini_get('upload_max_filesize')) * 1024,
-                'cover_art' => 'nullable|image|max:2048',
-                'release_date' => 'required|date',
-                'album_id' => 'nullable|exists:albums,id',
-                'status' => 'required|in:draft,published,private',
-                'download_type' => 'required|in:free,donate',
-                'minimum_donation' => 'required_if:download_type,donate|nullable|numeric|min:0.01',
-            ]);
+            $validated = $request->validated();
 
             $track = new Track($validated);
             $track->artist_id = Auth::user()->artistProfile->id;

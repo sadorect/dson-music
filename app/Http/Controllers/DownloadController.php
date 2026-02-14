@@ -10,6 +10,25 @@ class DownloadController extends Controller
 {
     public function download(Track $track, Request $request)
     {
+        if ($track->requiresDonation()) {
+            $minimumDonation = (float) $track->minimum_donation;
+            $donationAmount = (float) $request->input('donation_amount', 0);
+
+            if ($donationAmount < $minimumDonation) {
+                $track->downloads()->create([
+                    'user_id' => $request->user()->id,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'status' => 'failed',
+                ]);
+
+                return back()->with('error', sprintf(
+                    'This track requires a minimum donation of $%0.2f to download.',
+                    $minimumDonation
+                ));
+            }
+        }
+
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('s3');
 

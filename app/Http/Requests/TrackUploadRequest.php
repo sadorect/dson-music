@@ -36,6 +36,10 @@ class TrackUploadRequest extends FormRequest
             'title' => 'required|string|max:255|min:1',
             'album_id' => 'nullable|exists:albums,id',
             'genre' => ['required', 'string', Rule::in(self::ALLOWED_GENRES)],
+            'release_date' => 'required|date',
+            'status' => 'required|in:draft,published,private',
+            'download_type' => 'required|in:free,donate',
+            'minimum_donation' => 'required_if:download_type,donate|nullable|numeric|min:0.01',
 
             // Audio file validation
             'track_file' => [
@@ -47,7 +51,7 @@ class TrackUploadRequest extends FormRequest
             ],
 
             // Cover image validation
-            'cover_image' => [
+            'cover_art' => [
                 'nullable',
                 'file',
                 'image',
@@ -72,9 +76,10 @@ class TrackUploadRequest extends FormRequest
             'track_file.mimes' => 'The track must be an MP3, WAV, FLAC, M4A, or AAC file.',
             'track_file.mimetypes' => 'Invalid audio file type detected.',
             'track_file.max' => 'The track file may not be larger than 50MB.',
-            'cover_image.dimensions' => 'Cover image must be at least 300x300 pixels and no larger than 5000x5000 pixels.',
-            'cover_image.max' => 'The cover image may not be larger than 5MB.',
+            'cover_art.dimensions' => 'Cover image must be at least 300x300 pixels and no larger than 5000x5000 pixels.',
+            'cover_art.max' => 'The cover image may not be larger than 5MB.',
             'genre.in' => 'The selected genre is not valid. Please choose from the approved genres list.',
+            'minimum_donation.required_if' => 'A minimum donation is required when download type is donate.',
         ];
     }
 

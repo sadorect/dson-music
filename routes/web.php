@@ -49,7 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.profile.show');
 
     Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
-    Route::resource('artist/tracks', TrackController::class, ['as' => 'artist']);
+    Route::resource('artist/tracks', TrackController::class, ['as' => 'artist'])->except(['store']);
+    Route::post('artist/tracks', [TrackController::class, 'store'])
+        ->middleware('throttle:uploads')
+        ->name('artist.tracks.store');
 
     // Social interactions
     Route::post('artists/{artist}/follow', [FollowController::class, 'follow'])->name('artists.follow');
@@ -71,7 +74,9 @@ Route::middleware('auth')->group(function () {
         ->name('comments.pin');
 
     // Downloads
-    Route::get('tracks/{track}/download', [DownloadController::class, 'download'])->name('tracks.download');
+    Route::get('tracks/{track}/download', [DownloadController::class, 'download'])
+        ->middleware('throttle:downloads')
+        ->name('tracks.download');
 
     // Playlists
     Route::get('/my-playlists', [PlaylistController::class, 'myPlaylists'])->name('playlists.my-playlists');
@@ -89,10 +94,15 @@ Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.
 Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->name('playlists.show');
 
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
+Route::get('/tracks/{track}/stream', [PublicTrackController::class, 'stream'])->name('tracks.stream');
 Route::get('/tracks/{track}', [PublicTrackController::class, 'show'])->name('tracks.show');
 
-Route::get('/search', [SearchController::class, 'index'])->name('search');
-Route::get('/search/quick', [SearchController::class, 'quickSearch'])->name('search.quick');
+Route::get('/search', [SearchController::class, 'index'])
+    ->middleware('throttle:search')
+    ->name('search');
+Route::get('/search/quick', [SearchController::class, 'quickSearch'])
+    ->middleware('throttle:search')
+    ->name('search.quick');
 
 Route::get('/trending', [TrendingController::class, 'index'])->name('trending');
 Route::post('/tracks/{track}/play', [TrackController::class, 'recordPlay'])->name('tracks.play');

@@ -13,24 +13,26 @@ Create a new user account.
 **Endpoint:** `POST /api/auth/register`
 
 **Request Body:**
+
 ```json
 {
     "name": "John Doe",
     "email": "john@example.com",
     "password": "SecurePassword123",
     "password_confirmation": "SecurePassword123",
-    "user_type": "user"
+    "user_type": "listener"
 }
 ```
 
 **Response (201 Created):**
+
 ```json
 {
     "user": {
         "id": 1,
         "name": "John Doe",
         "email": "john@example.com",
-        "user_type": "user",
+        "user_type": "listener",
         "created_at": "2024-01-01T00:00:00.000000Z"
     },
     "token": "1|abcdefghijklmnopqrstuvwxyz123456789"
@@ -44,6 +46,7 @@ Authenticate and receive an API token.
 **Endpoint:** `POST /api/auth/login`
 
 **Request Body:**
+
 ```json
 {
     "email": "john@example.com",
@@ -52,6 +55,7 @@ Authenticate and receive an API token.
 ```
 
 **Response (200 OK):**
+
 ```json
 {
     "user": {
@@ -70,11 +74,13 @@ Revoke current API token.
 **Endpoint:** `POST /api/auth/logout`
 
 **Headers:**
+
 ```
 Authorization: Bearer {token}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
     "message": "Logged out successfully"
@@ -88,11 +94,13 @@ Get authenticated user information.
 **Endpoint:** `GET /api/user`
 
 **Headers:**
+
 ```
 Authorization: Bearer {token}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
     "id": 1,
@@ -112,6 +120,7 @@ Get a paginated list of all approved tracks.
 **Endpoint:** `GET /api/tracks`
 
 **Query Parameters:**
+
 - `page` (integer, optional): Page number (default: 1)
 - `per_page` (integer, optional): Items per page (default: 15, max: 100)
 - `genre` (string, optional): Filter by genre
@@ -120,6 +129,7 @@ Get a paginated list of all approved tracks.
 **Example:** `GET /api/tracks?page=1&per_page=20&genre=Hip-Hop`
 
 **Response (200 OK):**
+
 ```json
 {
     "data": [
@@ -160,6 +170,7 @@ Get details of a specific track.
 **Endpoint:** `GET /api/tracks/{id}`
 
 **Response (200 OK):**
+
 ```json
 {
     "id": 1,
@@ -182,7 +193,7 @@ Get details of a specific track.
     "likes_count": 56,
     "comments_count": 12,
     "download_type": "donate",
-    "minimum_donation": 5.00,
+    "minimum_donation": 5.0,
     "cover_url": "https://example.com/covers/track.jpg",
     "audio_url": "https://example.com/audio/track.mp3",
     "release_date": "2024-01-01",
@@ -193,36 +204,42 @@ Get details of a specific track.
 
 ### Create Track (Protected)
 
-Upload a new track. Requires authentication and artist profile.
+Create a new track record. Requires authentication and artist profile.
+
+Note: the current API implementation expects metadata + stored file paths (JSON). Multipart file upload for API is not yet implemented in this endpoint.
 
 **Endpoint:** `POST /api/tracks`
 
 **Headers:**
+
 ```
 Authorization: Bearer {token}
-Content-Type: multipart/form-data
+Content-Type: application/json
 ```
 
-**Request Body (multipart/form-data):**
-```
-title: "My New Track"
-description: "Track description"
-album_id: 2
-genre: "Hip-Hop"
-audio_file: [File]
-cover_image: [File] (optional)
-download_type: "free" (or "donate")
-minimum_donation: 5.00 (required if download_type is "donate")
-release_date: "2024-01-15" (optional)
-status: "published" (or "draft", "private")
+**Request Body (application/json):**
+
+```json
+{
+    "title": "My New Track",
+    "album_id": 2,
+    "genre": "hip-hop",
+    "duration": 235,
+    "file_path": "grinmuzik/tracks/my-new-track.mp3",
+    "cover_image": "grinmuzik/covers/my-new-track.jpg"
+}
 ```
 
 **Response (201 Created):**
+
 ```json
 {
     "id": 123,
     "title": "My New Track",
-    "message": "Track uploaded successfully and is pending approval"
+    "artist_id": 5,
+    "approval_status": "pending",
+    "created_at": "2024-01-01T00:00:00.000000Z",
+    "updated_at": "2024-01-01T00:00:00.000000Z"
 }
 ```
 
@@ -233,12 +250,14 @@ Update an existing track. Only the track owner can update.
 **Endpoint:** `PUT /api/tracks/{id}`
 
 **Headers:**
+
 ```
 Authorization: Bearer {token}
 Content-Type: application/json
 ```
 
 **Request Body:**
+
 ```json
 {
     "title": "Updated Track Title",
@@ -249,6 +268,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```json
 {
     "id": 123,
@@ -264,11 +284,13 @@ Delete a track. Only the track owner can delete.
 **Endpoint:** `DELETE /api/tracks/{id}`
 
 **Headers:**
+
 ```
 Authorization: Bearer {token}
 ```
 
 **Response (200 OK):**
+
 ```json
 {
     "message": "Track deleted successfully"
@@ -282,6 +304,7 @@ Check the application health status.
 **Endpoint:** `GET /api/health`
 
 **Response (200 OK):**
+
 ```json
 {
     "status": "healthy",
@@ -305,6 +328,7 @@ Check the application health status.
 ```
 
 **Response (503 Service Unavailable):** When one or more checks fail
+
 ```json
 {
     "status": "unhealthy",
@@ -332,6 +356,7 @@ Check the application health status.
 All error responses follow this format:
 
 ### 400 Bad Request
+
 ```json
 {
     "message": "Validation failed",
@@ -343,6 +368,7 @@ All error responses follow this format:
 ```
 
 ### 401 Unauthorized
+
 ```json
 {
     "message": "Unauthenticated."
@@ -350,6 +376,7 @@ All error responses follow this format:
 ```
 
 ### 403 Forbidden
+
 ```json
 {
     "message": "This action is unauthorized."
@@ -357,6 +384,7 @@ All error responses follow this format:
 ```
 
 ### 404 Not Found
+
 ```json
 {
     "message": "Resource not found"
@@ -364,6 +392,7 @@ All error responses follow this format:
 ```
 
 ### 422 Unprocessable Entity
+
 ```json
 {
     "message": "The given data was invalid.",
@@ -374,6 +403,7 @@ All error responses follow this format:
 ```
 
 ### 429 Too Many Requests
+
 ```json
 {
     "message": "Too many requests. Please try again later."
@@ -381,6 +411,7 @@ All error responses follow this format:
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
     "message": "Server error. Please try again later."
@@ -390,11 +421,13 @@ All error responses follow this format:
 ## Rate Limiting
 
 API endpoints are rate limited:
+
 - **Authenticated requests:** 60 requests per minute
 - **Guest requests:** 30 requests per minute
 - **Authentication endpoints:** 5 requests per minute
 
 Rate limit headers are included in responses:
+
 ```
 X-RateLimit-Limit: 60
 X-RateLimit-Remaining: 59
@@ -404,6 +437,7 @@ X-RateLimit-Reset: 1640000000
 ## Pagination
 
 List endpoints support pagination with these parameters:
+
 - `page`: Page number (default: 1)
 - `per_page`: Items per page (default: 15, max: 100)
 
@@ -423,6 +457,7 @@ Pagination metadata is included in responses under the `meta` key.
 ## Support
 
 For API support, please:
+
 - Check this documentation first
 - Review the [main README](README.md)
 - Open an issue on GitHub

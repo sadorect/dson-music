@@ -46,3 +46,4 @@ database/*.sqlite
 /tmp
 .DS_Store
 Thumbs.db
+API.md
