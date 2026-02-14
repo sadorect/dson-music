@@ -92,7 +92,7 @@
                             @endphp
 
                             @if($listenerPlaylists->isNotEmpty())
-                                <form action="{{ route('playlists.add-track', $listenerPlaylists->first()) }}" method="POST" class="flex items-center space-x-2">
+                                <form action="{{ route('playlists.tracks.add', $listenerPlaylists->first()) }}" method="POST" class="flex items-center space-x-2">
                                     @csrf
                                     <input type="hidden" name="track_id" value="{{ $track->id }}">
                                     <select

@@ -65,11 +65,23 @@ function playerControls() {
 
         setupEventListeners() {
             window.addEventListener("queue:add", (e) => {
-                this.addToQueue(e.detail);
+                const detail = e.detail || {};
+                const track = detail.track || detail;
+                this.addToQueue(track, Boolean(detail.silent));
             });
 
             window.addEventListener("queue:add-next", (e) => {
-                this.addNextToQueue(e.detail);
+                const detail = e.detail || {};
+                const track = detail.track || detail;
+                this.addNextToQueue(track, Boolean(detail.silent));
+            });
+
+            window.addEventListener("queue:add-many", (e) => {
+                const detail = e.detail || {};
+                this.addManyToQueue(
+                    Array.isArray(detail.tracks) ? detail.tracks : [],
+                    detail.notifyMessage || null,
+                );
             });
 
             window.addEventListener("track:play", (e) => {
@@ -571,14 +583,19 @@ function playerControls() {
                           1,
                       )[0]
                     : this.queue.shift();
-                this.playTrack(nextTrack, false);
+                this.playTrack(nextTrack, true);
                 this.persistRuntimeState();
                 return;
             }
 
             if (this.repeatMode === "all" && this.playHistory.length > 0) {
-                const nextFromHistory = this.playHistory.shift();
-                this.playTrack(nextFromHistory, false);
+                const nextFromHistory = this.isShuffled
+                    ? this.playHistory.splice(
+                          Math.floor(Math.random() * this.playHistory.length),
+                          1,
+                      )[0]
+                    : this.playHistory.shift();
+                this.playTrack(nextFromHistory, true);
                 this.persistRuntimeState();
             }
         },
@@ -639,11 +656,13 @@ function playerControls() {
             const currentIndex = modes.indexOf(this.repeatMode);
             this.repeatMode = modes[(currentIndex + 1) % modes.length];
             this.savePreferences();
+            this.persistRuntimeState();
         },
 
         toggleShuffle() {
             this.isShuffled = !this.isShuffled;
             this.savePreferences();
+            this.persistRuntimeState();
         },
 
         showQueueNotification(message) {
@@ -657,16 +676,41 @@ function playerControls() {
                 notification.remove();
             }, 2000);
         },
-        addToQueue(track) {
+        addToQueue(track, silent = false) {
+            if (!track?.audioUrl) {
+                return;
+            }
+
             this.queue.push(track);
             this.persistRuntimeState();
-            this.showQueueNotification("Track added to queue");
+            if (!silent) {
+                this.showQueueNotification("Track added to queue");
+            }
         },
 
-        addNextToQueue(track) {
+        addNextToQueue(track, silent = false) {
+            if (!track?.audioUrl) {
+                return;
+            }
+
             this.queue.unshift(track);
             this.persistRuntimeState();
-            this.showQueueNotification("Track will play next");
+            if (!silent) {
+                this.showQueueNotification("Track will play next");
+            }
+        },
+
+        addManyToQueue(tracks, notifyMessage = null) {
+            if (!Array.isArray(tracks) || tracks.length === 0) {
+                return;
+            }
+
+            tracks.forEach((track) => this.addToQueue(track, true));
+
+            const message =
+                notifyMessage ||
+                `${tracks.length} ${tracks.length === 1 ? "track" : "tracks"} added to queue`;
+            this.showQueueNotification(message);
         },
 
         removeFromQueue(index) {

@@ -53,6 +53,23 @@
                                 @endif
                             </span>
                         </div>
+
+                        @if($trackItems->isNotEmpty())
+                            <div class="mt-4 flex flex-wrap items-center gap-2">
+                                <button
+                                    onclick='window.libraryActions.playPlaylist(@json($trackItems))'
+                                    class="inline-flex items-center px-4 py-2 rounded-full bg-black text-white text-sm font-medium"
+                                >
+                                    Play All
+                                </button>
+                                <button
+                                    onclick='window.libraryActions.queueTracks(@json($trackItems), @json($playlist->name . " queued"))'
+                                    class="inline-flex items-center px-4 py-2 rounded-full bg-black/10 text-gray-900 dark:text-white text-sm font-medium"
+                                >
+                                    Queue All
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 
@@ -197,7 +214,7 @@
                                 @auth
                                     @if(Auth::id() === $playlist->user_id)
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <form action="{{ route('playlists.remove-track', [$playlist, $track]) }}" method="POST" class="inline" onsubmit="return confirm('Remove this track from playlist?');">
+                                            <form action="{{ route('playlists.tracks.remove', [$playlist, $track]) }}" method="POST" class="inline" onsubmit="return confirm('Remove this track from playlist?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">

@@ -134,6 +134,43 @@ window.libraryActions = {
             return { success: false };
         }
     },
+
+    queueTracks(tracks, notifyMessage = null) {
+        if (!Array.isArray(tracks) || tracks.length === 0) {
+            this.notify("No tracks available.", "error");
+            return;
+        }
+
+        window.dispatchEvent(
+            new CustomEvent("queue:add-many", {
+                detail: {
+                    tracks,
+                    notifyMessage,
+                },
+            }),
+        );
+    },
+
+    playPlaylist(tracks) {
+        if (!Array.isArray(tracks) || tracks.length === 0) {
+            this.notify("No tracks available.", "error");
+            return;
+        }
+
+        const [firstTrack, ...remainingTracks] = tracks;
+        window.dispatchEvent(
+            new CustomEvent("track:play", {
+                detail: firstTrack,
+            }),
+        );
+
+        if (remainingTracks.length > 0) {
+            this.queueTracks(
+                remainingTracks,
+                `${remainingTracks.length} ${remainingTracks.length === 1 ? "track" : "tracks"} queued`,
+            );
+        }
+    },
 };
 
 window.playlistReorder = (initialTracks, reorderUrl) => ({

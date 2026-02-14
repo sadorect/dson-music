@@ -33,16 +33,58 @@
             <!-- Playlists Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @foreach($playlists as $playlist)
-                    <a href="{{ route('playlists.show', $playlist) }}" class="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
-                        <div class="aspect-square bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                            <svg class="w-20 h-20 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-                            </svg>
+                    @php
+                        $playlistTracks = $playlist->tracks->map(function ($track) {
+                            return [
+                                'id' => $track->id,
+                                'title' => $track->title,
+                                'artist' => $track->artist->artist_name ?? 'Unknown Artist',
+                                'artwork' => $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-track-cover.jpg'),
+                                'audioUrl' => route('tracks.stream', $track),
+                                'format' => pathinfo($track->file_path ?? '', PATHINFO_EXTENSION) ?: 'mp3',
+                            ];
+                        })->values();
+                    @endphp
+                    <div class="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+                        <div class="relative aspect-square bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <a href="{{ route('playlists.show', $playlist) }}" class="w-full h-full flex items-center justify-center">
+                                <svg class="w-20 h-20 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                                </svg>
+                            </a>
+
+                            <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                                <button
+                                    onclick='window.libraryActions.playPlaylist(@json($playlistTracks))'
+                                    class="h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
+                                    aria-label="Play playlist"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                                    </svg>
+                                </button>
+                                <button
+                                    onclick='window.libraryActions.queueTracks(@json($playlistTracks), @json($playlist->name . " queued"))'
+                                    class="h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
+                                    aria-label="Queue playlist"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h8" />
+                                    </svg>
+                                </button>
+                                <button
+                                    onclick='window.libraryActions.share(@json(route("playlists.show", $playlist)), @json($playlist->name))'
+                                    class="h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
+                                    aria-label="Share playlist"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.228 12.733 9.95 12.25 10.79 11.95m2.42-.6a4.5 4.5 0 116.364-6.364 4.5 4.5 0 01-6.364 6.364zM6 20a4 4 0 100-8 4 4 0 000 8zm12 0a4 4 0 100-8 4 4 0 000 8z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <div class="p-4">
-                            <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
-                                {{ $playlist->name }}
-                            </h3>
+                            <a href="{{ route('playlists.show', $playlist) }}" class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate block">{{ $playlist->name }}</a>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                 {{ $playlist->tracks_count }} {{ Str::plural('track', $playlist->tracks_count) }}
                             </p>
@@ -50,7 +92,7 @@
                                 By {{ $playlist->user->name }}
                             </p>
                         </div>
-                    </a>
+                    </div>
                 @endforeach
             </div>
 

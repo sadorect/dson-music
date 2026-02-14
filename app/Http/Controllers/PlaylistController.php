@@ -22,6 +22,11 @@ class PlaylistController extends Controller
         $playlists = Playlist::query()
             ->where('is_public', true)
             ->with('user')
+            ->with(['tracks' => function ($query) {
+                $query->with('artist:id,artist_name')
+                    ->select(['tracks.id', 'tracks.title', 'tracks.artist_id', 'tracks.cover_art', 'tracks.file_path'])
+                    ->orderBy('playlist_track.position');
+            }])
             ->withCount('tracks')
             ->latest()
             ->paginate(12);
@@ -42,6 +47,11 @@ class PlaylistController extends Controller
 
         $playlists = $user
             ->playlists()
+            ->with(['tracks' => function ($query) {
+                $query->with('artist:id,artist_name')
+                    ->select(['tracks.id', 'tracks.title', 'tracks.artist_id', 'tracks.cover_art', 'tracks.file_path'])
+                    ->orderBy('playlist_track.position');
+            }])
             ->withCount('tracks')
             ->latest()
             ->get();
