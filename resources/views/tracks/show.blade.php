@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $libraryPlaylists = auth()->check()
+        ? auth()->user()->playlists()->select('id', 'name')->latest()->take(20)->get()
+        : collect();
+@endphp
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -81,6 +86,31 @@
                             </svg>
                             <span x-ref="likeCount">{{ $track->likes()->count() }}</span>
                         </button>
+
+                            @php
+                                $listenerPlaylists = auth()->user()->playlists()->latest()->get();
+                            @endphp
+
+                            @if($listenerPlaylists->isNotEmpty())
+                                <form action="{{ route('playlists.add-track', $listenerPlaylists->first()) }}" method="POST" class="flex items-center space-x-2">
+                                    @csrf
+                                    <input type="hidden" name="track_id" value="{{ $track->id }}">
+                                    <select
+                                        name="playlist_id"
+                                        class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                        onchange="this.form.action = '{{ url('/playlists') }}/' + this.value + '/tracks'"
+                                    >
+                                        @foreach($listenerPlaylists as $playlist)
+                                            <option value="{{ $playlist->id }}">{{ $playlist->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <button type="submit" class="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm hover:bg-black">
+                                        Add to Playlist
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('playlists.create') }}" class="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm hover:bg-black">Create Playlist</a>
+                            @endif
                             @endauth
                         </div>
 
@@ -109,15 +139,19 @@
                     <h3 class="text-lg font-semibold mb-4">More from this genre</h3>
                     <div class="space-y-4">
                         @foreach($relatedTracks as $relatedTrack)
-                            <a href="{{ route('tracks.show', $relatedTrack) }}" 
-                               class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
-                                <img src="{{ $relatedTrack->cover_art ? Storage::disk('s3')->url($relatedTrack->cover_art) : asset('images/default-track-cover.jpg') }}" 
-                                     class="w-12 h-12 rounded object-cover">
-                                <div>
-                                    <h4 class="font-medium text-sm">{{ $relatedTrack->title }}</h4>
-                                    <p class="text-gray-500 text-xs">{{ $relatedTrack->artist->artist_name }}</p>
-                                </div>
-                            </a>
+                            <div class="group relative">
+                                <a href="{{ route('tracks.show', $relatedTrack) }}" class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
+                                    <img src="{{ $relatedTrack->cover_art ? Storage::disk('s3')->url($relatedTrack->cover_art) : asset('images/default-track-cover.jpg') }}" 
+                                         class="w-12 h-12 rounded object-cover">
+                                    <div>
+                                        <h4 class="font-medium text-sm">{{ $relatedTrack->title }}</h4>
+                                        <p class="text-gray-500 text-xs">{{ $relatedTrack->artist->artist_name }}</p>
+                                    </div>
+                                </a>
+                                @auth
+                                    <x-track-floating-controls :track="$relatedTrack" :playlists="$libraryPlaylists" />
+                                @endauth
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -132,15 +166,19 @@
           ->latest()
           ->take(4)
           ->get() as $artistTrack)
-          <a href="{{ route('tracks.show', $artistTrack) }}" 
-             class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
-              <img src="{{ $artistTrack->cover_art ? Storage::disk('s3')->url($artistTrack->cover_art) : asset('images/default-track-cover.jpg') }}" 
-                   class="w-12 h-12 rounded object-cover">
-              <div>
-                  <h4 class="font-medium text-sm">{{ $artistTrack->title }}</h4>
-                  <p class="text-gray-500 text-xs">{{ $artistTrack->play_count }} plays</p>
-              </div>
-          </a>
+          <div class="group relative">
+              <a href="{{ route('tracks.show', $artistTrack) }}" class="flex items-center space-x-3 hover:bg-gray-50 p-2 rounded-lg">
+                  <img src="{{ $artistTrack->cover_art ? Storage::disk('s3')->url($artistTrack->cover_art) : asset('images/default-track-cover.jpg') }}" 
+                       class="w-12 h-12 rounded object-cover">
+                  <div>
+                      <h4 class="font-medium text-sm">{{ $artistTrack->title }}</h4>
+                      <p class="text-gray-500 text-xs">{{ $artistTrack->play_count }} plays</p>
+                  </div>
+              </a>
+              @auth
+                  <x-track-floating-controls :track="$artistTrack" :playlists="$libraryPlaylists" />
+              @endauth
+          </div>
       @endforeach
   </div>
 </div>

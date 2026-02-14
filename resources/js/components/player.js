@@ -14,11 +14,16 @@ function playerControls() {
         volume: 100,
         progressTimer: null,
         storageKey: "dson_player_preferences",
+        runtimeStateKey: "dson_player_runtime_state",
         playerType: null,
+        lastRecordedTrackId: null,
+        lastRecordedAt: 0,
 
         init() {
             this.loadPreferences();
+            this.restoreRuntimeState();
             this.setupEventListeners();
+            this.setupRuntimePersistence();
             this.startProgressTimer();
         },
 
@@ -63,6 +68,10 @@ function playerControls() {
                 this.addToQueue(e.detail);
             });
 
+            window.addEventListener("queue:add-next", (e) => {
+                this.addNextToQueue(e.detail);
+            });
+
             window.addEventListener("track:play", (e) => {
                 this.playTrack(e.detail);
             });
@@ -84,8 +93,127 @@ function playerControls() {
             });
         },
 
-        playTrack(track, addToHistory = true) {
+        setupRuntimePersistence() {
+            const persist = () => this.persistRuntimeState();
+
+            window.addEventListener("beforeunload", persist);
+            window.addEventListener("pagehide", persist);
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "hidden") {
+                    persist();
+                }
+            });
+        },
+
+        persistRuntimeState() {
+            if (!this.currentTrack) {
+                return;
+            }
+
+            const state = {
+                currentTrack: this.currentTrack,
+                queue: Array.isArray(this.queue) ? this.queue : [],
+                playHistory: Array.isArray(this.playHistory)
+                    ? this.playHistory
+                    : [],
+                isPlaying: this.isPlayerPlaying(),
+                currentTime: this.getPlayerSeek(),
+                savedAt: Date.now(),
+            };
+
+            try {
+                sessionStorage.setItem(
+                    this.runtimeStateKey,
+                    JSON.stringify(state),
+                );
+            } catch (_) {}
+        },
+
+        restoreRuntimeState() {
+            try {
+                const raw = sessionStorage.getItem(this.runtimeStateKey);
+                if (!raw) {
+                    return;
+                }
+
+                const state = JSON.parse(raw);
+                if (!state?.currentTrack?.audioUrl) {
+                    return;
+                }
+
+                this.queue = Array.isArray(state.queue) ? state.queue : [];
+                this.playHistory = Array.isArray(state.playHistory)
+                    ? state.playHistory
+                    : [];
+
+                this.playTrack(
+                    state.currentTrack,
+                    false,
+                    Boolean(state.isPlaying),
+                );
+
+                const resumeFrom = Number(state.currentTime || 0);
+                if (resumeFrom > 0) {
+                    this.restoreSeekAfterLoad(
+                        resumeFrom,
+                        Boolean(state.isPlaying),
+                    );
+                }
+            } catch (_) {}
+        },
+
+        restoreSeekAfterLoad(seconds, shouldPlay) {
+            let attempts = 0;
+            const maxAttempts = 40;
+            const timer = setInterval(() => {
+                attempts += 1;
+
+                if (!this.player) {
+                    if (attempts >= maxAttempts) {
+                        clearInterval(timer);
+                    }
+                    return;
+                }
+
+                const duration = this.getPlayerDuration();
+                if (!duration || !Number.isFinite(duration)) {
+                    if (attempts >= maxAttempts) {
+                        clearInterval(timer);
+                    }
+                    return;
+                }
+
+                const safeSeek = Math.min(Math.max(seconds, 0), duration);
+                this.setPlayerSeek(safeSeek);
+                this.currentTime = safeSeek;
+                this.duration = duration;
+                this.progress = duration > 0 ? (safeSeek / duration) * 100 : 0;
+
+                if (shouldPlay) {
+                    this.playCurrentPlayer();
+                    this.isPlaying = true;
+                } else {
+                    this.pauseCurrentPlayer();
+                    this.isPlaying = false;
+                }
+
+                clearInterval(timer);
+            }, 100);
+        },
+
+        playTrack(track, addToHistory = true, shouldAutoplay = true) {
             if (!track || !track.audioUrl) {
+                return;
+            }
+
+            if (
+                this.currentTrack?.id === track.id &&
+                this.player &&
+                this.duration > 0
+            ) {
+                if (shouldAutoplay) {
+                    this.playCurrentPlayer();
+                }
                 return;
             }
 
@@ -98,6 +226,7 @@ function playerControls() {
             this.currentTrack = track;
             this.currentTime = 0;
             this.progress = 0;
+            this.persistRuntimeState();
 
             if (typeof window.Howl === "function") {
                 this.playerType = "howl";
@@ -109,7 +238,9 @@ function playerControls() {
                     mute: this.isMuted,
                     onload: () => {
                         this.duration = this.getPlayerDuration();
-                        this.playCurrentPlayer();
+                        if (shouldAutoplay) {
+                            this.playCurrentPlayer();
+                        }
                     },
                     onplay: () => {
                         this.isPlaying = true;
@@ -160,7 +291,9 @@ function playerControls() {
                 this.handleTrackEnd();
             });
 
-            this.playCurrentPlayer();
+            if (shouldAutoplay) {
+                this.playCurrentPlayer();
+            }
         },
 
         resolveAudioFormats(track) {
@@ -341,12 +474,23 @@ function playerControls() {
                 return;
             }
 
+            const now = Date.now();
+            if (
+                this.lastRecordedTrackId === this.currentTrack.id &&
+                now - this.lastRecordedAt < 30000
+            ) {
+                return;
+            }
+
             const csrfToken = document.querySelector(
                 'meta[name="csrf-token"]',
             )?.content;
             if (!csrfToken) {
                 return;
             }
+
+            this.lastRecordedTrackId = this.currentTrack.id;
+            this.lastRecordedAt = now;
 
             fetch(`/tracks/${this.currentTrack.id}/play`, {
                 method: "POST",
@@ -377,6 +521,7 @@ function playerControls() {
                         this.duration > 0
                             ? (this.currentTime / this.duration) * 100
                             : 0;
+                    this.persistRuntimeState();
                 }
             }, 300);
         },
@@ -386,6 +531,12 @@ function playerControls() {
             this.isPlaying = false;
             this.currentTime = 0;
             this.progress = 0;
+            this.currentTrack = null;
+            this.queue = [];
+            this.playHistory = [];
+            try {
+                sessionStorage.removeItem(this.runtimeStateKey);
+            } catch (_) {}
         },
 
         togglePlay() {
@@ -400,12 +551,15 @@ function playerControls() {
                 this.playCurrentPlayer();
                 this.isPlaying = true;
             }
+
+            this.persistRuntimeState();
         },
 
         previousTrack() {
             if (this.playHistory && this.playHistory.length > 0) {
                 const previousTrack = this.playHistory.pop();
                 this.playTrack(previousTrack, false);
+                this.persistRuntimeState();
             }
         },
 
@@ -418,12 +572,14 @@ function playerControls() {
                       )[0]
                     : this.queue.shift();
                 this.playTrack(nextTrack, false);
+                this.persistRuntimeState();
                 return;
             }
 
             if (this.repeatMode === "all" && this.playHistory.length > 0) {
                 const nextFromHistory = this.playHistory.shift();
                 this.playTrack(nextFromHistory, false);
+                this.persistRuntimeState();
             }
         },
 
@@ -446,6 +602,7 @@ function playerControls() {
             this.setPlayerSeek(seekTime);
             this.currentTime = seekTime;
             this.progress = safePercent * 100;
+            this.persistRuntimeState();
         },
 
         toggleMute() {
@@ -502,15 +659,24 @@ function playerControls() {
         },
         addToQueue(track) {
             this.queue.push(track);
+            this.persistRuntimeState();
             this.showQueueNotification("Track added to queue");
+        },
+
+        addNextToQueue(track) {
+            this.queue.unshift(track);
+            this.persistRuntimeState();
+            this.showQueueNotification("Track will play next");
         },
 
         removeFromQueue(index) {
             this.queue.splice(index, 1);
+            this.persistRuntimeState();
         },
 
         clearQueue() {
             this.queue = [];
+            this.persistRuntimeState();
         },
 
         destroy() {

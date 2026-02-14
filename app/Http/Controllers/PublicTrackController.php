@@ -22,6 +22,7 @@ class PublicTrackController extends Controller
                     'artist' => $track->artist->artist_name,
                     'artwork' => $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : null,
                     'audioUrl' => route('tracks.stream', $track),
+                    'format' => $this->resolveAudioFormat($track->file_path),
                 ];
             });
 
@@ -44,7 +45,11 @@ class PublicTrackController extends Controller
             $localPath = Storage::disk('public')->path($path);
 
             if (File::exists($localPath)) {
-                return response()->file($localPath);
+                return response()->file($localPath, [
+                    'Accept-Ranges' => 'bytes',
+                    'Cache-Control' => 'public, max-age=3600',
+                    'Content-Type' => $this->resolveMimeType($path),
+                ]);
             }
         }
 
@@ -72,5 +77,31 @@ class PublicTrackController extends Controller
             ->get();
 
         return view('tracks.show', compact('track', 'relatedTracks'));
+    }
+
+    private function resolveAudioFormat(?string $path): string
+    {
+        if (! $path) {
+            return 'mp3';
+        }
+
+        $extension = strtolower(pathinfo(parse_url($path, PHP_URL_PATH) ?? $path, PATHINFO_EXTENSION));
+
+        return match ($extension) {
+            'wav', 'ogg', 'aac', 'm4a', 'flac' => $extension,
+            default => 'mp3',
+        };
+    }
+
+    private function resolveMimeType(string $path): string
+    {
+        return match ($this->resolveAudioFormat($path)) {
+            'wav' => 'audio/wav',
+            'ogg' => 'audio/ogg',
+            'aac' => 'audio/aac',
+            'm4a' => 'audio/mp4',
+            'flac' => 'audio/flac',
+            default => 'audio/mpeg',
+        };
     }
 }

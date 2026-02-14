@@ -67,7 +67,7 @@
                     <x-footer />
                 </div>
 
-                <div class="w-full md:w-4/12 lg:w-3/12 bg-white/[5%] rounded-lg p-4 sm:p-6 flex flex-col gap-4 justify-between overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+                <div class="hidden md:flex md:w-4/12 lg:w-3/12 bg-white/[5%] rounded-lg p-4 sm:p-6 flex-col gap-4 justify-between overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
 
 
                     <div class="flex flex-col gap-6">
@@ -75,6 +75,17 @@
                         @auth
                             @php
                                 $recentPlaylists = auth()->user()->playlists()->withCount('tracks')->latest()->take(5)->get();
+                                $recentPlays = auth()->user()->plays()
+                                    ->with(['track.artist'])
+                                    ->latest('played_at')
+                                    ->take(50)
+                                    ->get()
+                                    ->filter(fn ($play) => $play->track)
+                                    ->unique('track_id')
+                                    ->take(5)
+                                    ->values();
+                                $followedArtists = auth()->user()->following()->latest()->take(5)->get();
+                                $recentDownloads = auth()->user()->downloads()->with('track')->latest()->take(5)->get();
                             @endphp
 
                             @if($recentPlaylists->isEmpty())
@@ -87,7 +98,7 @@
                                 <div class="bg-black/10 p-4 rounded-lg">
                                     <div class="flex items-center justify-between mb-3">
                                         <h2 class="text-white font-semibold">Recent Playlists</h2>
-                                        <a href="{{ route('playlists.my-playlists') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                        <a href="{{ route('library.index') }}" class="text-xs text-white/70 hover:text-white">View all</a>
                                     </div>
                                     <div class="space-y-2">
                                         @foreach($recentPlaylists as $playlist)
@@ -97,9 +108,73 @@
                                             </a>
                                         @endforeach
                                     </div>
-                                    <a href="{{ route('playlists.create') }}" class="inline-flex mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-medium">New Playlist</a>
+                                    <div class="mt-3 flex gap-2">
+                                        <a href="{{ route('playlists.create') }}" class="inline-flex bg-white text-black px-4 py-2 rounded-full text-sm font-medium">New Playlist</a>
+                                        <a href="{{ route('library.index') }}" class="inline-flex bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/20">My Library</a>
+                                    </div>
                                 </div>
                             @endif
+
+                            <div class="bg-black/10 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h2 class="text-white font-semibold">Recently Played</h2>
+                                </div>
+
+                                @if($recentPlays->isEmpty())
+                                    <p class="text-xs text-white/60">Start playing tracks and your recent listens will appear here.</p>
+                                @else
+                                    <div class="space-y-2">
+                                        @foreach($recentPlays as $play)
+                                            @if($play->track)
+                                                <a href="{{ route('tracks.show', $play->track) }}" class="block p-2 rounded-md hover:bg-white/10">
+                                                    <div class="text-sm text-white truncate">{{ $play->track->title }}</div>
+                                                    <div class="text-xs text-white/60 truncate">{{ $play->track->artist->artist_name ?? 'Unknown Artist' }}</div>
+                                                    <div class="text-[11px] text-white/45">{{ number_format($play->track->play_count ?? 0) }} plays</div>
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="bg-black/10 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h2 class="text-white font-semibold">Followed Artists</h2>
+                                    <a href="{{ route('library.index') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                </div>
+                                @if($followedArtists->isEmpty())
+                                    <p class="text-xs text-white/60">Artists you follow will appear here.</p>
+                                @else
+                                    <div class="space-y-2">
+                                        @foreach($followedArtists as $artist)
+                                            <a href="{{ route('artists.show', $artist) }}" class="block p-2 rounded-md hover:bg-white/10">
+                                                <div class="text-sm text-white truncate">{{ $artist->artist_name }}</div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="bg-black/10 p-4 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h2 class="text-white font-semibold">Downloads</h2>
+                                    <a href="{{ route('library.index') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                </div>
+                                @if($recentDownloads->isEmpty())
+                                    <p class="text-xs text-white/60">Downloaded tracks will appear here.</p>
+                                @else
+                                    <div class="space-y-2">
+                                        @foreach($recentDownloads as $download)
+                                            @if($download->track)
+                                                <a href="{{ route('tracks.show', $download->track) }}" class="block p-2 rounded-md hover:bg-white/10">
+                                                    <div class="text-sm text-white truncate">{{ $download->track->title }}</div>
+                                                    <div class="text-xs text-white/60 truncate">{{ ucfirst($download->status ?? 'unknown') }}</div>
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
                         @else
                             <div class="bg-black/10 p-5 rounded-lg">
                                 <h2 class="text-white font-semibold text-base">Save tracks to your library</h2>

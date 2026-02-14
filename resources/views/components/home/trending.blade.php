@@ -1,5 +1,11 @@
 @props(['title', 'tracks'])
 
+@php
+    $libraryPlaylists = auth()->check()
+        ? auth()->user()->playlists()->select('id', 'name')->latest()->take(20)->get()
+        : collect();
+@endphp
+
 <div class="w-full" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 120)">
     <div class="w-full">
         <div class="flex items-center justify-between mb-2">
@@ -21,7 +27,10 @@
 
         <div x-show="ready" class="module-scroller flex gap-3 overflow-x-auto scroll-smooth pb-2 w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
             @forelse($tracks as $track)
-                <div class="module-card w-[155px] sm:w-[180px] md:w-[200px] p-3 hover:bg-black/10 rounded-md flex-shrink-0">
+                <div class="module-card group relative w-[155px] sm:w-[180px] md:w-[200px] p-3 hover:bg-black/10 rounded-md flex-shrink-0">
+                    @auth
+                        <x-track-floating-controls :track="$track" :playlists="$libraryPlaylists" />
+                    @endauth
                     <button
                         class="w-full text-left"
                         x-data

@@ -3,6 +3,21 @@
 @section('title', $playlist->name)
 
 @section('content')
+@php
+    $isOwner = auth()->check() && Auth::id() === $playlist->user_id;
+    $orderedTracks = $playlist->tracks->sortBy('pivot.position')->values();
+    $trackItems = $orderedTracks->map(function ($track) {
+        return [
+            'id' => $track->id,
+            'title' => $track->title,
+            'artist' => $track->artist->artist_name ?? 'Unknown Artist',
+            'url' => route('tracks.show', $track),
+            'audioUrl' => route('tracks.stream', $track),
+            'artwork' => $track->cover_art ? Storage::disk('s3')->url($track->cover_art) : asset('images/default-track-cover.jpg'),
+            'format' => pathinfo($track->file_path ?? '', PATHINFO_EXTENSION) ?: 'mp3',
+        ];
+    })->values();
+@endphp
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Playlist Header -->
@@ -76,6 +91,63 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add some tracks to get started.</p>
             </div>
         @else
+            @if($isOwner)
+                <div
+                    x-data="playlistReorder(@js($trackItems), '{{ route('playlists.reorder', $playlist) }}')"
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6"
+                >
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Reorder Tracks</h2>
+                        <button
+                            @click="saveOrder"
+                            :disabled="isSaving"
+                            class="px-4 py-2 rounded-lg text-sm font-medium bg-black text-white disabled:opacity-60"
+                        >
+                            <span x-show="!isSaving">Save Order</span>
+                            <span x-show="isSaving">Saving...</span>
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Drag tracks to reorder without interrupting playback.</p>
+
+                    <div class="space-y-2">
+                        <template x-for="(track, index) in tracks" :key="track.id">
+                            <div
+                                class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700"
+                                draggable="true"
+                                @dragstart="draggingIndex = index"
+                                @dragover.prevent
+                                @drop.prevent="moveTrack(draggingIndex, index)"
+                            >
+                                <div class="cursor-move text-gray-400">⋮⋮</div>
+                                <div class="text-xs text-gray-500 w-6" x-text="index + 1"></div>
+                                <div class="min-w-0 flex-1">
+                                    <a :href="track.url" class="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600" x-text="track.title"></a>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate" x-text="track.artist"></div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        class="px-3 py-2 rounded-full bg-black/10 text-xs"
+                                        @click="$dispatch('track:play', {
+                                            id: track.id,
+                                            title: track.title,
+                                            artist: track.artist,
+                                            artwork: track.artwork,
+                                            audioUrl: track.audioUrl,
+                                            format: track.format
+                                        })"
+                                    >Play</button>
+                                    <form :action="`{{ url('/playlists/'.$playlist->id.'/tracks') }}/${track.id}`" method="POST" class="inline" onsubmit="return confirm('Remove this track from playlist?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 text-xs hover:text-red-800">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            @else
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-700">
@@ -93,7 +165,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        @foreach($playlist->tracks as $index => $track)
+                        @foreach($orderedTracks as $index => $track)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     {{ $index + 1 }}
@@ -104,9 +176,9 @@
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    @if($track->artistProfile)
-                                        <a href="{{ route('artists.show', $track->artistProfile) }}" class="hover:text-blue-600 dark:hover:text-blue-400">
-                                            {{ $track->artistProfile->stage_name }}
+                                    @if($track->artist)
+                                        <a href="{{ route('artists.show', $track->artist) }}" class="hover:text-blue-600 dark:hover:text-blue-400">
+                                            {{ $track->artist->artist_name }}
                                         </a>
                                     @else
                                         Unknown
@@ -140,6 +212,7 @@
                     </tbody>
                 </table>
             </div>
+            @endif
         @endif
     </div>
 </div>

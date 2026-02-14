@@ -1,5 +1,11 @@
 @props(['trendingTracks'])
 
+@php
+    $libraryPlaylists = auth()->check()
+        ? auth()->user()->playlists()->select('id', 'name')->latest()->take(20)->get()
+        : collect();
+@endphp
+
 <div class="container mx-auto px-4" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 120)">
     <h2 class="text-xl md:text-2xl font-bold mb-2 text-white">Play Again</h2>
 
@@ -18,7 +24,10 @@
     @else
         <div x-show="ready" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             @foreach($trendingTracks as $track)
-                <div class="bg-black/10 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                <div class="group relative bg-black/10 rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105">
+                    @auth
+                        <x-track-floating-controls :track="$track" :playlists="$libraryPlaylists" />
+                    @endauth
                     <div class="h-48 relative">
                         @if($track->cover_art)
                             <img src="{{ Storage::disk('s3')->url($track->cover_art) }}" 

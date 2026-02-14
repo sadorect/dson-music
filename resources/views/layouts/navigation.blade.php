@@ -123,6 +123,9 @@
                             <x-dropdown-link :href="route('artist.dashboard')">
                                 {{ __('Dashboard') }}
                             </x-dropdown-link>
+                            <x-dropdown-link :href="route('library.index')">
+                                {{ __('Library') }}
+                            </x-dropdown-link>
                             @if(optional(Auth::user())->artistProfile)
                                 <x-dropdown-link :href="route('artist.profile.edit')">
                                     {{ __('Edit Profile') }}
@@ -168,9 +171,15 @@
             <x-responsive-nav-link href="#" class="text-white">
                 {{ __('Browse') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link href="#" class="text-white">
-                {{ __('Library') }}
-            </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link :href="route('library.index')" :active="request()->routeIs('library.*')" class="text-white">
+                    {{ __('Library') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('login')" class="text-white">
+                    {{ __('Library') }}
+                </x-responsive-nav-link>
+            @endauth
             <x-responsive-nav-link href="#" class="text-white">
                 {{ __('Radio') }}
             </x-responsive-nav-link>

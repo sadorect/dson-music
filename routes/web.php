@@ -8,6 +8,7 @@ use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicTrackController;
@@ -79,6 +80,7 @@ Route::middleware('auth')->group(function () {
         ->name('tracks.download');
 
     // Playlists
+    Route::get('/library', [LibraryController::class, 'index'])->name('library.index');
     Route::get('/my-playlists', [PlaylistController::class, 'myPlaylists'])->name('playlists.my-playlists');
     Route::resource('playlists', PlaylistController::class);
     Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.add-track');

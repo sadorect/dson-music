@@ -34,7 +34,13 @@ class PlaylistController extends Controller
      */
     public function myPlaylists()
     {
-        $playlists = Auth::user()
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+
+        $playlists = $user
             ->playlists()
             ->withCount('tracks')
             ->latest()
@@ -62,7 +68,13 @@ class PlaylistController extends Controller
             'is_public' => 'boolean',
         ]);
 
-        $playlist = Auth::user()->playlists()->create([
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        if (! $user) {
+            abort(403);
+        }
+
+        $playlist = $user->playlists()->create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'is_public' => $validated['is_public'] ?? true,
@@ -83,7 +95,7 @@ class PlaylistController extends Controller
             abort(403, 'This playlist is private.');
         }
 
-        $playlist->load(['user', 'tracks.artistProfile', 'tracks.album']);
+        $playlist->load(['user', 'tracks.artist', 'tracks.album']);
 
         return view('playlists.show', compact('playlist'));
     }
@@ -149,6 +161,13 @@ class PlaylistController extends Controller
 
         // Check if track already exists in playlist
         if ($playlist->tracks()->where('track_id', $request->track_id)->exists()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Track already in playlist.',
+                ], 409);
+            }
+
             return back()->with('error', 'Track already in playlist.');
         }
 
@@ -160,6 +179,17 @@ class PlaylistController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Track added to playlist!',
+                'playlist' => [
+                    'id' => $playlist->id,
+                    'name' => $playlist->name,
+                ],
+            ]);
+        }
 
         return back()->with('success', 'Track added to playlist!');
     }

@@ -179,6 +179,11 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
+    public function downloads()
+    {
+        return $this->hasMany(Download::class);
+    }
+
     public function followers()
     {
         return $this->hasMany(Follow::class, 'follower_id');
