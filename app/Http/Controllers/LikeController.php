@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Track;
+use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    public function toggleLike(Track $track)
+    public function toggleLike(Request $request, Track $track)
     {
         $user = auth()->user();
 
@@ -18,9 +19,15 @@ class LikeController extends Controller
             $message = 'Track liked';
         }
 
-        return response()->json([
+        $payload = [
             'message' => $message,
             'likes_count' => $track->likes()->count(),
-        ]);
+        ];
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json($payload);
+        }
+
+        return back()->with('success', $message);
     }
 }

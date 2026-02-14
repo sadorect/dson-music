@@ -17,7 +17,6 @@ class PlaylistFactory extends Factory
             'name' => fake()->words(3, true),
             'description' => fake()->optional()->paragraph(),
             'is_public' => fake()->boolean(70), // 70% chance of being public
-            'cover_image' => null,
         ];
     }
 

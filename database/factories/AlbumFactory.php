@@ -17,7 +17,7 @@ class AlbumFactory extends Factory
             'title' => fake()->words(3, true),
             'description' => fake()->paragraph(),
             'release_date' => fake()->dateTimeBetween('-2 years', 'now'),
-            'cover_art' => null,
+            'cover_art' => 'albums/'.fake()->uuid().'.jpg',
             'genre' => fake()->randomElement(['Hip-Hop', 'R&B', 'Pop', 'Rock', 'Jazz', 'Electronic', 'Country', 'Classical']),
         ];
     }

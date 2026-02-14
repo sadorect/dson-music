@@ -76,6 +76,16 @@ class ArtistProfile extends Model
         return $this->followers()->count();
     }
 
+    public function getNameAttribute()
+    {
+        return $this->artist_name;
+    }
+
+    public function setNameAttribute($value): void
+    {
+        $this->attributes['artist_name'] = $value;
+    }
+
     /**
      * Get the indexable data array for the model.
      *

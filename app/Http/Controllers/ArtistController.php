@@ -149,7 +149,7 @@ class ArtistController extends Controller
 
     public function index()
     {
-        $artists = ArtistProfile::where('is_verified', true)
+        $artists = ArtistProfile::query()
             ->with('user')
             ->withCount(['tracks', 'followers'])
             ->latest()

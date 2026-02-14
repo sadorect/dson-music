@@ -17,9 +17,25 @@ use Illuminate\Support\Facades\Storage;
 
 class TrackController extends Controller
 {
+    protected function requireArtistProfile()
+    {
+        $artistProfile = Auth::user()?->artistProfile;
+
+        if (! $artistProfile) {
+            return null;
+        }
+
+        return $artistProfile;
+    }
+
     public function apiIndex()
     {
-        $tracks = Auth::user()->artistProfile->tracks()
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return response()->json([], 403);
+        }
+
+        $tracks = $artistProfile->tracks()
             ->select(['id', 'title', 'file_path', 'cover_art'])
             ->with('artist:id,artist_name')
             ->get()
@@ -38,16 +54,24 @@ class TrackController extends Controller
 
     public function index()
     {
-        $tracks = Auth::user()->artistProfile->tracks()->latest()->paginate(10);
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return redirect()->route('home');
+        }
+
+        $tracks = $artistProfile->tracks()->latest()->paginate(10);
 
         return view('artist.tracks.index', compact('tracks'));
     }
 
     public function create()
     {
-        $albums = Auth::user()->artistProfile ?
-    Auth::user()->artistProfile->albums()->pluck('title', 'id') :
-    collect();
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return redirect()->route('home');
+        }
+
+        $albums = $artistProfile->albums()->pluck('title', 'id');
 
         return view('artist.tracks.create', compact('albums'));
     }
@@ -56,9 +80,13 @@ class TrackController extends Controller
     {
         try {
             $validated = $request->validated();
+            $artistProfile = $this->requireArtistProfile();
+            if (! $artistProfile) {
+                return redirect()->route('home');
+            }
 
             $track = new Track($validated);
-            $track->artist_id = Auth::user()->artistProfile->id;
+            $track->artist_id = $artistProfile->id;
             $track->approval_status = 'pending';
 
             if ($request->hasFile('track_file')) {
@@ -105,18 +133,45 @@ class TrackController extends Controller
 
     public function show(Track $track)
     {
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return redirect()->route('home');
+        }
+
+        if ((int) $track->artist_id !== (int) $artistProfile->id) {
+            abort(403);
+        }
+
         return view('artist.tracks.show', compact('track'));
     }
 
     public function edit(Track $track)
     {
-        $albums = Auth::user()->artistProfile->albums()->pluck('title', 'id');
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return redirect()->route('home');
+        }
+
+        if ((int) $track->artist_id !== (int) $artistProfile->id) {
+            abort(403);
+        }
+
+        $albums = $artistProfile->albums()->pluck('title', 'id');
 
         return view('artist.tracks.edit', compact('track', 'albums'));
     }
 
     public function update(Request $request, Track $track)
     {
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return redirect()->route('home');
+        }
+
+        if ((int) $track->artist_id !== (int) $artistProfile->id) {
+            abort(403);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'genre' => 'required|string',
@@ -170,6 +225,15 @@ class TrackController extends Controller
 
     public function destroy(Track $track)
     {
+        $artistProfile = $this->requireArtistProfile();
+        if (! $artistProfile) {
+            return redirect()->route('home');
+        }
+
+        if ((int) $track->artist_id !== (int) $artistProfile->id) {
+            abort(403);
+        }
+
         // Delete associated files
         /*if ($track->file_path) {
             Storage::delete('public/' . $track->file_path);

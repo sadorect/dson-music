@@ -8,7 +8,7 @@
         @foreach($artists as $artist)
             <div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition hover:scale-105">
                 <a href="{{ route('artists.show', $artist) }}" class="block">
-                    <img src="{{ Storage::url($artist->profile_image) }}" class="w-full h-48 object-cover">
+                    <img src="{{ $artist->profile_image ? Storage::url($artist->profile_image) : asset('images/default-profile.jpg') }}" class="w-full h-48 object-cover">
                     <div class="p-4">
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="font-bold text-lg">{{ $artist->artist_name }}</h3>

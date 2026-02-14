@@ -85,6 +85,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('playlists', PlaylistController::class);
     Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.add-track');
     Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.remove-track');
+    Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.tracks.add');
+    Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.tracks.remove');
     Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks'])->name('playlists.reorder');
 });
 
@@ -96,8 +98,12 @@ Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.
 Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->name('playlists.show');
 
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
+Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.index');
 Route::get('/tracks/{track}/stream', [PublicTrackController::class, 'stream'])->name('tracks.stream');
 Route::get('/tracks/{track}', [PublicTrackController::class, 'show'])->name('tracks.show');
+Route::post('/comments', [CommentController::class, 'store'])
+    ->middleware(['auth', 'throttle:comment-actions'])
+    ->name('comments.store');
 
 Route::get('/search', [SearchController::class, 'index'])
     ->middleware('throttle:search')

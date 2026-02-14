@@ -23,7 +23,7 @@
                 <div class="space-y-2">
                     @foreach($tracks as $track)
                     <div class="flex items-center p-3 hover:bg-gray-50 rounded-lg">
-                        <img src="{{ Storage::url($track->cover_art) }}" class="w-12 h-12 rounded object-cover">
+                        <img src="{{ $track->cover_art ? Storage::url($track->cover_art) : asset('images/default-track-cover.jpg') }}" class="w-12 h-12 rounded object-cover">
                         <div class="ml-4 flex-grow">
                             <h3 class="font-medium">{{ $track->title }}</h3>
                             <p class="text-sm text-gray-600">{{ $track->artist->artist_name }}</p>
@@ -41,7 +41,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     @foreach($artists as $artist)
                     <a href="/artists/{{ $artist->id }}" class="text-center group">
-                        <img src="{{ Storage::url($artist->profile_image) }}" class="w-32 h-32 mx-auto rounded-full object-cover">
+                        <img src="{{ $artist->profile_image ? Storage::url($artist->profile_image) : asset('images/default-profile.jpg') }}" class="w-32 h-32 mx-auto rounded-full object-cover">
                         <h3 class="mt-2 font-medium group-hover:text-red-600">{{ $artist->artist_name }}</h3>
                     </a>
                     @endforeach

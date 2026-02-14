@@ -11,6 +11,7 @@ class PublicTrackController extends Controller
     public function index()
     {
         $tracks = Track::where('status', 'published')
+            ->where('approval_status', 'approved')
             ->with('artist:id,artist_name')
             ->select(['id', 'title', 'file_path', 'cover_art', 'artist_id'])
             ->latest()

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class Playlist extends Model
 {
+    use HasFactory;
+
     protected static ?bool $hasSlugColumn = null;
 
     protected $fillable = [

@@ -8,6 +8,16 @@ class FollowController extends Controller
 {
     public function follow(ArtistProfile $artist)
     {
+        $existing = auth()->user()->follows()
+            ->where('artist_profile_id', $artist->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+
+            return back()->with('success', 'You have unfollowed '.$artist->artist_name);
+        }
+
         auth()->user()->follows()->create([
             'artist_profile_id' => $artist->id,
         ]);
