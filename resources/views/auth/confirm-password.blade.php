@@ -1,5 +1,6 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
+    <h1 class="text-black text-3xl text-center py-4 font-semibold">Confirm Password</h1>
+    <div class="mb-4 text-sm text-black/70">
         {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
     </div>
 
@@ -18,8 +19,11 @@
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
+        <!-- Math CAPTCHA -->
+        <x-math-captcha />
+
+        <div class="flex justify-start sm:justify-end mt-6">
+            <x-primary-button class="sm:w-auto sm:px-6">
                 {{ __('Confirm') }}
             </x-primary-button>
         </div>

@@ -52,7 +52,7 @@
     <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 </head>
 
-<body class="font-sans antialiased min-h-screen bg-bg overflow-x-hidden">
+<body class="brand-sitewide font-sans antialiased min-h-screen bg-bg overflow-x-hidden">
     <div class="flex flex-col min-h-screen">
         <div class="shrink-0">
             @include('layouts.navigation')

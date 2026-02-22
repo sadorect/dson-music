@@ -1,4 +1,6 @@
 <x-guest-layout>
+    <h1 class="text-black text-3xl text-center py-6 font-semibold">Reset Your Password</h1>
+    <p class="text-center text-sm text-black/60 mb-4">Choose a new password for your account.</p>
     <form method="POST" action="{{ route('password.store') }}">
         @csrf
 
@@ -30,8 +32,11 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
+        <!-- Math CAPTCHA -->
+        <x-math-captcha />
+
+        <div class="flex items-center justify-start sm:justify-end mt-6">
+            <x-primary-button class="sm:w-auto sm:px-6">
                 {{ __('Reset Password') }}
             </x-primary-button>
         </div>

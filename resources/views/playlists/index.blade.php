@@ -3,16 +3,16 @@
 @section('title', 'Playlists')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+<div class="min-h-screen bg-white py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Playlists</h1>
-                <p class="mt-2 text-gray-600 dark:text-gray-400">Discover curated playlists from the community</p>
+                <h1 class="text-3xl font-bold text-black">Playlists</h1>
+                <p class="mt-2 text-black/60">Discover curated playlists from the community</p>
             </div>
             @auth
-                <a href="{{ route('playlists.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
+                <a href="{{ route('playlists.create') }}" class="inline-flex items-center px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg transition">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -23,11 +23,11 @@
 
         @if($playlists->isEmpty())
             <div class="text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="mx-auto h-12 w-12 text-black/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No playlists found</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating your first playlist.</p>
+                <h3 class="mt-2 text-sm font-medium text-black">No playlists found</h3>
+                <p class="mt-1 text-sm text-black/60">Get started by creating your first playlist.</p>
             </div>
         @else
             <!-- Playlists Grid -->
@@ -45,8 +45,8 @@
                             ];
                         })->values();
                     @endphp
-                    <div class="group bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
-                        <div class="relative aspect-square bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <div class="group bg-white border border-black/10 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+                        <div class="relative aspect-square bg-gradient-to-br from-orange-500 to-[#2b1306] flex items-center justify-center">
                             <a href="{{ route('playlists.show', $playlist) }}" class="w-full h-full flex items-center justify-center">
                                 <svg class="w-20 h-20 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
@@ -56,7 +56,7 @@
                             <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition">
                                 <button
                                     onclick='window.libraryActions.playPlaylist(@json($playlistTracks))'
-                                    class="h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
+                                    class="force-white h-9 w-9 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-black"
                                     aria-label="Play playlist"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -65,7 +65,7 @@
                                 </button>
                                 <button
                                     onclick='window.libraryActions.queueTracks(@json($playlistTracks), @json($playlist->name . " queued"))'
-                                    class="h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
+                                    class="force-white h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
                                     aria-label="Queue playlist"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,7 +74,7 @@
                                 </button>
                                 <button
                                     onclick='window.libraryActions.share(@json(route("playlists.show", $playlist)), @json($playlist->name))'
-                                    class="h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
+                                    class="force-white h-9 w-9 rounded-full bg-black/75 text-white flex items-center justify-center hover:bg-black"
                                     aria-label="Share playlist"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,11 +84,11 @@
                             </div>
                         </div>
                         <div class="p-4">
-                            <a href="{{ route('playlists.show', $playlist) }}" class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate block">{{ $playlist->name }}</a>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            <a href="{{ route('playlists.show', $playlist) }}" class="font-semibold text-black group-hover:text-orange-600 truncate block">{{ $playlist->name }}</a>
+                            <p class="text-sm text-black/65 mt-1">
                                 {{ $playlist->tracks_count }} {{ Str::plural('track', $playlist->tracks_count) }}
                             </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                            <p class="text-xs text-black/50 mt-2">
                                 By {{ $playlist->user->name }}
                             </p>
                         </div>

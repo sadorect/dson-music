@@ -1,5 +1,6 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
+    <h1 class="text-black text-3xl text-center py-4 font-semibold">Verify Your Email</h1>
+    <div class="mb-4 text-sm text-black/70">
         {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
     </div>
 
@@ -9,12 +10,12 @@
         </div>
     @endif
 
-    <div class="mt-4 flex items-center justify-between">
+    <div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
 
             <div>
-                <x-primary-button>
+                <x-primary-button class="sm:w-auto sm:px-6">
                     {{ __('Resend Verification Email') }}
                 </x-primary-button>
             </div>
@@ -23,7 +24,7 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
 
-            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <button type="submit" class="underline text-sm text-black/70 hover:text-orange-600 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-color">
                 {{ __('Log Out') }}
             </button>
         </form>

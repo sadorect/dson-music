@@ -18,23 +18,23 @@
         ];
     })->values();
 @endphp
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+<div class="min-h-screen bg-white py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Playlist Header -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+        <div class="bg-white border border-black/10 rounded-lg shadow-md p-6 mb-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-start space-x-6">
-                    <div class="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div class="w-32 h-32 bg-gradient-to-br from-orange-500 to-[#2b1306] rounded-lg flex items-center justify-center flex-shrink-0">
                         <svg class="w-16 h-16 text-white opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ $playlist->name }}</h1>
+                        <h1 class="text-3xl font-bold text-black">{{ $playlist->name }}</h1>
                         @if($playlist->description)
-                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $playlist->description }}</p>
+                            <p class="mt-2 text-black/65">{{ $playlist->description }}</p>
                         @endif
-                        <div class="mt-4 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                        <div class="mt-4 flex items-center space-x-4 text-sm text-black/65">
                             <span>By {{ $playlist->user->name }}</span>
                             <span>•</span>
                             <span>{{ $playlist->tracks->count() }} {{ Str::plural('track', $playlist->tracks->count()) }}</span>
@@ -58,13 +58,13 @@
                             <div class="mt-4 flex flex-wrap items-center gap-2">
                                 <button
                                     onclick='window.libraryActions.playPlaylist(@json($trackItems))'
-                                    class="inline-flex items-center px-4 py-2 rounded-full bg-black text-white text-sm font-medium"
+                                    class="force-white inline-flex items-center px-4 py-2 rounded-full bg-black text-white text-sm font-medium"
                                 >
                                     Play All
                                 </button>
                                 <button
                                     onclick='window.libraryActions.queueTracks(@json($trackItems), @json($playlist->name . " queued"))'
-                                    class="inline-flex items-center px-4 py-2 rounded-full bg-black/10 text-gray-900 dark:text-white text-sm font-medium"
+                                    class="inline-flex items-center px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-medium hover:bg-orange-200"
                                 >
                                     Queue All
                                 </button>
@@ -76,7 +76,7 @@
                 @auth
                     @if(Auth::id() === $playlist->user_id)
                         <div class="flex space-x-2">
-                            <a href="{{ route('playlists.edit', $playlist) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            <a href="{{ route('playlists.edit', $playlist) }}" class="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
@@ -100,47 +100,47 @@
 
         <!-- Tracks List -->
         @if($playlist->tracks->isEmpty())
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
+            <div class="bg-white border border-black/10 rounded-lg shadow-md p-12 text-center">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tracks in playlist</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add some tracks to get started.</p>
+                <h3 class="mt-2 text-sm font-medium text-black">No tracks in playlist</h3>
+                <p class="mt-1 text-sm text-black/60">Add some tracks to get started.</p>
             </div>
         @else
             @if($isOwner)
                 <div
                     x-data="playlistReorder(@js($trackItems), '{{ route('playlists.reorder', $playlist) }}')"
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6"
+                    class="bg-white border border-black/10 rounded-lg shadow-md p-4 sm:p-6"
                 >
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Reorder Tracks</h2>
+                        <h2 class="text-base sm:text-lg font-semibold text-black">Reorder Tracks</h2>
                         <button
                             @click="saveOrder"
                             :disabled="isSaving"
-                            class="px-4 py-2 rounded-lg text-sm font-medium bg-black text-white disabled:opacity-60"
+                            class="force-white px-4 py-2 rounded-lg text-sm font-medium bg-black text-white disabled:opacity-60"
                         >
                             <span x-show="!isSaving">Save Order</span>
                             <span x-show="isSaving">Saving...</span>
                         </button>
                     </div>
 
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Drag tracks to reorder without interrupting playback.</p>
+                    <p class="text-xs text-black/55 mb-3">Drag tracks to reorder without interrupting playback.</p>
 
                     <div class="space-y-2">
                         <template x-for="(track, index) in tracks" :key="track.id">
                             <div
-                                class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700"
+                                class="flex items-center gap-3 p-3 rounded-lg border border-black/10"
                                 draggable="true"
                                 @dragstart="draggingIndex = index"
                                 @dragover.prevent
                                 @drop.prevent="moveTrack(draggingIndex, index)"
                             >
-                                <div class="cursor-move text-gray-400">⋮⋮</div>
-                                <div class="text-xs text-gray-500 w-6" x-text="index + 1"></div>
+                                <div class="cursor-move text-black/40">⋮⋮</div>
+                                <div class="text-xs text-black/50 w-6" x-text="index + 1"></div>
                                 <div class="min-w-0 flex-1">
-                                    <a :href="track.url" class="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600" x-text="track.title"></a>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate" x-text="track.artist"></div>
+                                    <a :href="track.url" class="text-sm font-medium text-black hover:text-orange-600" x-text="track.title"></a>
+                                    <div class="text-xs text-black/55 truncate" x-text="track.artist"></div>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <button
@@ -165,50 +165,50 @@
                     </div>
                 </div>
             @else
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-700">
+            <div class="bg-white border border-black/10 rounded-lg shadow-md overflow-hidden">
+                <table class="min-w-full divide-y divide-black/10">
+                    <thead class="bg-orange-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">#</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Artist</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Album</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Duration</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black/65 uppercase tracking-wider">#</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black/65 uppercase tracking-wider">Title</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black/65 uppercase tracking-wider">Artist</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black/65 uppercase tracking-wider">Album</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-black/65 uppercase tracking-wider">Duration</th>
                             @auth
                                 @if(Auth::id() === $playlist->user_id)
-                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-black/65 uppercase tracking-wider">Actions</th>
                                 @endif
                             @endauth
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="bg-white divide-y divide-black/10">
                         @foreach($orderedTracks as $index => $track)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <tr class="hover:bg-orange-50/60">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-black/55">
                                     {{ $index + 1 }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('tracks.show', $track) }}" class="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400">
+                                    <a href="{{ route('tracks.show', $track) }}" class="text-sm font-medium text-black hover:text-orange-600">
                                         {{ $track->title }}
                                     </a>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-black/60">
                                     @if($track->artist)
-                                        <a href="{{ route('artists.show', $track->artist) }}" class="hover:text-blue-600 dark:hover:text-blue-400">
+                                        <a href="{{ route('artists.show', $track->artist) }}" class="hover:text-orange-600">
                                             {{ $track->artist->artist_name }}
                                         </a>
                                     @else
                                         Unknown
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-black/60">
                                     @if($track->album)
                                         {{ $track->album->title }}
                                     @else
                                         -
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-black/60">
                                     {{ $track->duration ?? '-' }}
                                 </td>
                                 @auth
@@ -217,7 +217,7 @@
                                             <form action="{{ route('playlists.tracks.remove', [$playlist, $track]) }}" method="POST" class="inline" onsubmit="return confirm('Remove this track from playlist?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <button type="submit" class="text-red-600 hover:text-red-800">
                                                     Remove
                                                 </button>
                                             </form>

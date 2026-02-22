@@ -24,7 +24,7 @@
     <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
     @stack('scripts')
 </head>
-<body class="font-sans antialiased">
+<body class="brand-sitewide font-sans antialiased">
     @include('layouts.artist-sidebar')
     <div class="ml-64 min-h-screen bg-gray-100">
     @if(session('success') || session('error') || $errors->any())

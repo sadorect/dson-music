@@ -3,6 +3,7 @@ function playerControls() {
         player: null,
         currentTrack: null,
         queue: [],
+        showQueue: false,
         playHistory: [],
         isPlaying: false,
         isMuted: false,
@@ -663,6 +664,22 @@ function playerControls() {
             this.isShuffled = !this.isShuffled;
             this.savePreferences();
             this.persistRuntimeState();
+        },
+
+        toggleQueuePanel() {
+            this.showQueue = !this.showQueue;
+        },
+
+        playFromQueue(index) {
+            if (index < 0 || index >= this.queue.length) {
+                return;
+            }
+
+            const [track] = this.queue.splice(index, 1);
+            if (track) {
+                this.playTrack(track, true);
+                this.persistRuntimeState();
+            }
         },
 
         showQueueNotification(message) {

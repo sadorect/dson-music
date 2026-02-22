@@ -18,6 +18,13 @@ use App\Http\Controllers\TrendingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// ── Math CAPTCHA ──────────────────────────────────────────────────────────────
+// Public endpoint – refreshes the session captcha question and returns JSON.
+Route::get('/captcha/refresh', function () {
+    $question = \App\Services\CaptchaService::generate();
+    return response()->json(['question' => $question]);
+})->name('captcha.refresh');
 Route::get('/artist/tracks/api', [TrackController::class, 'apiIndex'])
     ->name('artist.tracks.api')
     ->middleware(['auth']);
@@ -82,9 +89,7 @@ Route::middleware('auth')->group(function () {
     // Playlists
     Route::get('/library', [LibraryController::class, 'index'])->name('library.index');
     Route::get('/my-playlists', [PlaylistController::class, 'myPlaylists'])->name('playlists.my-playlists');
-    Route::resource('playlists', PlaylistController::class);
-    Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.add-track');
-    Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.remove-track');
+    Route::resource('playlists', PlaylistController::class)->except(['index', 'show']);
     Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.tracks.add');
     Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.tracks.remove');
     Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks'])->name('playlists.reorder');
@@ -97,7 +102,6 @@ require __DIR__.'/admin.php';
 Route::get('/playlists', [PlaylistController::class, 'index'])->name('playlists.index');
 Route::get('/playlists/{playlist}', [PlaylistController::class, 'show'])->name('playlists.show');
 
-Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.public');
 Route::get('/tracks/public', [PublicTrackController::class, 'index'])->name('tracks.index');
 Route::get('/tracks/{track}/stream', [PublicTrackController::class, 'stream'])->name('tracks.stream');
 Route::get('/tracks/{track}', [PublicTrackController::class, 'show'])->name('tracks.show');

@@ -19,7 +19,7 @@ class HomeController extends Controller
     {
         try {
             $data = [
-                'featuredArtists' => $this->cacheService->getFeaturedArtists(4),
+                'featuredArtists' => $this->cacheService->getFeaturedArtists(12),
                 'trendingTracks' => $this->cacheService->getTrendingTracks(8),
                 'newReleases' => $this->cacheService->getNewReleases(8),
                 'genres' => Track::select('genre')->distinct()->pluck('genre'),

@@ -7,7 +7,7 @@
     <title>{{ config('app.name', 'Laravel') }} Admin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/dson-theme.css'])
 </head>
-<body class="font-sans antialiased">
+<body class="brand-sitewide font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
         <div class="flex">
             <!-- Sidebar -->

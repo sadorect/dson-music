@@ -8,12 +8,12 @@
 
 <div class="w-full" x-data="{ ready: false }" x-init="setTimeout(() => ready = true, 120)">
     <div class="w-full">
-        <div class="flex items-center justify-between mb-2">
-            <h2 class="text-2xl font-bold text-white">{{ $title }}</h2>
-            <a href="{{ route('trending') }}" class="text-sm text-gray-400 hover:text-white">Show all</a>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-black">{{ $title }}</h2>
+            <a href="{{ route('trending') }}" class="text-sm text-black/60 hover:text-orange-600 transition-colors">Show all →</a>
         </div>
 
-        <p class="text-xs text-white/50 mb-2 sm:hidden">Swipe to explore tracks</p>
+        <p class="text-xs text-black/50 mb-3 sm:hidden">Swipe to explore tracks</p>
 
         <div x-show="!ready" class="flex gap-3 overflow-x-auto pb-2 w-full">
             @for($i = 0; $i < 6; $i++)
@@ -25,9 +25,9 @@
             @endfor
         </div>
 
-        <div x-show="ready" class="module-scroller flex gap-3 overflow-x-auto scroll-smooth pb-2 w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+        <div x-show="ready" class="module-scroller marquee-ltr flex gap-3 overflow-x-auto scroll-smooth pb-2 w-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
             @forelse($tracks as $track)
-                <div class="module-card group relative w-[155px] sm:w-[180px] md:w-[200px] p-3 hover:bg-black/10 rounded-md flex-shrink-0">
+                <div class="module-card group relative w-[155px] sm:w-[180px] md:w-[200px] p-3 bg-white border border-black/10 hover:border-orange-400 hover:bg-orange-50/40 rounded-md flex-shrink-0">
                     @auth
                         <x-track-floating-controls :track="$track" :playlists="$libraryPlaylists" />
                     @endauth
@@ -49,12 +49,12 @@
                                 class="h-full w-full object-cover"
                             >
                         </div>
-                        <div class="text-white text-sm font-semibold truncate">{{ $track->title }}</div>
-                        <div class="text-gray-400 text-xs truncate">{{ $track->artist->artist_name ?? $track->artist?->user?->name ?? 'Unknown Artist' }}</div>
+                        <div class="text-black text-sm font-semibold truncate">{{ $track->title }}</div>
+                        <div class="text-black/60 text-xs truncate">{{ $track->artist->artist_name ?? $track->artist?->user?->name ?? 'Unknown Artist' }}</div>
                     </button>
                 </div>
             @empty
-                <p class="text-sm text-white/60">No trending tracks available yet.</p>
+                <p class="text-sm text-black/60">No trending tracks available yet.</p>
             @endforelse
         </div>
     </div>

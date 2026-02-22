@@ -283,3 +283,93 @@ document.addEventListener("alpine:init", () => {
 
 window.Alpine = Alpine;
 Alpine.start();
+
+function initAutoScrollMarquees() {
+    const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion) {
+        return;
+    }
+
+    const scrollers = document.querySelectorAll(".module-scroller");
+
+    scrollers.forEach((scroller) => {
+        if (scroller.dataset.autoScrollInitialized === "true") {
+            return;
+        }
+
+        scroller.dataset.autoScrollInitialized = "true";
+
+        const direction = scroller.classList.contains("marquee-rtl") ? 1 : -1;
+        const speed = 0.35;
+        let isPaused = false;
+        let rafId = null;
+
+        const tick = () => {
+            if (!isPaused) {
+                const maxScrollLeft =
+                    scroller.scrollWidth - scroller.clientWidth;
+
+                if (maxScrollLeft > 0) {
+                    scroller.scrollLeft += direction * speed;
+
+                    if (scroller.scrollLeft <= 0 && direction < 0) {
+                        scroller.scrollLeft = maxScrollLeft;
+                    } else if (
+                        scroller.scrollLeft >= maxScrollLeft &&
+                        direction > 0
+                    ) {
+                        scroller.scrollLeft = 0;
+                    }
+                }
+            }
+
+            rafId = window.requestAnimationFrame(tick);
+        };
+
+        scroller.addEventListener("mouseenter", () => {
+            isPaused = true;
+        });
+
+        scroller.addEventListener("mouseleave", () => {
+            isPaused = false;
+        });
+
+        scroller.addEventListener("focusin", () => {
+            isPaused = true;
+        });
+
+        scroller.addEventListener("focusout", () => {
+            isPaused = false;
+        });
+
+        scroller.addEventListener("touchstart", () => {
+            isPaused = true;
+        });
+
+        scroller.addEventListener("touchend", () => {
+            isPaused = false;
+        });
+
+        scroller.addEventListener("pointerdown", () => {
+            isPaused = true;
+        });
+
+        scroller.addEventListener("pointerup", () => {
+            isPaused = false;
+        });
+
+        tick();
+
+        window.addEventListener("beforeunload", () => {
+            if (rafId) {
+                window.cancelAnimationFrame(rafId);
+            }
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", initAutoScrollMarquees);
+window.addEventListener("load", initAutoScrollMarquees);

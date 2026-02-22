@@ -1,6 +1,6 @@
 <x-guest-layout>
-<h1 class="text-white text-3xl text-center  py-6"> 🔒 Forgot your Password?  </h1>
-    <div class="mb-4 text-sm text-white/80 text-center">
+<h1 class="text-black text-3xl text-center py-4 font-semibold">🔒 Forgot your Password?</h1>
+    <div class="mb-4 text-sm text-black/70 text-center">
         {{ __('No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 
@@ -17,7 +17,10 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex items-center my-4 ">
+        <!-- Math CAPTCHA -->
+        <x-math-captcha />
+
+        <div class="flex items-center my-5">
             <x-primary-button>
                 {{ __('Email Password Reset Link') }}
             </x-primary-button>
