@@ -28,10 +28,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = $request->user();
+        $user = Auth::user();
+
+        // Record login metadata and reset lockout counter
+        $user->update([
+            'last_login_at'         => now(),
+            'failed_login_attempts' => 0,
+            'locked_until'          => null,
+        ]);
+
+        // Start session activity tracking (for SessionTimeoutMiddleware)
+        session(['last_activity_at' => now()]);
 
         if ($user->isArtist()) {
-
             return redirect()->route('artist.dashboard');
         }
         if ($user->isAdmin()) {

@@ -9,11 +9,14 @@ class Kernel extends HttpKernel
     protected $middlewareAliases = [
         // ... other middlewares
 
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'artist.profile.complete' => \App\Http\Middleware\EnsureArtistProfileComplete::class,
-        'recaptcha' => \App\Http\Middleware\VerifyReCaptcha::class,
-        // 'filesize' => \App\Http\Middleware\HandlePostSizeErrors::class,  'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'auth.basic'                 => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'artist.profile.complete'    => \App\Http\Middleware\EnsureArtistProfileComplete::class,
+        'recaptcha'                  => \App\Http\Middleware\VerifyReCaptcha::class,
+        'admin'                      => \App\Http\Middleware\AdminMiddleware::class,
         'PreventImpersonationAccess' => \App\Http\Middleware\PreventImpersonationAccess::class,
+        '2fa'                        => \App\Http\Middleware\TwoFactorMiddleware::class,
+        'session.timeout'            => \App\Http\Middleware\SessionTimeoutMiddleware::class,
+        'password.policy'            => \App\Http\Middleware\PasswordPolicyMiddleware::class,
     ];
 
     protected $middleware = [
