@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNotificationEmail;
 use App\Models\ArtistProfile;
 
 class FollowController extends Controller
@@ -21,6 +22,15 @@ class FollowController extends Controller
         auth()->user()->follows()->create([
             'artist_profile_id' => $artist->id,
         ]);
+
+        // Notify the artist about their new follower
+        if ($artist->user) {
+            SendNotificationEmail::dispatch(
+                $artist->user,
+                'You have a new follower!',
+                auth()->user()->name.' is now following you on DSON Music.'
+            );
+        }
 
         return back()->with('success', 'You are now following '.$artist->artist_name);
     }

@@ -50,6 +50,7 @@ class RecordPlayHistory implements ShouldQueue
             PlayHistory::create([
                 'track_id' => $this->trackId,
                 'user_id' => $this->userId,
+                'played_at' => now(),
                 'ip_address' => $this->metadata['ip_address'] ?? null,
                 'user_agent' => $this->metadata['user_agent'] ?? null,
             ]);

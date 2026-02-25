@@ -112,4 +112,28 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Session Timeout
+    |--------------------------------------------------------------------------
+    |
+    | Idle session timeout in minutes. Sessions inactive longer than this will
+    | be automatically invalidated by SessionTimeoutMiddleware.
+    |
+    */
+
+    'session_timeout' => env('SESSION_TIMEOUT_MINUTES', 120),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Password Maximum Age
+    |--------------------------------------------------------------------------
+    |
+    | Require users to change their password after this many days. Set to 0
+    | to disable forced rotation. Enforced by PasswordPolicyMiddleware.
+    |
+    */
+
+    'password_max_age_days' => env('PASSWORD_MAX_AGE_DAYS', 0),
+
 ];

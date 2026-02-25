@@ -15,6 +15,7 @@ use App\Http\Controllers\PublicTrackController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\TrendingController;
+use App\Http\Controllers\TwoFactorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -36,6 +37,17 @@ Route::get('/artists', [ArtistController::class, 'index'])->name('artists.index'
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Two-Factor Authentication routes
+Route::middleware('auth')->prefix('two-factor')->name('2fa.')->group(function () {
+    Route::get('/challenge',       [TwoFactorController::class, 'showChallenge'])->name('challenge');
+    Route::post('/verify',         [TwoFactorController::class, 'verify'])->name('verify');
+    Route::get('/setup',           [TwoFactorController::class, 'showSetup'])->name('setup');
+    Route::post('/enable',         [TwoFactorController::class, 'enable'])->name('enable');
+    Route::post('/disable',        [TwoFactorController::class, 'disable'])->name('disable');
+    Route::get('/recovery-codes',  [TwoFactorController::class, 'showRecoveryCodes'])->name('recovery-codes');
+    Route::post('/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('regenerate-codes');
+});
 
 Route::post('register', [RegisteredUserController::class, 'store'])
     ->name('register');

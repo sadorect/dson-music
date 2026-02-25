@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use App\Rules\MathCaptcha;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -43,8 +44,27 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // DB-level lockout check (separate from RateLimiter)
+        $dbUser = User::where('email', $this->email)->first();
+        if ($dbUser && $dbUser->locked_until && now()->lt($dbUser->locked_until)) {
+            $minutes = (int) now()->diffInMinutes($dbUser->locked_until) + 1;
+            throw ValidationException::withMessages([
+                'email' => "Your account is temporarily locked. Please try again in {$minutes} minute(s).",
+            ]);
+        }
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+
+            // Increment DB failure counter; lock after 5 consecutive failures
+            if ($dbUser) {
+                $attempts = ($dbUser->failed_login_attempts ?? 0) + 1;
+                $update = ['failed_login_attempts' => $attempts];
+                if ($attempts >= 5) {
+                    $update['locked_until'] = now()->addMinutes(30);
+                }
+                $dbUser->update($update);
+            }
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),

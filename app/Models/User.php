@@ -24,6 +24,15 @@ class User extends Authenticatable
         'password',
         'user_type',
         'is_super_admin',
+        'google2fa_secret',
+        'google2fa_enabled_at',
+        'recovery_codes',
+        'two_factor_confirmed_at',
+        'locked_until',
+        'failed_login_attempts',
+        'last_login_at',
+        'password_changed_at',
+        'must_change_password',
     ];
 
     /**
@@ -44,9 +53,16 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_super_admin' => 'boolean',
+            'email_verified_at'       => 'datetime',
+            'password'                => 'hashed',
+            'is_super_admin'          => 'boolean',
+            'google2fa_enabled_at'    => 'datetime',
+            'two_factor_confirmed_at' => 'datetime',
+            'recovery_codes'          => 'array',
+            'locked_until'            => 'datetime',
+            'last_login_at'           => 'datetime',
+            'password_changed_at'     => 'datetime',
+            'must_change_password'    => 'boolean',
         ];
     }
 

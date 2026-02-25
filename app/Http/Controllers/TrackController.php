@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TrackUploadRequest;
-use App\Models\PlayHistory;
+use App\Jobs\ProcessTrackUpload;
+use App\Jobs\RecordPlayHistory;
 use App\Models\Track;
 use App\Models\User;
 use App\Notifications\NewTrackPendingApproval;
@@ -105,6 +106,9 @@ class TrackController extends Controller
             }
 
             $track->save();
+
+            // Dispatch async job to extract/update track metadata
+            ProcessTrackUpload::dispatch($track);
 
             // Log the activity
             ActivityLogger::log(
@@ -265,20 +269,18 @@ class TrackController extends Controller
     public function recordPlay(Request $request, Track $track)
     {
         try {
-            $track->incrementPlayCount();
-
-            PlayHistory::create([
-                'user_id' => Auth::id(),
-                'track_id' => $track->id,
-                'played_at' => now(),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-                'location' => $request->header('CF-IPCountry'),
-            ]);
+            RecordPlayHistory::dispatch(
+                $track->id,
+                Auth::id(),
+                [
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]
+            );
 
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            Log::error('Failed to record track play', [
+            Log::error('Failed to dispatch play history job', [
                 'track_id' => $track->id,
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
