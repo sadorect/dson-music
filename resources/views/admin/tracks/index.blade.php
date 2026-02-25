@@ -5,18 +5,35 @@
 @section('content')
 <div class="bg-white rounded-lg shadow">
     <div class="p-6 border-b">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-wrap justify-between items-center gap-4">
             <h2 class="text-xl font-semibold">Tracks</h2>
-            <div class="flex space-x-4">
-                <input type="text" placeholder="Search tracks..." class="border rounded px-4 py-2">
-                <select class="border rounded px-4 py-2">
-                    <option>All Genres</option>
-                    <option>Pop</option>
-                    <option>Hip Hop</option>
-                    <option>R&B</option>
-                    <option>Rock</option>
+            <form action="{{ route('admin.tracks.index') }}" method="GET" class="flex flex-wrap items-center gap-3">
+                <input type="text"
+                       name="search"
+                       value="{{ request('search') }}"
+                       placeholder="Search tracks…"
+                       class="border rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                       onkeydown="if(event.key==='Enter')this.form.submit()">
+                <select name="genre" onchange="this.form.submit()" class="border rounded-lg px-4 py-2 text-sm">
+                    <option value="">All Genres</option>
+                    @foreach(['pop','hip-hop','r&b','rock','jazz','gospel','classical','afrobeats','reggae'] as $g)
+                        <option value="{{ $g }}" {{ request('genre') === $g ? 'selected' : '' }}>{{ ucwords($g) }}</option>
+                    @endforeach
                 </select>
-            </div>
+                <select name="status" onchange="this.form.submit()" class="border rounded-lg px-4 py-2 text-sm">
+                    <option value="">All Status</option>
+                    <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
+                    <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="private" {{ request('status') === 'private' ? 'selected' : '' }}>Private</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                </select>
+                <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors">
+                    Search
+                </button>
+                @if(request()->hasAny(['search','genre','status']))
+                    <a href="{{ route('admin.tracks.index') }}" class="px-3 py-2 text-sm text-gray-500 hover:text-orange-600">Clear</a>
+                @endif
+            </form>
         </div>
     </div>
 

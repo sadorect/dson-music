@@ -67,11 +67,11 @@
                     <x-footer />
                 </div>
 
-                <div class="hidden md:flex md:w-4/12 lg:w-3/12 bg-white/[5%] rounded-lg p-4 sm:p-6 flex-col gap-4 justify-between overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
+                <div class="hidden md:flex md:w-4/12 lg:w-3/12 bg-white border border-orange-100 rounded-lg p-4 sm:p-6 flex-col gap-4 justify-between overflow-y-auto h-full [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar-track]:hidden [&::-webkit-scrollbar-thumb]:hidden">
 
 
                     <div class="flex flex-col gap-6">
-                        <h1 class="text-white font-semibold text-lg">Your Library</h1>
+                        <h1 class="text-gray-900 font-semibold text-lg">Your Library</h1>
                         @auth
                             @php
                                 $recentPlaylists = auth()->user()->playlists()->withCount('tracks')->latest()->take(5)->get();
@@ -89,47 +89,47 @@
                             @endphp
 
                             @if($recentPlaylists->isEmpty())
-                                <div class="bg-black/10 p-5 rounded-lg">
-                                    <h2 class="text-white font-semibold text-base">Create your first playlist</h2>
-                                    <p class="text-gray-400 text-sm mt-1">Start organizing your favorite tracks.</p>
-                                    <a href="{{ route('playlists.create') }}" class="inline-flex mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-medium">Create Playlist</a>
+                                <div class="bg-orange-50 border border-orange-100 p-5 rounded-lg">
+                                    <h2 class="text-gray-900 font-semibold text-base">Create your first playlist</h2>
+                                    <p class="text-gray-500 text-sm mt-1">Start organizing your favorite tracks.</p>
+                                    <a href="{{ route('playlists.create') }}" class="inline-flex mt-3 bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-orange-600 transition-colors">Create Playlist</a>
                                 </div>
                             @else
-                                <div class="bg-black/10 p-4 rounded-lg">
+                                <div class="bg-orange-50 border border-orange-100 p-4 rounded-lg">
                                     <div class="flex items-center justify-between mb-3">
-                                        <h2 class="text-white font-semibold">Recent Playlists</h2>
-                                        <a href="{{ route('library.index') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                        <h2 class="text-gray-900 font-semibold">Recent Playlists</h2>
+                                        <a href="{{ route('library.index') }}" class="text-xs text-orange-600 hover:text-orange-700 font-medium">View all</a>
                                     </div>
                                     <div class="space-y-2">
                                         @foreach($recentPlaylists as $playlist)
-                                            <a href="{{ route('playlists.show', $playlist) }}" class="flex items-center justify-between p-2 rounded-md hover:bg-white/10">
-                                                <span class="text-sm text-white truncate">{{ $playlist->name }}</span>
-                                                <span class="text-xs text-white/50">{{ $playlist->tracks_count }}</span>
+                                            <a href="{{ route('playlists.show', $playlist) }}" class="flex items-center justify-between p-2 rounded-md hover:bg-orange-100 transition-colors">
+                                                <span class="text-sm text-gray-800 truncate">{{ $playlist->name }}</span>
+                                                <span class="text-xs text-gray-500">{{ $playlist->tracks_count }}</span>
                                             </a>
                                         @endforeach
                                     </div>
                                     <div class="mt-3 flex gap-2">
-                                        <a href="{{ route('playlists.create') }}" class="inline-flex bg-white text-black px-4 py-2 rounded-full text-sm font-medium">New Playlist</a>
-                                        <a href="{{ route('library.index') }}" class="inline-flex bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/20">My Library</a>
+                                        <a href="{{ route('playlists.create') }}" class="inline-flex bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-orange-600 transition-colors">New Playlist</a>
+                                        <a href="{{ route('library.index') }}" class="inline-flex bg-white border border-orange-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-orange-50 transition-colors">My Library</a>
                                     </div>
                                 </div>
                             @endif
 
-                            <div class="bg-black/10 p-4 rounded-lg">
+                            <div class="bg-orange-50 border border-orange-100 p-4 rounded-lg">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h2 class="text-white font-semibold">Recently Played</h2>
+                                    <h2 class="text-gray-900 font-semibold">Recently Played</h2>
                                 </div>
 
                                 @if($recentPlays->isEmpty())
-                                    <p class="text-xs text-white/60">Start playing tracks and your recent listens will appear here.</p>
+                                    <p class="text-xs text-gray-500">Start playing tracks and your recent listens will appear here.</p>
                                 @else
                                     <div class="space-y-2">
                                         @foreach($recentPlays as $play)
                                             @if($play->track)
-                                                <a href="{{ route('tracks.show', $play->track) }}" class="block p-2 rounded-md hover:bg-white/10">
-                                                    <div class="text-sm text-white truncate">{{ $play->track->title }}</div>
-                                                    <div class="text-xs text-white/60 truncate">{{ $play->track->artist->artist_name ?? 'Unknown Artist' }}</div>
-                                                    <div class="text-[11px] text-white/45">{{ number_format($play->track->play_count ?? 0) }} plays</div>
+                                                <a href="{{ route('tracks.show', $play->track) }}" class="block p-2 rounded-md hover:bg-orange-100 transition-colors">
+                                                    <div class="text-sm text-gray-900 font-medium truncate">{{ $play->track->title }}</div>
+                                                    <div class="text-xs text-gray-700 truncate">{{ $play->track->artist->artist_name ?? 'Unknown Artist' }}</div>
+                                                    <div class="text-[11px] text-orange-500">{{ number_format($play->track->play_count ?? 0) }} plays</div>
                                                 </a>
                                             @endif
                                         @endforeach
@@ -137,38 +137,38 @@
                                 @endif
                             </div>
 
-                            <div class="bg-black/10 p-4 rounded-lg">
+                            <div class="bg-orange-50 border border-orange-100 p-4 rounded-lg">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h2 class="text-white font-semibold">Followed Artists</h2>
-                                    <a href="{{ route('library.index') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                    <h2 class="text-gray-900 font-semibold">Followed Artists</h2>
+                                    <a href="{{ route('library.index') }}" class="text-xs text-orange-600 hover:text-orange-700 font-medium">View all</a>
                                 </div>
                                 @if($followedArtists->isEmpty())
-                                    <p class="text-xs text-white/60">Artists you follow will appear here.</p>
+                                    <p class="text-xs text-gray-500">Artists you follow will appear here.</p>
                                 @else
                                     <div class="space-y-2">
                                         @foreach($followedArtists as $artist)
-                                            <a href="{{ route('artists.show', $artist) }}" class="block p-2 rounded-md hover:bg-white/10">
-                                                <div class="text-sm text-white truncate">{{ $artist->artist_name }}</div>
+                                            <a href="{{ route('artists.show', $artist) }}" class="block p-2 rounded-md hover:bg-orange-100 transition-colors">
+                                                <div class="text-sm text-gray-800 truncate">{{ $artist->artist_name }}</div>
                                             </a>
                                         @endforeach
                                     </div>
                                 @endif
                             </div>
 
-                            <div class="bg-black/10 p-4 rounded-lg">
+                            <div class="bg-orange-50 border border-orange-100 p-4 rounded-lg">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h2 class="text-white font-semibold">Downloads</h2>
-                                    <a href="{{ route('library.index') }}" class="text-xs text-white/70 hover:text-white">View all</a>
+                                    <h2 class="text-gray-900 font-semibold">Downloads</h2>
+                                    <a href="{{ route('library.index') }}" class="text-xs text-orange-600 hover:text-orange-700 font-medium">View all</a>
                                 </div>
                                 @if($recentDownloads->isEmpty())
-                                    <p class="text-xs text-white/60">Downloaded tracks will appear here.</p>
+                                    <p class="text-xs text-gray-500">Downloaded tracks will appear here.</p>
                                 @else
                                     <div class="space-y-2">
                                         @foreach($recentDownloads as $download)
                                             @if($download->track)
-                                                <a href="{{ route('tracks.show', $download->track) }}" class="block p-2 rounded-md hover:bg-white/10">
-                                                    <div class="text-sm text-white truncate">{{ $download->track->title }}</div>
-                                                    <div class="text-xs text-white/60 truncate">{{ ucfirst($download->status ?? 'unknown') }}</div>
+                                                <a href="{{ route('tracks.show', $download->track) }}" class="block p-2 rounded-md hover:bg-orange-100 transition-colors">
+                                                    <div class="text-sm text-gray-800 truncate">{{ $download->track->title }}</div>
+                                                    <div class="text-xs text-gray-500 truncate">{{ ucfirst($download->status ?? 'unknown') }}</div>
                                                 </a>
                                             @endif
                                         @endforeach
@@ -176,10 +176,10 @@
                                 @endif
                             </div>
                         @else
-                            <div class="bg-black/10 p-5 rounded-lg">
-                                <h2 class="text-white font-semibold text-base">Save tracks to your library</h2>
-                                <p class="text-gray-400 text-sm mt-1">Sign in to create playlists and manage your listening history.</p>
-                                <a href="{{ route('login') }}" class="inline-flex mt-3 bg-white text-black px-4 py-2 rounded-full text-sm font-medium">Sign In</a>
+                            <div class="bg-orange-50 border border-orange-100 p-5 rounded-lg">
+                                <h2 class="text-gray-900 font-semibold text-base">Save tracks to your library</h2>
+                                <p class="text-gray-500 text-sm mt-1">Sign in to create playlists and manage your listening history.</p>
+                                <a href="{{ route('login') }}" class="inline-flex mt-3 bg-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-orange-600 transition-colors">Sign In</a>
                             </div>
                         @endauth
                     </div>
@@ -187,16 +187,16 @@
 
                     <div class=" flex flex-col gap-4">
                         <div class="flex flex-wrap items-center gap-3 ">
-                            <a href="" class="text-xs text-white/50">Legal</a>
-                            <a href="" class="text-xs text-white/50">Safety and Privacy center</a>
-                            <a href="" class="text-xs text-white/50">Privacy Policy</a>
-                            <a href="" class="text-xs text-white/50">Cookies</a>
-                            <a href="" class="text-xs text-white/50">About Us</a>
-                            <a href="" class="text-xs text-white/50">Accessibility</a>
+                            <a href="" class="text-xs text-gray-400 hover:text-orange-600 transition-colors">Legal</a>
+                            <a href="" class="text-xs text-gray-400 hover:text-orange-600 transition-colors">Safety and Privacy center</a>
+                            <a href="" class="text-xs text-gray-400 hover:text-orange-600 transition-colors">Privacy Policy</a>
+                            <a href="" class="text-xs text-gray-400 hover:text-orange-600 transition-colors">Cookies</a>
+                            <a href="" class="text-xs text-gray-400 hover:text-orange-600 transition-colors">About Us</a>
+                            <a href="" class="text-xs text-gray-400 hover:text-orange-600 transition-colors">Accessibility</a>
                         </div>
 
                         <!-- Language Selector -->
-                        <button class="text-sm gap-3 w-fit border text-white/50 border-white/50 rounded-full px-4 py-2 flex items-center hover:text-white hover:border-white transition-colors">
+                        <button class="text-sm gap-3 w-fit border text-gray-500 border-gray-300 rounded-full px-4 py-2 flex items-center hover:text-orange-600 hover:border-orange-400 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>    
                             English
                         </button>

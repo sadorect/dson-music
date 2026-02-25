@@ -12,9 +12,20 @@ class DashboardController extends Controller
     public function index()
     {
         $stats = [
-            'users_count' => User::count(),
-            'tracks_count' => Track::count(),
-            'artists_count' => ArtistProfile::count(),
+            'users_count'          => User::count(),
+            'tracks_count'         => Track::count(),
+            'artists_count'        => ArtistProfile::count(),
+            'pending_tracks_count' => Track::whereIn('status', ['pending', 'draft'])
+                                           ->orWhere('approval_status', 'pending')
+                                           ->count(),
+            'pending_tracks' => Track::with(['artist'])
+                ->where(function ($q) {
+                    $q->whereIn('status', ['pending', 'draft'])
+                      ->orWhere('approval_status', 'pending');
+                })
+                ->latest()
+                ->take(8)
+                ->get(),
             'recent_tracks' => Track::with(['artist.user', 'album'])
                 ->latest()
                 ->take(5)

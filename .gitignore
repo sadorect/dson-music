@@ -47,3 +47,5 @@ database/*.sqlite
 .DS_Store
 Thumbs.db
 API.md
+*.md
+*.markdown

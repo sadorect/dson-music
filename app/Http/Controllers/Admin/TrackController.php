@@ -8,12 +8,19 @@ use Illuminate\Http\Request;
 
 class TrackController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $tracks = Track::with(['artist.user', 'album'])
             ->withCount('plays')
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('artist', fn ($a) => $a->where('artist_name', 'like', '%' . $request->search . '%'));
+            })
+            ->when($request->filled('genre'), fn ($q) => $q->where('genre', $request->genre))
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return view('admin.tracks.index', compact('tracks'));
     }

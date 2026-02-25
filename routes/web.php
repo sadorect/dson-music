@@ -54,7 +54,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/artist/profile/create', [ArtistController::class, 'create'])->name('artist.profile.create');
     Route::post('/artist/profile', [ArtistController::class, 'store'])->name('artist.profile.store');
     Route::get('/artist/profile/edit', [ArtistController::class, 'edit'])->name('artist.profile.edit');
+    Route::put('/artist/profile', [ArtistController::class, 'update'])->name('artist.profile.update');
     Route::get('/artist/profile', [ArtistController::class, 'show'])->name('artist.profile.show');
+    Route::get('/artist/statistics', [ArtistController::class, 'statistics'])->name('artist.statistics');
 
     Route::resource('artist/albums', AlbumController::class, ['as' => 'artist']);
     Route::resource('artist/tracks', TrackController::class, ['as' => 'artist'])->except(['store']);

@@ -158,13 +158,100 @@ class ArtistController extends Controller
         return view('artists.index', compact('artists'));
     }
 
-    public function edit(ArtistProfile $artist)
+    public function edit()
     {
+        $artist = Auth::user()->artistProfile;
+
         if (! $artist) {
-            return redirect()->route('artist.profile.create')
+            return redirect()->route('artist.register.form')
                 ->with('message', 'Please create your artist profile first');
         }
 
         return view('artist.profile.edit', compact('artist'));
+    }
+
+    public function update(Request $request)
+    {
+        $artist = Auth::user()->artistProfile;
+
+        if (! $artist) {
+            return redirect()->route('artist.register.form');
+        }
+
+        $validated = $request->validate([
+            'artist_name'  => 'required|string|max:255|unique:artist_profiles,artist_name,' . $artist->id,
+            'genre'        => 'required|string|max:100',
+            'bio'          => 'nullable|string|max:2000',
+            'custom_url'   => 'nullable|string|max:100|unique:artist_profiles,custom_url,' . $artist->id,
+            'profile_image' => 'nullable|image|max:3072',
+            'cover_image'  => 'nullable|image|max:5120',
+            'social_facebook'  => 'nullable|url|max:255',
+            'social_twitter'   => 'nullable|url|max:255',
+            'social_instagram' => 'nullable|url|max:255',
+            'social_tiktok'    => 'nullable|url|max:255',
+            'social_youtube'   => 'nullable|url|max:255',
+        ]);
+
+        $artist->fill([
+            'artist_name' => $validated['artist_name'],
+            'genre'       => $validated['genre'],
+            'bio'         => $validated['bio'] ?? $artist->bio,
+            'custom_url'  => $validated['custom_url'] ?? $artist->custom_url,
+            'social_links' => [
+                'facebook'  => $validated['social_facebook'] ?? '',
+                'twitter'   => $validated['social_twitter'] ?? '',
+                'instagram' => $validated['social_instagram'] ?? '',
+                'tiktok'    => $validated['social_tiktok'] ?? '',
+                'youtube'   => $validated['social_youtube'] ?? '',
+            ],
+        ]);
+
+        if ($request->hasFile('profile_image')) {
+            $artist->profile_image = $request->file('profile_image')->store('artist-profiles', 'public');
+        }
+
+        if ($request->hasFile('cover_image')) {
+            $artist->cover_image = $request->file('cover_image')->store('artist-covers', 'public');
+        }
+
+        $artist->save();
+
+        return redirect()->route('artist.profile.edit')->with('success', 'Profile updated successfully!');
+    }
+
+    public function statistics(CacheService $cacheService)
+    {
+        if (! Auth::user()?->artistProfile) {
+            return redirect()->route('artist.register.form')
+                ->with('message', 'Please complete your artist profile first');
+        }
+
+        $artist = Auth::user()->artistProfile;
+        $stats  = $cacheService->getArtistStats($artist->id);
+
+        // Per-track breakdown
+        $tracks = $artist->tracks()
+            ->withCount(['plays', 'likes', 'downloads'])
+            ->orderByDesc('play_count')
+            ->get();
+
+        // Monthly plays for the last 6 months
+        $monthlyPlays = \DB::table('play_histories')
+            ->whereIn('track_id', $artist->tracks()->pluck('id'))
+            ->where('played_at', '>=', now()->subMonths(6))
+            ->selectRaw("DATE_FORMAT(played_at, '%Y-%m') as month, COUNT(*) as plays")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get()
+            ->keyBy('month');
+
+        // Build a full 6-month array (fill gaps with 0)
+        $months = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $key = now()->subMonths($i)->format('Y-m');
+            $months[$key] = $monthlyPlays->get($key)?->plays ?? 0;
+        }
+
+        return view('artist.statistics', compact('artist', 'stats', 'tracks', 'months'));
     }
 }

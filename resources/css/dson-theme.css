@@ -571,3 +571,13 @@ body {
 .brand-gradient-shell a:hover {
     color: #fdba74 !important;
 }
+
+/* Dropdown panel overrides — higher specificity (0,2,1) beats brand-gradient-shell a (0,1,1) */
+.brand-gradient-shell .nav-dropdown-panel a {
+    color: #1f2937 !important;
+}
+
+.brand-gradient-shell .nav-dropdown-panel a:hover {
+    color: #c2410c !important;
+    background-color: #fff7ed !important;
+}

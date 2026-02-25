@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-blue-500 bg-opacity-10">
                 <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -12,13 +12,13 @@
                 </svg>
             </div>
             <div class="ml-4">
-                <h2 class="text-gray-600 text-sm">Total Users</h2>
+                <h2 class="text-gray-500 text-sm">Total Users</h2>
                 <p class="text-2xl font-semibold">{{ number_format($stats['users_count']) }}</p>
             </div>
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-red-500">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-red-500 bg-opacity-10">
                 <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,13 +26,13 @@
                 </svg>
             </div>
             <div class="ml-4">
-                <h2 class="text-gray-600 text-sm">Total Tracks</h2>
+                <h2 class="text-gray-500 text-sm">Total Tracks</h2>
                 <p class="text-2xl font-semibold">{{ number_format($stats['tracks_count']) }}</p>
             </div>
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-6">
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-green-500 bg-opacity-10">
                 <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,8 +40,25 @@
                 </svg>
             </div>
             <div class="ml-4">
-                <h2 class="text-gray-600 text-sm">Total Artists</h2>
+                <h2 class="text-gray-500 text-sm">Total Artists</h2>
                 <p class="text-2xl font-semibold">{{ number_format($stats['artists_count']) }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-orange-500">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-orange-500 bg-opacity-10">
+                <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="ml-4">
+                <h2 class="text-gray-500 text-sm">Pending Reviews</h2>
+                <p class="text-2xl font-semibold">{{ number_format($stats['pending_tracks_count'] ?? 0) }}</p>
+                @if(($stats['pending_tracks_count'] ?? 0) > 0)
+                    <a href="{{ route('admin.tracks.review.index') }}" class="text-xs text-orange-600 hover:underline">Review now &rarr;</a>
+                @endif
             </div>
         </div>
     </div>
@@ -49,8 +66,9 @@
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="bg-white rounded-lg shadow">
-        <div class="p-4 border-b">
+        <div class="p-4 border-b flex items-center justify-between">
             <h2 class="text-lg font-semibold">Recent Tracks</h2>
+            <a href="{{ route('admin.tracks.index') }}" class="text-xs text-orange-600 hover:underline">View all</a>
         </div>
         <div class="p-4">
             <div class="space-y-4">
@@ -71,8 +89,9 @@
     </div>
 
     <div class="bg-white rounded-lg shadow">
-        <div class="p-4 border-b">
+        <div class="p-4 border-b flex items-center justify-between">
             <h2 class="text-lg font-semibold">Recent Users</h2>
+            <a href="{{ route('admin.users.index') }}" class="text-xs text-orange-600 hover:underline">View all</a>
         </div>
         <div class="p-4">
             <div class="space-y-4">
@@ -94,4 +113,56 @@
         </div>
     </div>
 </div>
+
+{{-- Pending Approvals Widget --}}
+@if(($stats['pending_tracks_count'] ?? 0) > 0)
+<div class="mt-6 bg-white rounded-lg shadow border-l-4 border-orange-500">
+    <div class="p-4 border-b border-orange-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="p-2 rounded-full bg-orange-50">
+                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-base font-semibold text-gray-900">Pending Track Approvals</h2>
+                <p class="text-xs text-gray-500">{{ number_format($stats['pending_tracks_count']) }} {{ Str::plural('track', $stats['pending_tracks_count']) }} awaiting review</p>
+            </div>
+        </div>
+        <a href="{{ route('admin.tracks.review.index') }}"
+           class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors">
+            Review All
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </div>
+    <div class="divide-y divide-gray-50">
+        @foreach($stats['pending_tracks'] as $track)
+            <div class="flex items-center px-4 py-3 hover:bg-orange-50/50 transition-colors">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ $track->title }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ $track->artist->artist_name ?? '—' }} &bull; {{ optional($track->created_at)->diffForHumans() }}</p>
+                </div>
+                <div class="ml-4 flex items-center gap-2 shrink-0">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                        {{ ucfirst($track->status ?? $track->approval_status ?? 'pending') }}
+                    </span>
+                    <a href="{{ route('admin.tracks.review.show', $track) }}"
+                       class="text-xs text-orange-600 hover:text-orange-800 font-medium hover:underline">
+                        Review &rarr;
+                    </a>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    @if($stats['pending_tracks_count'] > 8)
+        <div class="px-4 py-3 bg-orange-50/50 border-t border-orange-100 text-center">
+            <a href="{{ route('admin.tracks.review.index') }}" class="text-sm text-orange-600 hover:underline font-medium">
+                + {{ number_format($stats['pending_tracks_count'] - 8) }} more pending — view all &rarr;
+            </a>
+        </div>
+    @endif
+</div>
+@endif
 @endsection

@@ -6,12 +6,27 @@
 <div class="space-y-6">
     <!-- Stats Overview -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
-            <h3 class="text-gray-500 text-sm">Total Plays</h3>
-            <p class="text-3xl font-bold">{{ number_format($stats['total_plays']) }}</p>
-            <div class="mt-2 text-green-600 text-sm">
+        <div class="bg-white rounded-lg shadow p-6 border-t-4 border-orange-500">
+            <h3 class="text-gray-500 text-sm font-medium">Total Plays</h3>
+            <p class="text-3xl font-bold mt-1">{{ number_format($stats['total_plays']) }}</p>
+            <div class="mt-2 text-green-600 text-sm font-medium">
                 +{{ number_format($stats['monthly_plays']) }} this month
             </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
+            <h3 class="text-gray-500 text-sm font-medium">Active Artists</h3>
+            <p class="text-3xl font-bold mt-1">{{ number_format($stats['popular_tracks']->count() > 0 ? \App\Models\ArtistProfile::count() : 0) }}</p>
+            <p class="mt-2 text-gray-400 text-sm">Registered artists</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 border-t-4 border-purple-500">
+            <h3 class="text-gray-500 text-sm font-medium">Top Track Plays</h3>
+            <p class="text-3xl font-bold mt-1">{{ number_format($stats['popular_tracks']->first()?->plays_count ?? 0) }}</p>
+            <p class="mt-2 text-gray-400 text-sm">{{ $stats['popular_tracks']->first()?->title ?? 'N/A' }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
+            <h3 class="text-gray-500 text-sm font-medium">Active Listeners</h3>
+            <p class="text-3xl font-bold mt-1">{{ number_format(count($stats['active_users'])) }}</p>
+            <p class="mt-2 text-gray-400 text-sm">Most active users</p>
         </div>
     </div>
 

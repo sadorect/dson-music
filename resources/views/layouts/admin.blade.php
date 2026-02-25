@@ -4,16 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }} Admin</title>
+    <title>@yield('title', 'Dashboard') — {{ config('app.name') }} Admin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/dson-theme.css'])
+    @stack('styles')
 </head>
 <body class="brand-sitewide font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
         <div class="flex">
             <!-- Sidebar -->
-            <div class="w-64 bg-gray-900 min-h-screen">
-                <div class="flex items-center justify-center h-16 bg-gray-800">
-                    <span class="text-white font-bold text-xl">GRIN Admin</span>
+            <div class="w-64 min-h-screen text-white flex-shrink-0" style="background: linear-gradient(180deg, #140b05 0%, #2b1306 55%, #140b05 100%)">
+                <div class="flex items-center justify-center h-16 border-b border-orange-900/40">
+                    <span class="text-orange-100 font-bold text-xl tracking-wide">{{ setting('site_name', config('app.name')) }} Admin</span>
                 </div>
                 
                 <nav class="mt-4">
@@ -92,9 +93,9 @@
             </div>
 
             <!-- Main Content -->
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
                 <!-- Top Navigation -->
-                <div class="bg-white shadow">
+                <div class="bg-white shadow border-b border-orange-100">
                     <div class="flex justify-between items-center px-6 py-4">
                         <h2 class="text-xl font-semibold">@yield('title')</h2>
                         
@@ -122,7 +123,7 @@
                 </div>
 
                 <!-- Page Content -->
-                <main class="p-6">
+                <main class="p-6 bg-orange-50/20 min-h-screen">
                     @yield('content')
                 </main>
             </div>
@@ -130,6 +131,7 @@
     </div>
     <!-- At the end of your body tag -->
 @vite(['resources/js/logo-preview.js'])
+@stack('scripts')
 
 </body>
 </html>

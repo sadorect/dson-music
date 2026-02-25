@@ -109,7 +109,7 @@
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="flex items-center brand-text hover:text-orange-200 transition-colors">
+                            <button class="flex items-center brand-text hover:text-orange-300 transition-colors">
                                 <div>{{ Auth::user()?->name ?? 'User' }}</div>
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
