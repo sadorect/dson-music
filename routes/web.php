@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
 
     // Playlists
     Route::get('/my-playlists', [PlaylistController::class, 'myPlaylists'])->name('playlists.my-playlists');
-    Route::resource('playlists', PlaylistController::class);
+    Route::resource('playlists', PlaylistController::class)->except(['index', 'show']);
     Route::post('/playlists/{playlist}/tracks', [PlaylistController::class, 'addTrack'])->name('playlists.add-track');
     Route::delete('/playlists/{playlist}/tracks/{track}', [PlaylistController::class, 'removeTrack'])->name('playlists.remove-track');
     Route::post('/playlists/{playlist}/reorder', [PlaylistController::class, 'reorderTracks'])->name('playlists.reorder');
