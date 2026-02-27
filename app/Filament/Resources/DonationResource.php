@@ -95,7 +95,7 @@ class DonationResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->options(['pending' => 'Pending', 'completed' => 'Completed', 'refunded' => 'Refunded', 'failed' => 'Failed']),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
+            ->actions([Actions\EditAction::make()])
             ->defaultSort('created_at', 'desc')
             ->bulkActions([]);
     }

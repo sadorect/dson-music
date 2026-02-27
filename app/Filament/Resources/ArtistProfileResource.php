@@ -80,8 +80,8 @@ class ArtistProfileResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_verified'),
                 Tables\Filters\TernaryFilter::make('is_active'),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);  
+            ->actions([Actions\EditAction::make()])
+            ->bulkActions([Actions\BulkActionGroup::make([Actions\DeleteBulkAction::make()])]);  
     }
 
     public static function getPages(): array

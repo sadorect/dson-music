@@ -73,8 +73,8 @@ class AlbumResource extends Resource
                 Tables\Filters\SelectFilter::make('type')->options(['album' => 'Album', 'ep' => 'EP', 'single' => 'Single']),
                 Tables\Filters\TernaryFilter::make('is_published'),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);  
+            ->actions([Actions\EditAction::make()])
+            ->bulkActions([Actions\BulkActionGroup::make([Actions\DeleteBulkAction::make()])]);  
     }
 
     public static function getPages(): array
