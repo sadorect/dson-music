@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* Glass Panel - Main container backgrounds */
+    .glass-panel {
+        @apply bg-glass-base/30 backdrop-blur-lg border border-glass-border/20 shadow-glass rounded-2xl;
+    }
+    
+    .glass-panel-hover {
+        @apply hover:bg-glass-hover/40 hover:backdrop-blur-xl hover:shadow-glass-hover hover:border-glass-border/30 transition-all duration-300 ease-out;
+    }
+    
+    /* Glass Card - Smaller elements */
+    .glass-card {
+        @apply bg-glass-base/25 backdrop-blur-md border border-glass-border/15 shadow-glass rounded-xl;
+    }
+    
+    .glass-card-hover {
+        @apply hover:bg-glass-hover/35 hover:backdrop-blur-lg hover:shadow-glass-hover hover:scale-[1.02] transition-all duration-300 ease-out;
+    }
+    
+    /* Glass Button - Interactive elements */
+    .glass-btn {
+        @apply bg-glass-base/20 backdrop-blur-md border border-glass-border/20 shadow-glass rounded-lg px-4 py-2 text-gray-800 font-medium transition-all duration-300 ease-out;
+    }
+    
+    .glass-btn-hover {
+        @apply hover:bg-glass-hover/30 hover:backdrop-blur-lg hover:shadow-glass-hover hover:scale-[1.05] hover:text-gray-900;
+    }
+    
+    .glass-btn-primary {
+        @apply bg-primary/80 backdrop-blur-md border border-primary/30 shadow-glass rounded-lg px-4 py-2 text-white font-medium transition-all duration-300 ease-out;
+    }
+    
+    .glass-btn-primary-hover {
+        @apply hover:bg-primary/90 hover:backdrop-blur-lg hover:shadow-glass-hover hover:scale-[1.05] hover:border-primary/40;
+    }
+    
+    /* Glass Mini Player - Fixed bottom player */
+    .glass-mini-player {
+        @apply bg-glass-base/40 backdrop-blur-2xl border border-glass-border/30 shadow-glass rounded-2xl px-6 py-3;
+    }
+    
+    .glass-mini-player-playing {
+        @apply shadow-glass-hover border-primary/20;
+    }
+    
+    /* Glass Input - Form elements */
+    .glass-input {
+        @apply bg-glass-base/20 backdrop-blur-md border border-glass-border/20 rounded-lg px-4 py-2 text-gray-800 placeholder-gray-500 transition-all duration-300 ease-out;
+    }
+    
+    .glass-input-focus {
+        @apply focus:bg-glass-hover/30 focus:backdrop-blur-lg focus:shadow-glass-hover focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20;
+    }
+    
+    /* Glass Navigation - Header/nav elements */
+    .glass-nav {
+        @apply bg-glass-base/25 backdrop-blur-lg border-b border-glass-border/20 shadow-glass;
+    }
+    
+    /* Glass Modal/Popup */
+    .glass-modal {
+        @apply bg-glass-base/40 backdrop-blur-2xl border border-glass-border/30 shadow-glass-hover rounded-3xl p-6;
+    }
+    
+    /* Glass Gradient Backgrounds */
+    .glass-gradient-light {
+        @apply bg-gradient-to-br from-gray-50 via-red-50/20 to-gray-100;
+    }
+    
+    .glass-gradient-subtle {
+        @apply bg-gradient-to-tr from-white/30 via-gray-50/20 to-white/30;
+    }
+}
+
+/* Custom scrollbar for glass theme */
+@layer utilities {
+    .glass-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.glass.border') transparent;
+    }
+    
+    .glass-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .glass-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .glass-scrollbar::-webkit-scrollbar-thumb {
+        background-color: theme('colors.glass.border');
+        border-radius: 3px;
+    }
+    
+    .glass-scrollbar::-webkit-scrollbar-thumb:hover {
+        background-color: theme('colors.primary.DEFAULT');
+    }
+}
