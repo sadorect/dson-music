@@ -19,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Http\Middleware\EnsureSuperAdmin;
+use App\Filament\Pages\Auth\Login as FilamentLogin;
 
 class MusicdirectorPanelProvider extends PanelProvider
 {
@@ -29,7 +30,7 @@ class MusicdirectorPanelProvider extends PanelProvider
             ->id('musicdirector')
             ->path('musicdirector')
             ->brandName('Grinmusic Admin')
-            ->login()
+            ->login(FilamentLogin::class)
             ->colors([
                 'primary' => Color::Red,
             ])
