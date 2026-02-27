@@ -56,8 +56,14 @@ class AlbumResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('title')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('artist.stage_name')->label('Artist')->searchable(),
-                Tables\Columns\BadgeColumn::make('type')
-                    ->colors(['primary' => 'album', 'success' => 'ep', 'warning' => 'single']),
+                Tables\Columns\TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'album'  => 'primary',
+                        'ep'     => 'success',
+                        'single' => 'warning',
+                        default  => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('genre.name'),
                 Tables\Columns\TextColumn::make('play_count')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('release_date')->date()->sortable(),
@@ -67,8 +73,8 @@ class AlbumResource extends Resource
                 Tables\Filters\SelectFilter::make('type')->options(['album' => 'Album', 'ep' => 'EP', 'single' => 'Single']),
                 Tables\Filters\TernaryFilter::make('is_published'),
             ])
-            ->actions([Actions\EditAction::make()])
-            ->bulkActions([Actions\BulkActionGroup::make([Actions\DeleteBulkAction::make()])]);
+            ->actions([Tables\Actions\EditAction::make()])
+            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);  
     }
 
     public static function getPages(): array

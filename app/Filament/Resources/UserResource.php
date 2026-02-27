@@ -88,10 +88,10 @@ class UserResource extends Resource
                     ->label('Roles'),
             ])
             ->actions([
-                Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
 

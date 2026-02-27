@@ -73,10 +73,21 @@ class DonationResource extends Resource
                 Tables\Columns\TextColumn::make('artist.stage_name')->searchable()->label('Artist'),
                 Tables\Columns\TextColumn::make('track.title')->label('Track')->limit(30)->toggleable(),
                 Tables\Columns\TextColumn::make('amount')->money('USD')->sortable(),
-                Tables\Columns\BadgeColumn::make('type')
-                    ->colors(['primary' => 'unlock', 'success' => 'tip']),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors(['success' => 'completed', 'warning' => 'pending', 'danger' => fn ($state) => in_array($state, ['failed', 'refunded'])]),
+                Tables\Columns\TextColumn::make('type')
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'unlock' => 'primary',
+                        'tip'    => 'success',
+                        default  => 'gray',
+                    }),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match($state) {
+                        'completed' => 'success',
+                        'pending'   => 'warning',
+                        'failed', 'refunded' => 'danger',
+                        default     => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->filters([
@@ -84,7 +95,7 @@ class DonationResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->options(['pending' => 'Pending', 'completed' => 'Completed', 'refunded' => 'Refunded', 'failed' => 'Failed']),
             ])
-            ->actions([Actions\EditAction::make()])
+            ->actions([Tables\Actions\EditAction::make()])
             ->defaultSort('created_at', 'desc')
             ->bulkActions([]);
     }

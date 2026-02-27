@@ -103,15 +103,15 @@ class TrackResource extends Resource
                     ->relationship('genre', 'name')
                     ->label('Genre'),
             ])
-            ->actions([Actions\EditAction::make()])
+            ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                    Actions\BulkAction::make('publish')
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('publish')
                         ->label('Publish selected')
                         ->action(fn ($records) => $records->each->update(['is_published' => true]))
                         ->icon('heroicon-o-check'),
-                    Actions\BulkAction::make('unpublish')
+                    Tables\Actions\BulkAction::make('unpublish')
                         ->label('Unpublish selected')
                         ->action(fn ($records) => $records->each->update(['is_published' => false]))
                         ->icon('heroicon-o-x-mark'),
