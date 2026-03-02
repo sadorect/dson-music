@@ -19,6 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
         ]);
+
+        // Track page views for analytics
+        $middleware->web(append: [
+            \App\Http\Middleware\TrackPageView::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

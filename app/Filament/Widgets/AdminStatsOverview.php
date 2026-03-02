@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\ArtistProfile;
 use App\Models\Donation;
+use App\Models\PageView;
 use App\Models\Track;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget;
@@ -22,6 +23,11 @@ class AdminStatsOverview extends StatsOverviewWidget
         $totalTracks    = Track::where('is_published', true)->count();
         $totalPlays     = Track::sum('play_count');
         $totalDonations = Donation::sum('amount');
+
+        $totalPageViews    = PageView::count();
+        $todayPageViews    = PageView::today()->count();
+        $todayUniqueSessions = PageView::today()->distinct('session_id')->count('session_id');
+        $totalUniqueSessions = PageView::distinct('session_id')->count('session_id');
 
         return [
             Stat::make('Total Users', number_format($totalUsers))
@@ -43,6 +49,14 @@ class AdminStatsOverview extends StatsOverviewWidget
                 User::whereDate('created_at', today())->count()
             ))
                 ->icon('heroicon-o-user-plus'),
+
+            Stat::make('Total Page Views', number_format($totalPageViews))
+                ->description(number_format($todayPageViews) . ' today')
+                ->icon('heroicon-o-eye'),
+
+            Stat::make('Unique Sessions', number_format($totalUniqueSessions))
+                ->description(number_format($todayUniqueSessions) . ' today')
+                ->icon('heroicon-o-user-circle'),
         ];
     }
 }
