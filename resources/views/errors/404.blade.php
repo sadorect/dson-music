@@ -22,7 +22,7 @@
 
         {{-- Logo --}}
         <a href="{{ route('home') }}" class="mb-10 flex items-center gap-2 group">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition">
                 <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/>
                 </svg>
@@ -36,13 +36,13 @@
             {{-- Animated note --}}
             <div class="flex justify-center mb-6">
                 <div class="relative">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center">
-                        <svg class="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                        <svg class="w-10 h-10 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                   d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
                         </svg>
                     </div>
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shadow">
+                    <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shadow">
                         404
                     </span>
                 </div>

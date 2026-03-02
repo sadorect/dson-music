@@ -62,14 +62,14 @@ new #[Layout('layouts.glass-app')] class extends Component {
         <button
             wire:click="setGenre(null)"
             class="px-4 py-1.5 rounded-full text-sm font-medium transition
-                {{ is_null($genre) ? 'bg-red-500 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-red-300 hover:text-red-500' }}">
+                {{ is_null($genre) ? 'bg-primary text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary' }}">
             All
         </button>
         @foreach($genres as $g)
             <button
                 wire:click="setGenre('{{ $g->slug }}')"
                 class="px-4 py-1.5 rounded-full text-sm font-medium transition
-                    {{ $genre === $g->slug ? 'bg-red-500 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-red-300 hover:text-red-500' }}">
+                    {{ $genre === $g->slug ? 'bg-primary text-white' : 'bg-white text-gray-600 border border-gray-200 hover:border-primary-300 hover:text-primary' }}">
                 {{ $g->name }}
             </button>
         @endforeach
@@ -79,11 +79,11 @@ new #[Layout('layouts.glass-app')] class extends Component {
     <div class="max-w-7xl mx-auto mb-6 flex gap-3 items-center">
         <span class="text-gray-500 text-sm">Sort by:</span>
         <button wire:click="setSort('latest')"
-                class="text-sm {{ $sort === 'latest' ? 'text-red-500 font-semibold' : 'text-gray-500 hover:text-gray-800' }}">
+                class="text-sm {{ $sort === 'latest' ? 'text-primary font-semibold' : 'text-gray-500 hover:text-gray-800' }}">
             Latest
         </button>
         <button wire:click="setSort('popular')"
-                class="text-sm {{ $sort === 'popular' ? 'text-red-500 font-semibold' : 'text-gray-500 hover:text-gray-800' }}">
+                class="text-sm {{ $sort === 'popular' ? 'text-primary font-semibold' : 'text-gray-500 hover:text-gray-800' }}">
             Popular
         </button>
     </div>
@@ -99,8 +99,8 @@ new #[Layout('layouts.glass-app')] class extends Component {
                              alt="{{ $track->title }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                     @else
-                        <div class="w-full h-full bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center">
-                            <svg class="w-10 h-10 text-red-300" fill="currentColor" viewBox="0 0 24 24">
+                        <div class="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                            <svg class="w-10 h-10 text-primary-300" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/>
                             </svg>
                         </div>
@@ -131,7 +131,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                     <p class="text-gray-800 text-xs font-semibold truncate">{{ $track->title }}</p>
                     <a href="{{ route('artist.page', $track->artistProfile) }}"
                        @click.stop
-                       class="text-gray-500 text-xs hover:text-red-500 truncate block">
+                       class="text-gray-500 text-xs hover:text-primary truncate block">
                         {{ $track->artistProfile->stage_name ?? $track->artistProfile->user->name }}
                     </a>
                 </div>

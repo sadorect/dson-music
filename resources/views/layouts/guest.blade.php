@@ -19,15 +19,15 @@
 
     {{-- Decorative background blobs --}}
     <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-        <div class="absolute -top-40 -right-40 w-96 h-96 bg-red-200/30 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-rose-100/40 rounded-full blur-3xl"></div>
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-200/30 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-primary-100/40 rounded-full blur-3xl"></div>
     </div>
 
     <div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-12">
 
         {{-- Logo --}}
         <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2 mb-8 group">
-            <svg class="w-8 h-8 text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+            <svg class="w-8 h-8 text-primary-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M9 3v10.55A4 4 0 107 17V7h8V3H9z"/>
             </svg>
             <span class="text-2xl font-bold text-gray-800 tracking-tight">GrinMusic</span>
@@ -40,7 +40,7 @@
 
         {{-- Footer link --}}
         <p class="mt-6 text-xs text-gray-400">
-            &copy; {{ date('Y') }} GrinMusic &mdash; <a href="{{ route('home') }}" wire:navigate class="hover:text-red-400 transition">Back to home</a>
+            &copy; {{ date('Y') }} GrinMusic &mdash; <a href="{{ route('home') }}" wire:navigate class="hover:text-primary-400 transition">Back to home</a>
         </p>
     </div>
 

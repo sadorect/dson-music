@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Like;
 use App\Models\PlayHistory;
 use App\Models\Track;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,9 @@ class MiniPlayer extends Component
     public int  $currentTime = 0;
     public int  $duration   = 0;
     public int  $volume     = 80;
+
+    public bool $liked      = false;
+    public int  $likesCount = 0;
 
     // Queue in client-side; server just provides track data
     #[On('play-track')]
@@ -42,6 +46,7 @@ class MiniPlayer extends Component
             'artist'      => $model->artistProfile?->stage_name ?? 'Unknown',
             'cover'       => $model->getCoverUrl(),
             'audio_url'   => $audioUrl,
+            'url'         => route('track.show', $model->slug),
             'duration'    => $model->duration ?? 0,
             'requires_donation' => $model->requires_donation,
             'donation_amount'   => $model->donation_amount,
@@ -60,8 +65,56 @@ class MiniPlayer extends Component
         }
 
         $model->incrementPlayCount();
+        $this->refreshLikeState();
 
         $this->dispatch('player-track-loaded', track: $this->track);
+    }
+
+    public function likeToggle(): void
+    {
+        if (!Auth::check()) {
+            $this->dispatch('open-modal', 'login-required');
+            return;
+        }
+
+        if (!$this->trackId) return;
+
+        $exists = Like::where('user_id', Auth::id())
+            ->where('track_id', $this->trackId)
+            ->exists();
+
+        if ($exists) {
+            Like::where('user_id', Auth::id())->where('track_id', $this->trackId)->delete();
+        } else {
+            Like::create(['user_id' => Auth::id(), 'track_id' => $this->trackId]);
+        }
+
+        $this->refreshLikeState();
+    }
+
+    public function downloadTrack(): void
+    {
+        if (!Auth::check()) {
+            $this->dispatch('open-modal', 'login-required');
+            return;
+        }
+
+        $track = Track::find($this->trackId);
+        if (!$track) return;
+
+        $track->increment('downloads_count');
+        $this->dispatch('start-download',
+            url: $track->getAudioUrl(),
+            filename: $track->title . '.mp3'
+        );
+    }
+
+    protected function refreshLikeState(): void
+    {
+        if (!$this->trackId) return;
+        $this->liked = Auth::check()
+            && Like::where('user_id', Auth::id())->where('track_id', $this->trackId)->exists();
+        $this->likesCount = Like::where('track_id', $this->trackId)->count();
     }
 
     #[On('queue-track')]

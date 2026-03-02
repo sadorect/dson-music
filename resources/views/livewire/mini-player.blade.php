@@ -9,6 +9,12 @@
     @destroyed="destroy()"
     x-on:player-track-loaded.window="onTrackLoaded($event.detail)"
     x-on:player-queue-add.window="onQueueAdd($event.detail)"
+    @start-download.window="
+        var a = document.createElement('a');
+        a.href = $event.detail.url;
+        a.download = $event.detail.filename || 'track.mp3';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    "
     class="fixed bottom-0 left-0 right-0 z-50"
 >
     {{-- ── Queue Panel (slides up above the bar) ───────────────────────────── --}}
@@ -28,7 +34,7 @@
             {{-- Header --}}
             <div class="flex items-center justify-between px-4 py-3 border-b border-white/30">
                 <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10"/>
                     </svg>
                     <span class="text-sm font-semibold text-gray-800">Up Next</span>
@@ -36,7 +42,7 @@
                 </div>
                 <button @click="clearQueue()"
                         x-show="queueTracks.length > 0"
-                        class="text-xs text-gray-400 hover:text-red-500 transition">
+                        class="text-xs text-gray-400 hover:text-primary-500 transition">
                     Clear all
                 </button>
             </div>
@@ -53,14 +59,14 @@
                     <div
                         @click="jumpTo(idx)"
                         class="flex items-center gap-3 px-4 py-2.5 cursor-pointer transition hover:bg-white/50"
-                        :class="idx === queueIndex ? 'bg-red-50/70' : ''"
+                        :class="idx === queueIndex ? 'bg-primary-50/70' : ''"
                     >
                         <div class="w-5 text-center shrink-0">
                             <template x-if="idx === queueIndex">
                                 <span class="inline-flex gap-0.5 items-end h-4">
-                                    <span class="w-0.5 bg-red-500 rounded-full animate-bounce" style="height:60%;animation-delay:0ms"></span>
-                                    <span class="w-0.5 bg-red-500 rounded-full animate-bounce" style="height:100%;animation-delay:150ms"></span>
-                                    <span class="w-0.5 bg-red-500 rounded-full animate-bounce" style="height:40%;animation-delay:75ms"></span>
+                                    <span class="w-0.5 bg-primary-500 rounded-full animate-bounce" style="height:60%;animation-delay:0ms"></span>
+                                    <span class="w-0.5 bg-primary-500 rounded-full animate-bounce" style="height:100%;animation-delay:150ms"></span>
+                                    <span class="w-0.5 bg-primary-500 rounded-full animate-bounce" style="height:40%;animation-delay:75ms"></span>
                                 </span>
                             </template>
                             <template x-if="idx !== queueIndex">
@@ -74,12 +80,12 @@
                         >
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-semibold truncate"
-                               :class="idx === queueIndex ? 'text-red-600' : 'text-gray-800'"
+                               :class="idx === queueIndex ? 'text-primary-600' : 'text-gray-800'"
                                x-text="t.title"></p>
                             <p class="text-xs text-gray-400 truncate" x-text="t.artist"></p>
                         </div>
                         <button @click.stop="removeFromQueue(idx)"
-                                class="text-gray-300 hover:text-red-500 transition shrink-0"
+                                class="text-gray-300 hover:text-primary-500 transition shrink-0"
                                 title="Remove">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -143,7 +149,7 @@
                     {{-- Play / Pause --}}
                     <button
                         @click="togglePlay"
-                        class="w-10 h-10 rounded-full bg-red-500 text-white shadow-lg flex items-center justify-center hover:bg-red-600 transition active:scale-95"
+                        class="w-10 h-10 rounded-full bg-primary-500 text-white shadow-lg flex items-center justify-center hover:bg-primary-600 transition active:scale-95"
                         :title="playing ? 'Pause' : 'Play'"
                     >
                         <template x-if="!playing">
@@ -166,15 +172,68 @@
                 <div class="flex items-center gap-2 w-full max-w-md">
                     <span class="text-xs tabular-nums text-gray-500 w-8 text-right" x-text="formatTime(currentTime)"></span>
                     <div class="flex-1 h-1.5 bg-gray-200 rounded-full cursor-pointer relative group" @click="seek($event)">
-                        <div class="h-full bg-red-500 rounded-full transition-all" :style="`width: ${progress}%`"></div>
-                        <div class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-red-500 rounded-full shadow opacity-0 group-hover:opacity-100 transition" :style="`left: calc(${progress}% - 6px)`"></div>
+                        <div class="h-full bg-primary-500 rounded-full transition-all" :style="`width: ${progress}%`"></div>
+                        <div class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-primary-500 rounded-full shadow opacity-0 group-hover:opacity-100 transition" :style="`left: calc(${progress}% - 6px)`"></div>
                     </div>
                     <span class="text-xs tabular-nums text-gray-500 w-8" x-text="formatTime(duration)"></span>
                 </div>
             </div>
 
-            {{-- ── Volume + Queue toggle ─────────────────────────────────────── --}}
+            {{-- ── Like / Share / Download + Volume + Queue toggle ──────────── --}}
             <div class="hidden sm:flex items-center gap-3 shrink-0">
+
+                {{-- Like --}}
+                @if($track)
+                <button
+                    wire:click="likeToggle"
+                    class="flex items-center gap-1 transition group"
+                    title="{{ $liked ? 'Unlike' : 'Like' }}"
+                >
+                    <svg class="w-4 h-4 transition {{ $liked ? 'text-primary fill-current' : 'text-gray-400 group-hover:text-primary' }}"
+                         viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <span class="text-xs tabular-nums {{ $liked ? 'text-primary' : 'text-gray-400 group-hover:text-primary' }}"
+                          wire:key="like-count-{{ $trackId }}">{{ $likesCount > 0 ? $likesCount : '' }}</span>
+                </button>
+
+                {{-- Share --}}
+                <button
+                    x-data="{ copied: false }"
+                    @click="
+                        if (track?.url) {
+                            navigator.clipboard.writeText(window.location.origin + track.url).then(() => {
+                                copied = true; setTimeout(() => copied = false, 2000);
+                            });
+                        }
+                    "
+                    class="relative text-gray-400 hover:text-primary transition"
+                    :title="copied ? 'Link copied!' : 'Share track'"
+                >
+                    <svg x-show="!copied" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    <svg x-show="copied" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </button>
+
+                {{-- Download --}}
+                <button
+                    wire:click="downloadTrack"
+                    class="text-gray-400 hover:text-primary transition"
+                    title="Download"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                </button>
+
+                <div class="w-px h-4 bg-gray-200 mx-1"></div>
+                @endif
                 <div class="flex items-center gap-2 w-28">
                     <button @click="toggleMute()" class="text-gray-500 hover:text-gray-800 transition">
                         <template x-if="muted || volume === 0">
@@ -188,14 +247,14 @@
                         type="range" min="0" max="100"
                         x-model="volume"
                         @input="setVolume()"
-                        class="w-full accent-red-500 h-1 cursor-pointer"
+                        class="w-full accent-primary-500 h-1 cursor-pointer"
                     >
                 </div>
 
                 {{-- Queue toggle button --}}
                 <button
                     @click="showQueue = !showQueue"
-                    :class="showQueue ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-gray-800'"
+                    :class="showQueue ? 'text-primary-500 bg-primary-50' : 'text-gray-500 hover:text-gray-800'"
                     class="relative p-1.5 rounded-lg transition"
                     title="Queue"
                 >
@@ -203,7 +262,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10"/>
                     </svg>
                     <span x-show="queue.length > 1"
-                          class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none"
+                          class="absolute -top-1 -right-1 bg-primary-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none"
                           x-text="queue.length"></span>
                 </button>
             </div>

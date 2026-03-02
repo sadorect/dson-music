@@ -107,9 +107,9 @@ new #[Layout('layouts.glass-app')] class extends Component {
     {{-- ── Hero ───────────────────────────────────────────── --}}
     <section class="relative flex items-center justify-center min-h-[56vh] text-center px-4 overflow-hidden">
         {{-- Decorative blobs --}}
-        <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-red-400 rounded-full blur-3xl opacity-[0.08] pointer-events-none"></div>
-        <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-rose-300 rounded-full blur-3xl opacity-[0.08] pointer-events-none"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-red-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+        <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-primary-400 rounded-full blur-3xl opacity-[0.08] pointer-events-none"></div>
+        <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-primary-300 rounded-full blur-3xl opacity-[0.08] pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary-50 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
         {{-- Floating music notes --}}
         <span class="note-1 absolute top-16 left-[12%] text-3xl select-none opacity-20 pointer-events-none">♪</span>
@@ -118,12 +118,12 @@ new #[Layout('layouts.glass-app')] class extends Component {
         <span class="note-1 absolute bottom-16 right-[18%] text-3xl select-none opacity-15 pointer-events-none">♬</span>
 
         <div class="relative z-10">
-            <div class="inline-flex items-center gap-2 bg-red-50 border border-red-100 text-red-600 text-xs font-semibold px-4 py-1.5 rounded-full mb-5 shadow-sm">
-                <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+            <div class="inline-flex items-center gap-2 bg-primary-50 border border-primary-100 text-primary-600 text-xs font-semibold px-4 py-1.5 rounded-full mb-5 shadow-sm">
+                <span class="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse"></span>
                 {{ $stats['tracks'] }} tracks live now
             </div>
             <h1 class="text-5xl sm:text-7xl font-black text-gray-900 leading-none mb-4 tracking-tight">
-                Grin<span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-rose-400">Muzik</span>
+                Grin<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600">Muzik</span>
             </h1>
             <p class="text-gray-500 text-lg sm:text-xl max-w-xl mx-auto mb-8">
                 Independent music. Real artists. Support the creators you love.
@@ -131,7 +131,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
             @guest
                 <div class="flex flex-wrap gap-3 justify-center">
                     <a href="{{ route('register') }}"
-                       class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-semibold transition shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                       class="bg-primary hover:bg-primary-500 text-white px-8 py-3 rounded-full font-semibold transition shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
                         Start Listening
                     </a>
                     <a href="{{ route('browse') }}"
@@ -141,7 +141,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 </div>
             @else
                 <a href="{{ route('browse') }}"
-                   class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-semibold transition shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
+                   class="bg-primary hover:bg-primary-500 text-white px-8 py-3 rounded-full font-semibold transition shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0">
                     Browse Music
                 </a>
             @endguest
@@ -149,7 +149,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
     </section>
 
     {{-- ── Stats bar ───────────────────────────────────────── --}}
-    <div class="bg-gradient-to-r from-red-500 to-rose-500 py-5 shadow-inner"
+    <div class="bg-gradient-to-r from-primary to-primary-500 py-5 shadow-inner"
          x-data="{ visible: false }"
          x-init="
             const obs = new IntersectionObserver((entries) => {
@@ -176,7 +176,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
         <section class="py-10 bg-gray-50/80 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5 flex items-center justify-between">
                 <h2 class="text-2xl font-bold text-gray-800">🔥 Trending Now</h2>
-                <a href="{{ route('browse', ['sort' => 'popular']) }}" class="text-red-500 hover:text-red-600 text-sm font-medium">See all →</a>
+                <a href="{{ route('browse', ['sort' => 'popular']) }}" class="text-primary hover:text-primary-600 text-sm font-medium">See all →</a>
             </div>
             <div
                 class="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
@@ -197,8 +197,8 @@ new #[Layout('layouts.glass-app')] class extends Component {
                                 @if($track->getFirstMediaUrl('cover'))
                                     <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->title }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center">
-                                        <svg class="w-10 h-10 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
+                                    <div class="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                                        <svg class="w-10 h-10 text-primary-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
                                     </div>
                                 @endif
                                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
@@ -219,8 +219,8 @@ new #[Layout('layouts.glass-app')] class extends Component {
                                 @if($track->getFirstMediaUrl('cover'))
                                     <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->title }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-red-100 to-rose-200 flex items-center justify-center">
-                                        <svg class="w-10 h-10 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
+                                    <div class="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                                        <svg class="w-10 h-10 text-primary-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
                                     </div>
                                 @endif
                                 <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
@@ -252,7 +252,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                      ">
                 <div class="flex items-center justify-between mb-5">
                     <h2 class="text-2xl font-bold text-gray-800">✨ New Releases</h2>
-                    <a href="{{ route('browse') }}" class="text-red-500 hover:text-red-600 text-sm font-medium">See all →</a>
+                    <a href="{{ route('browse') }}" class="text-primary hover:text-primary-600 text-sm font-medium">See all →</a>
                 </div>
                 <div class="space-y-2">
                     @foreach($latest as $i => $track)
@@ -263,17 +263,17 @@ new #[Layout('layouts.glass-app')] class extends Component {
                              style="animation-delay: {{ $i * 60 }}ms"
                              @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })">
                             <span class="w-5 text-center text-gray-400 text-sm shrink-0 group-hover:hidden">{{ $i + 1 }}</span>
-                            <svg class="w-5 h-5 text-red-500 hidden group-hover:block shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <svg class="w-5 h-5 text-primary hidden group-hover:block shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0">
                                 @if($track->getFirstMediaUrl('cover'))
                                     <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->title }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-red-100 to-rose-200"></div>
+                                    <div class="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200"></div>
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-gray-800 text-sm font-medium truncate">{{ $track->title }}</p>
-                                <a href="{{ route('artist.page', $track->artistProfile) }}" @click.stop class="text-gray-500 text-xs hover:text-red-500 truncate">
+                                <a href="{{ route('artist.page', $track->artistProfile) }}" @click.stop class="text-gray-500 text-xs hover:text-primary truncate">
                                     {{ $track->artistProfile->stage_name ?? ($track->artistProfile->user->name ?? '') }}
                                 </a>
                             </div>
@@ -290,7 +290,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 <h2 class="text-2xl font-bold text-gray-800 mb-5">🎵 Browse by Genre</h2>
                 <div class="flex flex-wrap gap-3">
                     @php
-                        $fallbackColors = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#6366f1','#ec4899','#8b5cf6','#14b8a6','#f43f5e','#84cc16','#0ea5e9'];
+                        $fallbackColors = ['#728FCE','#f97316','#eab308','#22c55e','#06b6d4','#6366f1','#ec4899','#8b5cf6','#14b8a6','#5574b9','#84cc16','#0ea5e9'];
                     @endphp
                     @foreach($genres as $idx => $genre)
                         @php $color = $genre->color ?: $fallbackColors[$idx % count($fallbackColors)]; @endphp
@@ -324,11 +324,11 @@ new #[Layout('layouts.glass-app')] class extends Component {
                            class="float-card flex flex-col items-center gap-2 p-4 rounded-xl glass-card glass-card-hover transition text-center"
                            :class="{ 'visible': ready }"
                            style="animation-delay: {{ $i * 80 }}ms">
-                            <div class="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-red-100 to-rose-200 ring-2 ring-white shadow-sm">
+                            <div class="w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-primary-100 to-primary-200 ring-2 ring-white shadow-sm">
                                 @if($artist->getFirstMediaUrl('avatar'))
                                     <img src="{{ $artist->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $artist->stage_name }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center text-xl font-black text-red-400">
+                                    <div class="w-full h-full flex items-center justify-center text-xl font-black text-primary-400">
                                         {{ strtoupper(substr($artist->stage_name ?? $artist->user->name, 0, 1)) }}
                                     </div>
                                 @endif
@@ -336,7 +336,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                             <div>
                                 <p class="text-gray-800 text-xs font-semibold">{{ $artist->stage_name ?? $artist->user->name }}</p>
                                 @if($artist->is_verified)
-                                    <p class="text-red-500 text-[10px] font-medium">✓ Verified</p>
+                                    <p class="text-primary text-[10px] font-medium">✓ Verified</p>
                                 @else
                                     <p class="text-gray-400 text-[10px]">Artist</p>
                                 @endif
@@ -360,9 +360,10 @@ new #[Layout('layouts.glass-app')] class extends Component {
             <p class="text-gray-500 text-sm mb-7">Music for everyone. Income for artists.</p>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 @foreach([
-                    ['icon' => '🎧', 'title' => 'Discover', 'desc' => 'Browse thousands of tracks across every genre. Search by artist, mood or vibe.', 'color' => 'from-red-50 to-rose-50', 'border' => 'border-red-100'],
-                    ['icon' => '❤️', 'title' => 'Support',  'desc' => 'Unlock premium tracks with a small donation. Every rand goes directly to the artist.', 'color' => 'from-orange-50 to-red-50', 'border' => 'border-orange-100'],
-                    ['icon' => '🚀', 'title' => 'Create',   'desc' => 'Are you an artist? Upload your music, build a following and earn from your craft.', 'color' => 'from-rose-50 to-pink-50', 'border' => 'border-rose-100'],
+                    ['icon' => '🎧', 'title' => 'Discover', 'desc' => 'Browse thousands of tracks across every genre. Search by artist, mood or vibe.', 'color' => 'from-primary-50 to-primary-100', 'border' => 'border-primary-100'],
+                    ['icon' => '❤️', 'title' => 'Support',  'desc' => 'Unlock premium tracks with a small donation. Every rand goes directly to the artist.', 'color' => 'from-primary-50 to-blue-50', 'border' => 'border-primary-100'],
+                    ['icon' => '🚀', 'title' => 'Create',   'desc' => 'Are you an artist? Upload your music, build a following and earn from your craft.', 'color' => 'from-blue-50 to-primary-50', 'border' => 'border-primary-100'],
+
                 ] as $i => $step)
                     <div class="float-card glass-card p-6 border {{ $step['border'] }} bg-gradient-to-br {{ $step['color'] }} hover:shadow-lg transition"
                          :class="{ 'visible': ready }"
@@ -377,7 +378,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
 
         {{-- ── Artist CTA ──────────────────────────────────── --}}
         @guest
-            <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 p-10 text-center shadow-xl mb-6">
+            <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-600 p-10 text-center shadow-xl mb-6">
                 <div class="absolute top-0 left-0 right-0 bottom-0 opacity-10 pointer-events-none">
                     <span class="absolute top-4 left-8 text-6xl note-1">♪</span>
                     <span class="absolute bottom-4 right-8 text-6xl note-2">♫</span>
@@ -388,7 +389,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                     <p class="text-white/80 text-base mb-7 max-w-sm mx-auto">Upload your music, grow your audience, and receive donations from your fans — for free.</p>
                     <div class="flex flex-wrap gap-3 justify-center">
                         <a href="{{ route('register') }}"
-                           class="bg-white text-red-600 hover:bg-red-50 px-8 py-3 rounded-full font-bold transition shadow-lg hover:-translate-y-0.5 inline-block">
+                           class="bg-white text-primary-600 hover:bg-primary-50 px-8 py-3 rounded-full font-bold transition shadow-lg hover:-translate-y-0.5 inline-block">
                             Join as Artist
                         </a>
                         <a href="{{ route('browse') }}"

@@ -43,8 +43,8 @@ new #[Layout('layouts.glass-app')] class extends Component
         ] as $stat)
         <a href="{{ $stat['href'] }}" wire:navigate class="glass-card rounded-2xl p-5 hover:shadow-glass-hover transition">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="{{ $stat['icon'] }}"/>
                     </svg>
                 </div>
@@ -61,7 +61,7 @@ new #[Layout('layouts.glass-app')] class extends Component
     <div class="glass-card rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-white/40 flex items-center justify-between">
             <h2 class="font-semibold text-gray-800">Recently Played</h2>
-            <a href="{{ route('listener.history') }}" wire:navigate class="text-sm text-red-500 hover:underline">See all →</a>
+            <a href="{{ route('listener.history') }}" wire:navigate class="text-sm text-primary hover:underline">See all →</a>
         </div>
         @if($recentHistory->isEmpty())
             <p class="px-6 py-8 text-sm text-gray-500 text-center">No plays yet. Start exploring music!</p>
@@ -96,7 +96,7 @@ new #[Layout('layouts.glass-app')] class extends Component
     <div class="glass-card rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-white/40 flex items-center justify-between">
             <h2 class="font-semibold text-gray-800">Liked Tracks</h2>
-            <a href="{{ route('listener.liked') }}" wire:navigate class="text-sm text-red-500 hover:underline">See all →</a>
+            <a href="{{ route('listener.liked') }}" wire:navigate class="text-sm text-primary hover:underline">See all →</a>
         </div>
         @if($likedTracks->isEmpty())
             <p class="px-6 py-8 text-sm text-gray-500 text-center">No liked tracks yet.</p>
@@ -128,7 +128,7 @@ new #[Layout('layouts.glass-app')] class extends Component
     <div class="glass-card rounded-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-white/40 flex items-center justify-between">
             <h2 class="font-semibold text-gray-800">My Playlists</h2>
-            <a href="{{ route('listener.playlists') }}" wire:navigate class="text-sm text-red-500 hover:underline">See all →</a>
+            <a href="{{ route('listener.playlists') }}" wire:navigate class="text-sm text-primary hover:underline">See all →</a>
         </div>
         @if($playlists->isEmpty())
             <p class="px-6 py-8 text-sm text-gray-500 text-center">No playlists yet.</p>
@@ -136,7 +136,7 @@ new #[Layout('layouts.glass-app')] class extends Component
         <ul class="divide-y divide-white/30">
             @foreach($playlists as $pl)
             <li class="flex items-center gap-3 px-5 py-3 hover:bg-white/40 transition">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-red-400 to-pink-400 flex items-center justify-center shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center shrink-0">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                 </div>
                 <div class="flex-1 min-w-0">

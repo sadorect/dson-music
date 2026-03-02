@@ -103,21 +103,21 @@ new #[Layout('layouts.guest')] class extends Component
             <p class="text-sm font-medium text-gray-700 mb-2">{{ __('I want to…') }}</p>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition
-                              {{ $role === 'listener' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-red-300' }}">
+                              {{ $role === 'listener' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-primary-300' }}">
                     <input type="radio" wire:model.live="role" value="listener" class="sr-only">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $role === 'listener' ? 'text-red-500' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $role === 'listener' ? 'text-primary' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                     </svg>
-                    <span class="text-sm font-semibold {{ $role === 'listener' ? 'text-red-600' : 'text-gray-600' }}">{{ __('Listen to music') }}</span>
+                    <span class="text-sm font-semibold {{ $role === 'listener' ? 'text-primary-600' : 'text-gray-600' }}">{{ __('Listen to music') }}</span>
                 </label>
 
                 <label class="flex flex-col items-center gap-1 p-3 rounded-xl border-2 cursor-pointer transition
-                              {{ $role === 'artist' ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-red-300' }}">
+                              {{ $role === 'artist' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-primary-300' }}">
                     <input type="radio" wire:model.live="role" value="artist" class="sr-only">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $role === 'artist' ? 'text-red-500' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {{ $role === 'artist' ? 'text-primary' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                     </svg>
-                    <span class="text-sm font-semibold {{ $role === 'artist' ? 'text-red-600' : 'text-gray-600' }}">{{ __('Release my music') }}</span>
+                    <span class="text-sm font-semibold {{ $role === 'artist' ? 'text-primary-600' : 'text-gray-600' }}">{{ __('Release my music') }}</span>
                 </label>
             </div>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
@@ -152,8 +152,8 @@ new #[Layout('layouts.guest')] class extends Component
 
         {{-- ── Artist Fields ─────────────────────────────────────────────────── --}}
         @if($role === 'artist')
-        <div class="mt-6 space-y-4 rounded-xl border border-red-200 bg-red-50/60 p-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-red-500">{{ __('Artist Details') }}</p>
+        <div class="mt-6 space-y-4 rounded-xl border border-primary-200 bg-primary-50/60 p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-primary">{{ __('Artist Details') }}</p>
 
             {{-- Stage Name --}}
             <div>
@@ -166,7 +166,7 @@ new #[Layout('layouts.guest')] class extends Component
             <div>
                 <x-input-label for="bio" :value="__('Bio') . ' (' . mb_strlen($bio) . '/500)'" />
                 <textarea wire:model.live="bio" id="bio" name="bio" rows="3" maxlength="500"
-                          class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-red-400 focus:ring-red-400 text-sm resize-none"
+                          class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-primary-400 focus:ring-primary-400 text-sm resize-none"
                           placeholder="{{ __('Tell the world about your music…') }}"></textarea>
                 <x-input-error :messages="$errors->get('bio')" class="mt-2" />
             </div>
@@ -178,7 +178,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <div class="mt-2 flex flex-wrap gap-2">
                     @foreach($genres as $genre)
                     <label class="flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-medium cursor-pointer transition
-                                  {{ in_array($genre['id'], $selectedGenres) ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-600 border-gray-300 hover:border-red-400' }}">
+                                  {{ in_array($genre['id'], $selectedGenres) ? 'bg-primary text-white border-primary' : 'bg-white text-gray-600 border-gray-300 hover:border-primary-400' }}">
                         <input type="checkbox" wire:model.live="selectedGenres" value="{{ $genre['id'] }}" class="sr-only">
                         {{ $genre['name'] }}
                     </label>
@@ -193,14 +193,14 @@ new #[Layout('layouts.guest')] class extends Component
                 <x-input-label for="avatar" :value="__('Profile Photo (optional)')" />
                 <div class="mt-1 flex items-center gap-4">
                     @if($avatar)
-                        <img src="{{ $avatar->temporaryUrl() }}" class="h-16 w-16 rounded-full object-cover ring-2 ring-red-400" alt="Preview">
+                        <img src="{{ $avatar->temporaryUrl() }}" class="h-16 w-16 rounded-full object-cover ring-2 ring-primary-400" alt="Preview">
                     @else
                         <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
                     @endif
                     <input wire:model="avatar" id="avatar" type="file" accept="image/jpeg,image/png,image/webp"
-                           class="text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
+                           class="text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100">
                 </div>
                 <x-input-error :messages="$errors->get('avatar')" class="mt-2" />
             </div>

@@ -32,7 +32,7 @@ class MusicdirectorPanelProvider extends PanelProvider
             ->brandName('Grinmusic Admin')
             ->login(FilamentLogin::class)
             ->colors([
-                'primary' => Color::Red,
+                'primary' => Color::hex('#728FCE'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

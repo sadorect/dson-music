@@ -42,7 +42,7 @@
 
         <!-- Glass Card 3 -->
         <div class="glass-card glass-card-hover p-6">
-            <div class="w-full h-48 bg-gradient-to-br from-red-300/20 to-red-400/40 rounded-lg mb-4"></div>
+            <div class="w-full h-48 bg-gradient-to-br from-primary-300/20 to-primary-400/40 rounded-lg mb-4"></div>
             <h3 class="text-lg font-semibold text-gray-800 mb-2">Artist Profiles</h3>
             <p class="text-gray-600 mb-4">Connect with your favorite creators</p>
             <button class="glass-btn glass-btn-hover w-full">Discover</button>

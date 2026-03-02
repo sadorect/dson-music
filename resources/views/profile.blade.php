@@ -16,7 +16,7 @@
     </div>
 
     {{-- Delete Account --}}
-    <div class="glass-card rounded-2xl p-6 sm:p-8 border border-red-100">
+    <div class="glass-card rounded-2xl p-6 sm:p-8 border border-primary-100">
         <livewire:profile.delete-user-form />
     </div>
 

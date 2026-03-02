@@ -59,7 +59,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                 {{-- Info --}}
                 <div class="flex-1 min-w-0">
                     <a href="{{ route('track.show', $track->slug) }}" wire:navigate
-                       class="text-sm font-semibold text-gray-800 hover:text-red-500 truncate block transition">{{ $track->title }}</a>
+                       class="text-sm font-semibold text-gray-800 hover:text-primary truncate block transition">{{ $track->title }}</a>
                     <p class="text-xs text-gray-500 truncate">{{ $track->artistProfile?->stage_name ?? '—' }}</p>
                 </div>
 
@@ -68,7 +68,7 @@ new #[Layout('layouts.glass-app')] class extends Component
 
                 {{-- Add to queue --}}
                 <button @click.stop="Livewire.dispatch('queue-track', { id: {{ $track->id }} })"
-                        class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition shrink-0"
+                        class="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-primary transition shrink-0"
                         title="Add to queue">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

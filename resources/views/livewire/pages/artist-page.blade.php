@@ -65,7 +65,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
         @if($profile->getFirstMediaUrl('banner'))
             <img src="{{ $profile->getFirstMediaUrl('banner', 'large') }}" alt="" class="w-full h-full object-cover">
         @else
-            <div class="w-full h-full bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900"></div>
+            <div class="w-full h-full bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900"></div>
         @endif
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
     </div>
@@ -74,7 +74,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-end gap-5 -mt-16 sm:-mt-20 mb-6">
             {{-- Avatar --}}
-            <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl ring-4 ring-black overflow-hidden shrink-0 bg-gradient-to-br from-purple-800 to-indigo-900">
+            <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl ring-4 ring-white overflow-hidden shrink-0 bg-gradient-to-br from-primary-400 to-primary-700">
                 @if($profile->getFirstMediaUrl('avatar'))
                     <img src="{{ $profile->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $profile->stage_name }}" class="w-full h-full object-cover">
                 @else
@@ -90,7 +90,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                         {{ $profile->stage_name ?? $profile->user->name }}
                     </h1>
                     @if($profile->is_verified)
-                        <span class="text-purple-400 text-sm font-medium">✓ Verified</span>
+                        <span class="text-primary-300 text-sm font-medium">✓ Verified</span>
                     @endif
                 </div>
                 <div class="flex items-center gap-4 mt-1">
@@ -102,7 +102,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 <button wire:click="toggleFollow"
                         class="px-6 py-2 rounded-full font-semibold text-sm transition {{ $isFollowing
                             ? 'bg-white/10 text-white hover:bg-white/20'
-                            : 'bg-purple-600 text-white hover:bg-purple-500' }}">
+                            : 'bg-primary text-white hover:bg-primary-500' }}">
                     {{ $isFollowing ? 'Following' : 'Follow' }}
                 </button>
             </div>
@@ -110,7 +110,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
 
         {{-- Bio --}}
         @if($profile->bio)
-            <p class="text-white/60 text-sm leading-relaxed mb-8 max-w-2xl">{{ $profile->bio }}</p>
+            <p class="text-gray-500 text-sm leading-relaxed mb-8 max-w-2xl">{{ $profile->bio }}</p>
         @endif
 
         {{-- Genres --}}
@@ -118,7 +118,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
             <div class="flex flex-wrap gap-2 mb-8">
                 @foreach($profile->genres as $genre)
                     <a href="{{ route('browse', ['genre' => $genre->slug]) }}"
-                       class="text-xs bg-white/10 text-white/70 px-3 py-1 rounded-full hover:bg-white/20 transition">
+                       class="text-xs bg-primary-50 text-primary-600 px-3 py-1 rounded-full hover:bg-primary-100 transition">
                         {{ $genre->name }}
                     </a>
                 @endforeach
@@ -128,28 +128,28 @@ new #[Layout('layouts.glass-app')] class extends Component {
         {{-- Tracks --}}
         @if($profile->tracks->count())
             <section class="mb-10">
-                <h2 class="text-xl font-bold text-white mb-4">Tracks</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Tracks</h2>
                 <div class="space-y-2">
                     @foreach($profile->tracks as $i => $track)
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition group"
+                        <div class="flex items-center gap-3 p-3 rounded-xl glass-card hover:bg-white/50 cursor-pointer transition group"
                              @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })">
-                            <span class="w-6 text-center text-white/30 text-sm group-hover:hidden">{{ $i + 1 }}</span>
-                            <svg class="w-6 h-6 text-white hidden group-hover:block shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <span class="w-6 text-center text-gray-300 text-sm group-hover:hidden">{{ $i + 1 }}</span>
+                            <svg class="w-6 h-6 text-primary hidden group-hover:block shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M8 5v14l11-7z"/>
                             </svg>
                             <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0">
                                 @if($track->getFirstMediaUrl('cover'))
                                     <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->title }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-purple-800 to-indigo-900"></div>
+                                    <div class="w-full h-full bg-gradient-to-br from-primary-200 to-primary-400"></div>
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-white text-sm font-medium truncate">{{ $track->title }}</p>
-                                <p class="text-white/40 text-xs">{{ number_format($track->play_count) }} plays</p>
+                                <p class="text-gray-800 text-sm font-medium truncate">{{ $track->title }}</p>
+                                <p class="text-gray-400 text-xs">{{ number_format($track->play_count) }} plays</p>
                             </div>
                             @if($track->requires_donation)
-                                <span class="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded-full shrink-0">
+                                <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full shrink-0">
                                     ${{ number_format($track->donation_amount, 2) }}
                                 </span>
                             @endif
@@ -163,22 +163,22 @@ new #[Layout('layouts.glass-app')] class extends Component {
         {{-- Albums --}}
         @if($profile->albums->count())
             <section class="mb-10">
-                <h2 class="text-xl font-bold text-white mb-4">Albums & EPs</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-4">Albums &amp; EPs</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     @foreach($profile->albums as $album)
-                        <div class="bg-white/5 rounded-xl overflow-hidden hover:bg-white/10 transition">
+                        <div class="glass-card rounded-xl overflow-hidden hover:bg-white/50 transition">
                             <div class="aspect-square">
                                 @if($album->getFirstMediaUrl('cover'))
                                     <img src="{{ $album->getFirstMediaUrl('cover', 'large') }}" alt="{{ $album->title }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="w-full h-full bg-gradient-to-br from-purple-800 to-indigo-900 flex items-center justify-center">
-                                        <svg class="w-12 h-12 text-white/20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
+                                    <div class="w-full h-full bg-gradient-to-br from-primary-300 to-primary-600 flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-white/40" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
                                     </div>
                                 @endif
                             </div>
                             <div class="p-2">
-                                <p class="text-white text-sm font-semibold truncate">{{ $album->title }}</p>
-                                <p class="text-white/50 text-xs">{{ ucfirst($album->type) }} · {{ $album->release_date?->year }}</p>
+                                <p class="text-gray-800 text-sm font-semibold truncate">{{ $album->title }}</p>
+                                <p class="text-gray-400 text-xs">{{ ucfirst($album->type) }} · {{ $album->release_date?->year }}</p>
                             </div>
                         </div>
                     @endforeach
