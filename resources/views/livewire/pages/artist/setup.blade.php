@@ -88,50 +88,50 @@ new #[Layout('layouts.glass-app')] class extends Component {
 
         {{-- Header --}}
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
                 </svg>
             </div>
-            <h1 class="text-2xl font-bold text-white">Set Up Your Artist Profile</h1>
-            <p class="text-white/50 text-sm mt-1">Tell listeners who you are. You can update this anytime.</p>
+            <h1 class="text-2xl font-bold text-gray-900">Set Up Your Artist Profile</h1>
+            <p class="text-gray-500 text-sm mt-1">Tell listeners who you are. You can update this anytime.</p>
         </div>
 
         {{-- Card --}}
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
+        <div class="glass-card rounded-2xl p-6">
             <form wire:submit="save" class="space-y-5">
 
                 {{-- Stage name --}}
                 <div>
-                    <label class="block text-sm font-medium text-white/80 mb-1.5">
-                        Artist / Stage Name <span class="text-purple-400">*</span>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Artist / Stage Name <span class="text-primary">*</span>
                     </label>
                     <input
                         wire:model="stageName"
                         type="text"
                         placeholder="How should fans know you?"
-                        class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition">
+                        class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition">
                     @error('stageName')
-                        <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Bio --}}
                 <div>
-                    <label class="block text-sm font-medium text-white/80 mb-1.5">Bio</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Bio</label>
                     <textarea
                         wire:model="bio"
                         rows="3"
                         placeholder="Tell your story in a few sentences…"
-                        class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-purple-400 transition resize-none"></textarea>
+                        class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition resize-none"></textarea>
                     @error('bio')
-                        <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Genres --}}
                 <div>
-                    <label class="block text-sm font-medium text-white/80 mb-2">Genres (pick up to 3)</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Genres (pick up to 3)</label>
                     <div class="flex flex-wrap gap-2">
                         @foreach($genres as $genre)
                             <label class="cursor-pointer">
@@ -139,9 +139,9 @@ new #[Layout('layouts.glass-app')] class extends Component {
                                        wire:model="selectedGenres"
                                        value="{{ $genre->id }}"
                                        class="sr-only peer">
-                                <span class="inline-block px-3 py-1. 5 rounded-full text-sm border border-white/20 text-white/60
-                                             peer-checked:bg-purple-600 peer-checked:border-purple-500 peer-checked:text-white
-                                             hover:bg-white/10 transition">
+                                <span class="inline-block px-3 py-1.5 rounded-full text-sm border border-gray-200 text-gray-600
+                                             peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white
+                                             hover:border-primary-300 hover:text-primary-600 transition">
                                     {{ $genre->name }}
                                 </span>
                             </label>
@@ -152,7 +152,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 {{-- Social links (collapsible) --}}
                 <div x-data="{ open: false }">
                     <button type="button" @click="open = !open"
-                            class="flex items-center gap-2 text-sm text-white/50 hover:text-white transition">
+                            class="flex items-center gap-2 text-sm text-gray-500 hover:text-primary transition">
                         <svg class="w-4 h-4 transition" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
@@ -160,34 +160,34 @@ new #[Layout('layouts.glass-app')] class extends Component {
                     </button>
                     <div x-show="open" x-collapse class="mt-3 space-y-3">
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm">instagram.com/</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">instagram.com/</span>
                             <input wire:model="instagram" type="text" placeholder="yourusername"
-                                   class="w-full bg-white/10 border border-white/20 rounded-xl pl-32 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple-400 transition">
+                                   class="w-full bg-white border border-gray-200 rounded-xl pl-32 pr-4 py-2.5 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition">
                         </div>
                         <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm">twitter.com/</span>
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">twitter.com/</span>
                             <input wire:model="twitter" type="text" placeholder="yourusername"
-                                   class="w-full bg-white/10 border border-white/20 rounded-xl pl-28 pr-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple-400 transition">
+                                   class="w-full bg-white border border-gray-200 rounded-xl pl-28 pr-4 py-2.5 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition">
                         </div>
                         <input wire:model="spotify" type="url" placeholder="Spotify profile URL"
-                               class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple-400 transition">
+                               class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition">
                         <input wire:model="website" type="url" placeholder="https://yourwebsite.com"
-                               class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple-400 transition">
+                               class="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition">
                     </div>
                 </div>
 
                 {{-- Approval notice --}}
-                <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3 flex gap-2">
-                    <svg class="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 flex gap-2">
+                    <svg class="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2Zm1 14h-2v-2h2v2Zm0-4h-2V7h2v5Z"/>
                     </svg>
-                    <p class="text-yellow-300 text-xs leading-relaxed">
+                    <p class="text-yellow-700 text-xs leading-relaxed">
                         Your profile will be reviewed before going public. You can still upload tracks while waiting for approval.
                     </p>
                 </div>
 
                 <button type="submit"
-                        class="w-full bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl font-semibold transition shadow-lg">
+                        class="w-full bg-primary hover:bg-primary-600 text-white py-3 rounded-xl font-semibold transition shadow-sm">
                     <span wire:loading.remove>Create Profile</span>
                     <span wire:loading>Creating…</span>
                 </button>

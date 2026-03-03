@@ -77,15 +77,23 @@ new #[Layout('layouts.glass-app')] class extends Component
             'donation_amount'   => $this->requires_donation ? (float)$this->donation_amount : 1.00,
         ]);
 
-        // Store audio file
-        $track->addMedia($this->audioFile->getRealPath())
-            ->usingFileName(str()->slug($this->title) . '.' . $this->audioFile->getClientOriginalExtension())
+        // Store audio file — storeAs to a known local path so Spatie gets a real absolute path
+        $audioExt     = strtolower($this->audioFile->getClientOriginalExtension());
+        $audioName    = str()->slug($this->title) . '-' . uniqid() . '.' . $audioExt;
+        $audioRelPath = $this->audioFile->storeAs('media-tmp', $audioName, 'local');
+
+        $track->addMedia(storage_path('app/' . $audioRelPath))
+            ->usingFileName(str()->slug($this->title) . '.' . $audioExt)
             ->toMediaCollection('audio');
 
         // Store cover if provided
         if ($this->coverFile) {
-            $track->addMedia($this->coverFile->getRealPath())
-                ->usingFileName('cover.' . $this->coverFile->getClientOriginalExtension())
+            $coverExt     = strtolower($this->coverFile->getClientOriginalExtension());
+            $coverName    = 'cover-' . uniqid() . '.' . $coverExt;
+            $coverRelPath = $this->coverFile->storeAs('media-tmp', $coverName, 'local');
+
+            $track->addMedia(storage_path('app/' . $coverRelPath))
+                ->usingFileName('cover.' . $coverExt)
                 ->toMediaCollection('cover');
         }
 

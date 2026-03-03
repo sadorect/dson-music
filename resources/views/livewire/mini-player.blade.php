@@ -10,7 +10,7 @@
     x-on:player-track-loaded.window="onTrackLoaded($event.detail)"
     x-on:player-queue-add.window="onQueueAdd($event.detail)"
     @start-download.window="
-        var a = document.createElement('a');
+        const a = document.createElement('a');
         a.href = $event.detail.url;
         a.download = $event.detail.filename || 'track.mp3';
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
