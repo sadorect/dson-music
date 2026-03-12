@@ -11,6 +11,7 @@ Volt::route('/browse', 'pages.browse')->name('browse');
 Volt::route('/search', 'pages.search')->name('search');
 Volt::route('/charts', 'pages.charts')->name('charts');
 Volt::route('/new-releases', 'pages.new-releases')->name('new-releases');
+Volt::route('/playlists', 'pages.public-playlists')->name('playlists.public');
 Volt::route('/track/{track:slug}', 'pages.track-show')->name('track.show');
 Volt::route('/playlist/{playlist:slug}', 'pages.playlist-show')->name('playlist.show');
 

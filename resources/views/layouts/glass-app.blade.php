@@ -21,10 +21,12 @@
     @livewireStyles
     @stack('styles')
 </head>
-<body class="glass-gradient-light min-h-screen antialiased">
+<body class="glass-gradient-light min-h-screen antialiased"
+      x-data="{ showBackToTop: false }"
+      x-on:scroll.window.throttle.150ms="showBackToTop = window.scrollY > 500">
 <div id="app" class="min-h-screen">
 
-    {{-- ── Navigation ──────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <nav class="glass-nav sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -83,7 +85,7 @@
         </div>
     </nav>
 
-    {{-- ── Mobile Drawer ───────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Mobile Drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div x-data="{ open: false }" x-on:toggle-mobile-nav.window="open = !open" class="md:hidden">
         <div x-show="open" x-transition @click="open = false" class="fixed inset-0 bg-black/30 z-40 backdrop-blur-sm" style="display:none"></div>
         <div x-show="open" x-transition class="fixed top-0 left-0 h-full w-64 glass-panel z-50 shadow-xl p-6 flex flex-col gap-4 text-sm" style="display:none">
@@ -104,13 +106,13 @@
         </div>
     </div>
 
-    {{-- ── Page Content ────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Page Content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <main class="pb-6">
         {{ $slot ?? '' }}
         @yield('content')
     </main>
 
-    {{-- ── Site Footer ─────────────────────────────────────────────────────── --}}
+    {{-- â”€â”€ Site Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <footer class="bg-gray-900 text-gray-400 pb-32 pt-14">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -150,6 +152,7 @@
                         <li><a href="{{ route('search') }}" class="hover:text-primary-400 transition">Search</a></li>
                         <li><a href="{{ route('charts') }}" wire:navigate class="hover:text-primary-400 transition">Charts</a></li>
                         <li><a href="{{ route('new-releases') }}" wire:navigate class="hover:text-primary-400 transition">New Releases</a></li>
+                        <li><a href="{{ route('playlists.public') }}" wire:navigate class="hover:text-primary-400 transition">Public Playlists</a></li>
                         @auth
                             <li><a href="{{ route('listener.liked') }}" class="hover:text-primary-400 transition">Liked Tracks</a></li>
                             <li><a href="{{ route('listener.playlists') }}" class="hover:text-primary-400 transition">My Playlists</a></li>
@@ -190,7 +193,7 @@
 
             {{-- Divider --}}
             <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <p>© {{ date('Y') }} {{ $siteName }}. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $siteName }}. All rights reserved.</p>
 
                 {{-- Site visit counter --}}
                 @php
@@ -210,17 +213,30 @@
                 </p>
 
                 <p class="flex items-center gap-1.5">
-                    Made with <span class="text-primary-500">♥</span> for independent artists
+                    Made with <span class="text-primary-500">&hearts;</span> for independent artists
                 </p>
             </div>
 
         </div>
     </footer>
 
-    {{-- ── Persistent Mini Player ──────────────────────────────────────────── --}}
+    <button
+        x-show="showBackToTop"
+        x-transition.opacity.scale
+        @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+        class="fixed bottom-36 right-4 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-gray-900/90 text-white shadow-xl backdrop-blur-md transition hover:bg-primary md:bottom-40"
+        style="display:none"
+        aria-label="Back to top"
+    >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+        </svg>
+    </button>
+
+    {{-- â”€â”€ Persistent Mini Player â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     @livewire('mini-player')
 
-    {{-- ── Login-Required Modal ───────────────────────────────────────────── --}}
+    {{-- â”€â”€ Login-Required Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div
         x-data="{ show: false }"
         @open-modal.window="if ($event.detail === 'login-required' || $event.detail?.id === 'login-required') show = true"

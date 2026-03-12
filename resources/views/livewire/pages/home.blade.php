@@ -3,6 +3,7 @@
 use App\Models\ArtistProfile;
 use App\Models\Genre;
 use App\Models\HomepageBannerSlide;
+use App\Models\Playlist;
 use App\Models\Track;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Layout;
@@ -44,6 +45,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 'tracks' => Track::where('is_published', true)->count(),
                 'artists' => ArtistProfile::where('is_approved', true)->count(),
                 'genres' => Genre::where('is_active', true)->count(),
+                'playlists' => Playlist::where('is_public', true)->count(),
             ],
         ];
     }
@@ -308,16 +310,24 @@ new #[Layout('layouts.glass-app')] class extends Component {
             }, { threshold: 0.3 });
             observer.observe($el);
          ">
-        <div class="mx-auto grid max-w-3xl grid-cols-3 divide-x divide-white/30 text-center text-white">
+        <div class="mx-auto grid max-w-5xl grid-cols-2 divide-x divide-y divide-white/20 text-center text-white sm:grid-cols-4 sm:divide-y-0">
             @foreach([
                 ['n' => $stats['tracks'], 'label' => 'Published Tracks'],
                 ['n' => $stats['artists'], 'label' => 'Artists'],
                 ['n' => $stats['genres'], 'label' => 'Genres'],
+                ['n' => $stats['playlists'], 'label' => 'Public Playlists', 'href' => route('playlists.public')],
             ] as $stat)
-                <div class="px-6 py-1">
-                    <p class="stat-num text-2xl font-black sm:text-3xl" x-show="visible">{{ number_format($stat['n']) }}</p>
-                    <p class="mt-0.5 text-xs text-white/80 sm:text-sm">{{ $stat['label'] }}</p>
-                </div>
+                @if(!empty($stat['href']))
+                    <a href="{{ $stat['href'] }}" wire:navigate class="block px-6 py-3 transition hover:bg-white/10 sm:py-1">
+                        <p class="stat-num text-2xl font-black sm:text-3xl" x-show="visible">{{ number_format($stat['n']) }}</p>
+                        <p class="mt-0.5 text-xs text-white/80 sm:text-sm">{{ $stat['label'] }}</p>
+                    </a>
+                @else
+                    <div class="px-6 py-3 sm:py-1">
+                        <p class="stat-num text-2xl font-black sm:text-3xl" x-show="visible">{{ number_format($stat['n']) }}</p>
+                        <p class="mt-0.5 text-xs text-white/80 sm:text-sm">{{ $stat['label'] }}</p>
+                    </div>
+                @endif
             @endforeach
         </div>
     </div>

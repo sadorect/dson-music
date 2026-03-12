@@ -21,7 +21,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
         ]);
 
         if (auth()->check()) {
-            $this->isFollowing = Follow::where('follower_id', auth()->id())
+            $this->isFollowing = Follow::where('user_id', auth()->id())
                 ->where('artist_profile_id', $profile->id)
                 ->exists();
         }
@@ -41,7 +41,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
         }
 
         $userId = auth()->id();
-        $existing = Follow::where('follower_id', $userId)
+        $existing = Follow::where('user_id', $userId)
             ->where('artist_profile_id', $this->profile->id)
             ->first();
 
@@ -51,7 +51,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
             $this->isFollowing = false;
         } else {
             Follow::create([
-                'follower_id' => $userId,
+                'user_id' => $userId,
                 'artist_profile_id' => $this->profile->id,
             ]);
             $this->profile->increment('followers_count');
