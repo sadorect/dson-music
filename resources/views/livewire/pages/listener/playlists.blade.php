@@ -214,7 +214,10 @@ new #[Layout('layouts.glass-app')] class extends Component
                         </button>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-800 truncate">{{ $track->title }}</p>
-                            <p class="text-xs text-gray-500">{{ $track->artistProfile?->stage_name }}</p>
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                                <span>{{ $track->artistProfile?->stage_name }}</span>
+                                <x-track-duration :track="$track" class="text-gray-400" />
+                            </div>
                         </div>
                         <button wire:click="removeTrack({{ $pl->id }}, {{ $track->id }})"
                                 class="text-red-400 hover:text-red-600 transition opacity-0 group-hover:opacity-100">
@@ -263,7 +266,10 @@ new #[Layout('layouts.glass-app')] class extends Component
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-gray-800 truncate">{{ $result->title }}</p>
-                                        <p class="text-xs text-gray-500">{{ $result->artistProfile?->stage_name }}</p>
+                                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                                            <span>{{ $result->artistProfile?->stage_name }}</span>
+                                            <x-track-duration :track="$result" class="text-gray-400" />
+                                        </div>
                                     </div>
                                     <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

@@ -75,7 +75,10 @@ new #[Layout('layouts.glass-app')] class extends Component
                 <div class="flex-1 min-w-0">
                     <a href="{{ route('track.show', $track->slug) }}" wire:navigate
                        class="text-sm font-semibold text-gray-800 hover:text-primary truncate block transition">{{ $track->title }}</a>
-                    <p class="text-xs text-gray-500 truncate">{{ $track->artistProfile?->stage_name ?? '—' }}</p>
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                        <span class="truncate">{{ $track->artistProfile?->stage_name ?? '—' }}</span>
+                        <x-track-duration :track="$track" class="text-gray-400" />
+                    </div>
                 </div>
 
                 {{-- Plays --}}

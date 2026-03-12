@@ -95,7 +95,10 @@ new #[Layout('layouts.glass-app')] class extends Component {
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-white font-medium truncate">{{ $track->title }}</p>
-                            <p class="text-white/50 text-sm truncate">{{ $track->artistProfile->stage_name ?? $track->artistProfile->user->name }}</p>
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-white/50">
+                                <span class="truncate">{{ $track->artistProfile->stage_name ?? $track->artistProfile->user->name }}</span>
+                                <x-track-duration :track="$track" class="text-white/40" />
+                            </div>
                         </div>
                         @if($track->requires_donation)
                             <span class="shrink-0 text-xs bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded-full">

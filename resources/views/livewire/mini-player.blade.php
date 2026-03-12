@@ -200,22 +200,15 @@
 
                 {{-- Share --}}
                 <button
-                    x-data="{ copied: false }"
-                    @click="
-                        if (track?.url) {
-                            navigator.clipboard.writeText(window.location.origin + track.url).then(() => {
-                                copied = true; setTimeout(() => copied = false, 2000);
-                            });
-                        }
-                    "
+                    @click="shareTrack()"
                     class="relative text-gray-400 hover:text-primary transition"
-                    :title="copied ? 'Link copied!' : 'Share track'"
+                    :title="shareCopied ? 'Link copied!' : 'Share track'"
                 >
-                    <svg x-show="!copied" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="!shareCopied" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
                     </svg>
-                    <svg x-show="copied" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none">
+                    <svg x-show="shareCopied" class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                 </button>
@@ -287,7 +280,9 @@ function miniPlayer() {
         queueIndex:  P.queueIndex,
         showQueue:   false,
         queueToast:  false,
+        shareCopied: false,
         _toastTimer: null,
+        _shareTimer: null,
         _handlers:   {},
 
         get progress() {
@@ -426,6 +421,65 @@ function miniPlayer() {
         },
 
         // ── Playback controls ─────────────────────────────────────────────
+        getShareUrl() {
+            if (!this.track?.url) return null;
+
+            try {
+                return new URL(this.track.url, window.location.origin).toString();
+            } catch (_) {
+                return this.track.url;
+            }
+        },
+
+        async shareTrack() {
+            const shareUrl = this.getShareUrl();
+            if (!shareUrl) return;
+
+            const payload = {
+                title: this.track?.title || 'Track',
+                text: this.track?.artist ? `${this.track.title} by ${this.track.artist}` : (this.track?.title || 'Track'),
+                url: shareUrl,
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(payload);
+                    return;
+                } catch (error) {
+                    if (error?.name === 'AbortError') return;
+                }
+            }
+
+            let copied = false;
+
+            if (navigator.clipboard?.writeText) {
+                try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    copied = true;
+                } catch (_) {
+                    copied = false;
+                }
+            }
+
+            if (!copied) {
+                const input = document.createElement('input');
+                input.value = shareUrl;
+                input.setAttribute('readonly', '');
+                input.style.position = 'absolute';
+                input.style.left = '-9999px';
+                document.body.appendChild(input);
+                input.select();
+                copied = document.execCommand('copy');
+                document.body.removeChild(input);
+            }
+
+            if (copied) {
+                this.shareCopied = true;
+                clearTimeout(this._shareTimer);
+                this._shareTimer = setTimeout(() => { this.shareCopied = false; }, 2000);
+            }
+        },
+
         togglePlay() {
             if (!this.track) return;
             if (this.playing) {

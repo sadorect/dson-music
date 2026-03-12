@@ -25,6 +25,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                 'profile'       => null,
                 'totalTracks'   => 0,
                 'totalPlays'    => 0,
+                'totalDownloads'=> 0,
                 'totalDonations'=> 0,
                 'followers'     => 0,
                 'recentTracks'  => collect(),
@@ -35,6 +36,7 @@ new #[Layout('layouts.glass-app')] class extends Component
             'profile'       => $profile,
             'totalTracks'   => $profile->tracks()->where('is_published', true)->count(),
             'totalPlays'    => $profile->tracks()->sum('play_count'),
+            'totalDownloads'=> $profile->tracks()->sum('downloads_count'),
             'totalDonations'=> $profile->donations()->sum('amount'),
             'followers'     => $profile->followers()->count(),
             'recentTracks'  => $profile->tracks()->with('genre')->latest()->take(5)->get(),
@@ -73,10 +75,11 @@ new #[Layout('layouts.glass-app')] class extends Component
     @else
 
     {{-- Stats Grid --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 xl:grid-cols-5 gap-4">
         @foreach([
             ['label' => 'Published Tracks', 'value' => number_format($totalTracks),   'icon' => 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3'],
             ['label' => 'Total Plays',      'value' => number_format($totalPlays),     'icon' => 'M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+            ['label' => 'Total Downloads',  'value' => number_format($totalDownloads), 'icon' => 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'],
             ['label' => 'Followers',        'value' => number_format($followers),      'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
             ['label' => 'Total Donations',  'value' => '$' . number_format($totalDonations, 2), 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
         ] as $stat)

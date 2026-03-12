@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Page Not Found — GrinMusic</title>
+    <title>Page Not Found — {{ $siteTitle }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full antialiased" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 30%, #ffe4e6 60%, #fef3c7 100%);">
@@ -27,7 +27,7 @@
                     <path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/>
                 </svg>
             </div>
-            <span class="text-xl font-bold text-gray-800 tracking-tight">GrinMusic</span>
+            <span class="text-xl font-bold text-gray-800 tracking-tight">{{ $siteName }}</span>
         </a>
 
         {{-- Glass card --}}

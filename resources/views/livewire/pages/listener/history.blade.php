@@ -49,7 +49,10 @@ new #[Layout('layouts.glass-app')] class extends Component
                 </button>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-800 truncate">{{ $play->track->title }}</p>
-                    <p class="text-xs text-gray-500">{{ $play->track->artist?->stage_name ?? 'Unknown' }}</p>
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                        <span>{{ $play->track->artist?->stage_name ?? 'Unknown' }}</span>
+                        <x-track-duration :track="$play->track" class="text-gray-400" />
+                    </div>
                 </div>
                 <span class="text-xs text-gray-400 shrink-0">{{ $play->created_at->diffForHumans() }}</span>
             </li>

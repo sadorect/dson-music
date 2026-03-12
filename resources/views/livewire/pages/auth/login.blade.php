@@ -31,7 +31,7 @@ new #[Layout('layouts.guest')] class extends Component
 <div>
     <div class="mb-6 text-center">
         <h1 class="text-2xl font-bold text-gray-800">Welcome back</h1>
-        <p class="text-sm text-gray-500 mt-1">Sign in to your GrinMusic account</p>
+        <p class="text-sm text-gray-500 mt-1">Sign in to your {{ $siteName }} account</p>
     </div>
 
     <!-- Session Status -->

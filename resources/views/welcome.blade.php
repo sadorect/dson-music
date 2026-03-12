@@ -5,7 +5,7 @@
     <!-- Hero Section -->
     <div class="text-center mb-16">
         <h1 class="text-5xl font-bold text-gray-900 mb-4 animate-fade-in">
-            Welcome to <span class="text-primary">GrinMusic</span>
+            Welcome to <span class="text-primary">{{ $siteName }}</span>
         </h1>
         <p class="text-xl text-gray-700 mb-8 animate-slide-up">
             Experience music streaming with a beautiful glassy design
@@ -51,7 +51,7 @@
 
     <!-- Glass Panel Section -->
     <div class="glass-panel glass-panel-hover p-8 mb-16">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Why Choose GrinMusic?</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Why Choose {{ $siteName }}?</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="text-center">
                 <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">

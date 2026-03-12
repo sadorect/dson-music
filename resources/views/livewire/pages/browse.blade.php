@@ -129,11 +129,14 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 </div>
                 <div class="p-2">
                     <p class="text-gray-800 text-xs font-semibold truncate">{{ $track->title }}</p>
-                    <a href="{{ route('artist.page', $track->artistProfile) }}"
-                       @click.stop
-                       class="text-gray-500 text-xs hover:text-primary truncate block">
-                        {{ $track->artistProfile->stage_name ?? $track->artistProfile->user->name }}
-                    </a>
+                    <div class="flex items-center justify-between gap-2">
+                        <a href="{{ route('artist.page', $track->artistProfile) }}"
+                           @click.stop
+                           class="text-gray-500 text-xs hover:text-primary truncate block">
+                            {{ $track->artistProfile->stage_name ?? $track->artistProfile->user->name }}
+                        </a>
+                        <x-track-duration :track="$track" class="shrink-0 text-[11px] text-gray-400" :icon="false" />
+                    </div>
                 </div>
             </div>
         @empty
