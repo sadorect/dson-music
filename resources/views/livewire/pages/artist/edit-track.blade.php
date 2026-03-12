@@ -3,12 +3,15 @@
 use App\Models\Album;
 use App\Models\Genre;
 use App\Models\Track;
+use App\StagesLivewireUploads;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 
 new #[Layout('layouts.glass-app')] class extends Component
 {
+    use StagesLivewireUploads;
     use WithFileUploads;
 
     // Track being edited
@@ -94,17 +97,20 @@ new #[Layout('layouts.glass-app')] class extends Component
         // Replace audio if a new file was provided
         if ($this->audioFile) {
             $this->track->clearMediaCollection('audio');
-            $this->track->addMedia($this->audioFile->getRealPath())
-                ->usingFileName(\Str::slug($this->title) . '.' . $this->audioFile->getClientOriginalExtension())
-                ->toMediaCollection('audio');
+            $audioFileName = (Str::slug($this->title) ?: 'track') . '.' . strtolower($this->audioFile->getClientOriginalExtension());
+
+            $this->addStagedMedia($this->track, $this->audioFile, 'audio', $audioFileName);
         }
 
         // Replace cover if a new file was provided
         if ($this->coverFile) {
             $this->track->clearMediaCollection('cover');
-            $this->track->addMedia($this->coverFile->getRealPath())
-                ->usingFileName('cover.' . $this->coverFile->getClientOriginalExtension())
-                ->toMediaCollection('cover');
+            $this->addStagedMedia(
+                $this->track,
+                $this->coverFile,
+                'cover',
+                'cover.' . strtolower($this->coverFile->getClientOriginalExtension())
+            );
         }
 
         session()->flash('success', "\"{$this->track->title}\" updated successfully!");

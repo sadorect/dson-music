@@ -2,6 +2,7 @@
 
 use App\Models\Album;
 use App\Models\Genre;
+use App\StagesLivewireUploads;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
@@ -9,6 +10,7 @@ use Livewire\WithFileUploads;
 
 new #[Layout('layouts.glass-app')] class extends Component
 {
+    use StagesLivewireUploads;
     use WithFileUploads;
 
     public string $title       = '';
@@ -60,9 +62,12 @@ new #[Layout('layouts.glass-app')] class extends Component
         ]);
 
         if ($this->coverFile) {
-            $album->addMedia($this->coverFile->getRealPath())
-                ->usingFileName('cover.' . $this->coverFile->getClientOriginalExtension())
-                ->toMediaCollection('cover');
+            $this->addStagedMedia(
+                $album,
+                $this->coverFile,
+                'cover',
+                'cover.' . strtolower($this->coverFile->getClientOriginalExtension())
+            );
         }
 
         session()->flash('success', "Album \"{$album->title}\" created!");

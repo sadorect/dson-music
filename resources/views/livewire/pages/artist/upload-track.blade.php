@@ -3,6 +3,8 @@
 use App\Models\Album;
 use App\Models\Genre;
 use App\Models\Track;
+use App\StagesLivewireUploads;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
@@ -10,6 +12,7 @@ use Livewire\WithFileUploads;
 
 new #[Layout('layouts.glass-app')] class extends Component
 {
+    use StagesLivewireUploads;
     use WithFileUploads;
 
     public string $title          = '';
@@ -78,18 +81,17 @@ new #[Layout('layouts.glass-app')] class extends Component
         ]);
 
         // Store audio file — storeAs to a known local path so Spatie gets a real absolute path
-        $audioExt     = strtolower($this->audioFile->getClientOriginalExtension());
-        $track->addMedia($this->audioFile->getRealPath())
-            ->usingFileName(str()->slug($this->title) . '.' . $audioExt)
-            ->toMediaCollection('audio');
+        // Stage Livewire uploads onto a stable local path before Media Library imports them.
+        $audioExt = strtolower($this->audioFile->getClientOriginalExtension());
+        $audioFileName = (Str::slug($this->title) ?: 'track') . '.' . $audioExt;
+
+        $this->addStagedMedia($track, $this->audioFile, 'audio', $audioFileName);
 
         // Store cover if provided
         if ($this->coverFile) {
             $coverExt = strtolower($this->coverFile->getClientOriginalExtension());
 
-            $track->addMedia($this->coverFile->getRealPath())
-                ->usingFileName('cover.' . $coverExt)
-                ->toMediaCollection('cover');
+            $this->addStagedMedia($track, $this->coverFile, 'cover', 'cover.' . $coverExt);
         }
 
         session()->flash('success', "Track \"{$track->title}\" uploaded successfully!");
@@ -114,10 +116,17 @@ new #[Layout('layouts.glass-app')] class extends Component
     <form wire:submit="save" class="space-y-6" enctype="multipart/form-data">
 
         {{-- Audio File --}}
-        <div class="glass-card rounded-2xl p-6 space-y-4">
+        <div
+            class="glass-card rounded-2xl p-6 space-y-4"
+            x-data="{ drag: false, uploading: false, progress: 0 }"
+            x-on:livewire-upload-start="if ($event.detail.property !== 'audioFile') return; uploading = true; progress = 0"
+            x-on:livewire-upload-progress="if ($event.detail.property !== 'audioFile') return; progress = $event.detail.progress"
+            x-on:livewire-upload-finish="if ($event.detail.property !== 'audioFile') return; uploading = false; progress = 100"
+            x-on:livewire-upload-error="if ($event.detail.property !== 'audioFile') return; uploading = false"
+            x-on:livewire-upload-cancel="if ($event.detail.property !== 'audioFile') return; uploading = false; progress = 0"
+        >
             <h2 class="font-semibold text-gray-700">Audio File <span class="text-red-500">*</span></h2>
             <div
-                x-data="{ drag: false }"
                 x-on:dragover.prevent="drag = true"
                 x-on:dragleave.prevent="drag = false"
                 x-on:drop.prevent="drag = false"
@@ -134,6 +143,15 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <p class="text-xs text-gray-400 mt-1">MP3, WAV, FLAC, OGG, AAC · Max 100 MB</p>
                 @endif
                 <input id="audioInput" wire:model="audioFile" type="file" accept=".mp3,.wav,.flac,.ogg,.aac" class="sr-only">
+            </div>
+            <div x-show="uploading" class="space-y-2">
+                <div class="flex items-center justify-between text-xs font-medium text-gray-500">
+                    <span>Uploading audio file...</span>
+                    <span x-text="`${progress}%`"></span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-gray-200">
+                    <div class="h-full rounded-full bg-red-500 transition-all duration-200" :style="`width: ${progress}%`"></div>
+                </div>
             </div>
             <x-input-error :messages="$errors->get('audioFile')" />
         </div>
@@ -185,7 +203,15 @@ new #[Layout('layouts.glass-app')] class extends Component
         </div>
 
         {{-- Cover Art --}}
-        <div class="glass-card rounded-2xl p-6 space-y-3">
+        <div
+            class="glass-card rounded-2xl p-6 space-y-3"
+            x-data="{ uploading: false, progress: 0 }"
+            x-on:livewire-upload-start="if ($event.detail.property !== 'coverFile') return; uploading = true; progress = 0"
+            x-on:livewire-upload-progress="if ($event.detail.property !== 'coverFile') return; progress = $event.detail.progress"
+            x-on:livewire-upload-finish="if ($event.detail.property !== 'coverFile') return; uploading = false; progress = 100"
+            x-on:livewire-upload-error="if ($event.detail.property !== 'coverFile') return; uploading = false"
+            x-on:livewire-upload-cancel="if ($event.detail.property !== 'coverFile') return; uploading = false; progress = 0"
+        >
             <h2 class="font-semibold text-gray-700">Cover Art <span class="text-xs text-gray-400 font-normal">(optional)</span></h2>
             <div class="flex items-center gap-5">
                 @if($coverFile)
@@ -199,6 +225,15 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <input wire:model="coverFile" type="file" accept="image/jpeg,image/png,image/webp"
                            class="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
                     <p class="text-xs text-gray-400 mt-1">JPG, PNG, WebP · Recommended 1:1</p>
+                </div>
+            </div>
+            <div x-show="uploading" class="space-y-2">
+                <div class="flex items-center justify-between text-xs font-medium text-gray-500">
+                    <span>Uploading cover art...</span>
+                    <span x-text="`${progress}%`"></span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-gray-200">
+                    <div class="h-full rounded-full bg-red-500 transition-all duration-200" :style="`width: ${progress}%`"></div>
                 </div>
             </div>
             <x-input-error :messages="$errors->get('coverFile')" />
@@ -243,9 +278,11 @@ new #[Layout('layouts.glass-app')] class extends Component
             </a>
             <button type="submit"
                     class="glass-btn-primary glass-btn-primary-hover px-6 py-2.5 rounded-xl text-sm font-semibold"
-                    wire:loading.attr="disabled">
-                <span wire:loading.remove>Upload Track</span>
-                <span wire:loading>Uploading…</span>
+                    wire:loading.attr="disabled"
+                    wire:target="audioFile,coverFile,save">
+                <span wire:loading.remove wire:target="audioFile,coverFile,save">Upload Track</span>
+                <span wire:loading wire:target="audioFile,coverFile">Uploading files...</span>
+                <span wire:loading wire:target="save">Saving track...</span>
             </button>
         </div>
     </form>

@@ -3,6 +3,7 @@
 use App\Models\ArtistProfile;
 use App\Models\Genre;
 use App\Models\User;
+use App\StagesLivewireUploads;
 use App\Rules\CaptchaAnswer;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,7 @@ use Livewire\WithFileUploads;
 
 new #[Layout('layouts.guest')] class extends Component
 {
+    use StagesLivewireUploads;
     use WithFileUploads;
 
     public string $name        = '';
@@ -77,9 +79,12 @@ new #[Layout('layouts.guest')] class extends Component
             }
 
             if ($this->avatar) {
-                $profile->addMedia($this->avatar->getRealPath())
-                    ->usingFileName('avatar.' . $this->avatar->getClientOriginalExtension())
-                    ->toMediaCollection('avatar');
+                $this->addStagedMedia(
+                    $profile,
+                    $this->avatar,
+                    'avatar',
+                    'avatar.' . strtolower($this->avatar->getClientOriginalExtension())
+                );
             }
         }
 
