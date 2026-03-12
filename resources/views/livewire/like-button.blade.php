@@ -1,7 +1,6 @@
 <button
     wire:click="toggle"
-    class="flex items-center gap-1.5 transition"
-    :class="liked ? 'text-primary' : 'text-gray-400 hover:text-primary-400'"
+    class="flex items-center gap-1.5 transition {{ $liked ? 'text-primary' : 'text-gray-400 hover:text-primary-400' }}"
     title="{{ $liked ? 'Unlike' : 'Like' }}"
 >
     <svg class="w-4 h-4" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

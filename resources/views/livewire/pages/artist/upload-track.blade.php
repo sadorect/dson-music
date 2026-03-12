@@ -79,20 +79,15 @@ new #[Layout('layouts.glass-app')] class extends Component
 
         // Store audio file — storeAs to a known local path so Spatie gets a real absolute path
         $audioExt     = strtolower($this->audioFile->getClientOriginalExtension());
-        $audioName    = str()->slug($this->title) . '-' . uniqid() . '.' . $audioExt;
-        $audioRelPath = $this->audioFile->storeAs('media-tmp', $audioName, 'local');
-
-        $track->addMedia(storage_path('app/' . $audioRelPath))
+        $track->addMedia($this->audioFile->getRealPath())
             ->usingFileName(str()->slug($this->title) . '.' . $audioExt)
             ->toMediaCollection('audio');
 
         // Store cover if provided
         if ($this->coverFile) {
-            $coverExt     = strtolower($this->coverFile->getClientOriginalExtension());
-            $coverName    = 'cover-' . uniqid() . '.' . $coverExt;
-            $coverRelPath = $this->coverFile->storeAs('media-tmp', $coverName, 'local');
+            $coverExt = strtolower($this->coverFile->getClientOriginalExtension());
 
-            $track->addMedia(storage_path('app/' . $coverRelPath))
+            $track->addMedia($this->coverFile->getRealPath())
                 ->usingFileName('cover.' . $coverExt)
                 ->toMediaCollection('cover');
         }
