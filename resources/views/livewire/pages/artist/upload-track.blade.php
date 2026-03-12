@@ -3,6 +3,7 @@
 use App\Models\Album;
 use App\Models\Genre;
 use App\Models\Track;
+use App\Rules\ValidAudioUpload;
 use App\StagesLivewireUploads;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -55,7 +56,7 @@ new #[Layout('layouts.glass-app')] class extends Component
             'is_published'     => ['boolean'],
             'requires_donation'=> ['boolean'],
             'donation_amount'  => ['nullable', 'numeric', 'min:0.5', 'max:999'],
-            'audioFile'        => ['required', 'file', 'mimes:mp3,wav,flac,ogg,aac', 'max:102400'], // 100MB
+            'audioFile'        => ['required', 'file', new ValidAudioUpload(), 'max:102400'], // 100MB
             'coverFile'        => ['nullable', 'image', 'max:4096'],
         ];
 
@@ -142,7 +143,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <p class="text-sm font-medium text-gray-600">Drop your audio file here or <span class="text-red-500">browse</span></p>
                     <p class="text-xs text-gray-400 mt-1">MP3, WAV, FLAC, OGG, AAC · Max 100 MB</p>
                 @endif
-                <input id="audioInput" wire:model="audioFile" type="file" accept=".mp3,.wav,.flac,.ogg,.aac" class="sr-only">
+                <input id="audioInput" wire:model="audioFile" type="file" accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,audio/*" class="sr-only">
             </div>
             <div x-show="uploading" class="space-y-2">
                 <div class="flex items-center justify-between text-xs font-medium text-gray-500">

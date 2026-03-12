@@ -3,6 +3,7 @@
 use App\Models\Album;
 use App\Models\Genre;
 use App\Models\Track;
+use App\Rules\ValidAudioUpload;
 use App\StagesLivewireUploads;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
@@ -72,7 +73,7 @@ new #[Layout('layouts.glass-app')] class extends Component
             'is_published'       => ['boolean'],
             'requires_donation'  => ['boolean'],
             'donation_amount'    => ['nullable', 'numeric', 'min:0.5', 'max:999'],
-            'audioFile'          => ['nullable', 'file', 'mimes:mp3,wav,flac,ogg,aac', 'max:102400'],
+            'audioFile'          => ['nullable', 'file', new ValidAudioUpload(), 'max:102400'],
             'coverFile'          => ['nullable', 'image', 'max:4096'],
         ];
 
@@ -251,7 +252,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <p class="text-sm text-gray-500">Drop new audio file here or <span class="text-red-500">browse</span></p>
                     <p class="text-xs text-gray-400 mt-1">MP3, WAV, FLAC, OGG, AAC · Max 100 MB</p>
                 @endif
-                <input id="audioReplaceInput" wire:model="audioFile" type="file" accept=".mp3,.wav,.flac,.ogg,.aac" class="sr-only">
+                <input id="audioReplaceInput" wire:model="audioFile" type="file" accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,audio/*" class="sr-only">
             </div>
             <x-input-error :messages="$errors->get('audioFile')" class="mt-1" />
         </div>
