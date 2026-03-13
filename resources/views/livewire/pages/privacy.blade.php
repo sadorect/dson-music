@@ -1,33 +1,69 @@
 <?php
+
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
-new #[Layout('layouts.glass-app')] class extends Component {}; ?>
 
-<div class="max-w-3xl mx-auto px-4 py-12 space-y-6">
-    <h1 class="text-3xl font-bold text-gray-800">Privacy Policy</h1>
-    <p class="text-sm text-gray-400">Last updated: {{ date('F Y') }}</p>
+new #[Layout('layouts.glass-app')] class extends Component
+{
+    public function with(): array
+    {
+        return [
+            'seo' => [
+                'title' => 'Privacy Policy',
+                'description' => 'Read the GrinMuzik privacy policy covering accounts, payments, cookies, data handling, and your rights.',
+                'canonical' => route('privacy'),
+            ],
+            'sections' => [
+                ['title' => 'Information we collect', 'body' => 'We collect the information you provide when registering, building an artist profile, liking tracks, creating playlists, and contacting us. Payment details for donations are processed by Stripe rather than stored directly by GrinMuzik.'],
+                ['title' => 'How we use your information', 'body' => 'We use account and activity data to operate the platform, provide playback and discovery features, process support requests, and improve the product experience.'],
+                ['title' => 'Cookies and sessions', 'body' => 'Cookies are used for authentication, sessions, and core product functionality. Disabling them may prevent sign-in and other essential features from working properly.'],
+                ['title' => 'Third-party services', 'body' => 'Stripe handles payment processing. Cloud storage and infrastructure providers may also be used to host uploaded media and site services.'],
+                ['title' => 'Retention and deletion', 'body' => 'We retain account data while your account remains active unless deletion is requested or legal obligations require otherwise. Aggregated non-identifying platform statistics may be retained longer.'],
+                ['title' => 'Your rights', 'body' => 'Depending on your jurisdiction, you may have rights to access, correct, export, or delete your personal data. Contact us if you need help exercising those rights.'],
+                ['title' => 'Security', 'body' => 'We use common security practices such as hashed passwords, HTTPS, and access controls, but no internet service can guarantee absolute security.'],
+            ],
+        ];
+    }
+};
+?>
 
-    @foreach([
-        ['title' => '1. Information We Collect',
-         'body'  => 'We collect information you provide when you register (name, email address, password). If you are an artist, we also collect your stage name, bio, and uploaded media. If you make a donation, payment is processed by Stripe — we do not store card details. We automatically collect basic usage data such as IP addresses, browser type, pages visited, and play history for logged-in users.'],
-        ['title' => '2. How We Use Your Information',
-         'body'  => 'We use your information to operate the platform (authentication, playing music, processing donations), send transactional emails (password resets, email verification), personalise your experience (play history, liked tracks), and improve the service. We do not sell your personal data.'],
-        ['title' => '3. Cookies',
-         'body'  => 'We use cookies to maintain your session and remember preferences. We do not use third-party advertising cookies. You may disable cookies in your browser settings but this will prevent you from logging in.'],
-        ['title' => '4. Third Parties',
-         'body'  => 'Payments are processed by Stripe. Please review Stripe\'s privacy policy at stripe.com/privacy. Media files may be stored on Amazon S3 or similar cloud storage providers. We do not share your data with any other third parties for marketing purposes.'],
-        ['title' => '5. Data Retention',
-         'body'  => 'We retain your account data as long as your account is active. You may request deletion of your account and associated data by contacting us. Anonymised play count statistics may be retained permanently.'],
-        ['title' => '6. Your Rights',
-         'body'  => 'Depending on your jurisdiction, you may have the right to access, correct, or delete your personal data, object to processing, and request portability. Contact us to exercise these rights.'],
-        ['title' => '7. Security',
-         'body'  => 'We implement industry-standard security measures including password hashing (bcrypt), encrypted connections (HTTPS), and access controls. No system is 100% secure; please use a strong, unique password.'],
-        ['title' => '8. Contact',
-         'body'  => 'Questions about this policy? Contact us via the Contact page.'],
-    ] as $section)
-    <div class="glass-card rounded-2xl p-6 space-y-2">
-        <h2 class="font-bold text-gray-800">{{ $section['title'] }}</h2>
-        <p class="text-sm text-gray-600 leading-relaxed">{{ $section['body'] }}</p>
+<div class="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-5xl space-y-6">
+        <section class="glass-card rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary/70">Privacy Policy</p>
+            <h1 class="mt-2 text-3xl font-black tracking-tight text-gray-900 sm:text-5xl">How GrinMuzik handles your data.</h1>
+            <p class="mt-4 max-w-3xl text-sm leading-relaxed text-gray-600 sm:text-base">
+                This policy explains what information we collect, how it is used, and what rights you may have when using the platform.
+            </p>
+            <p class="mt-3 text-xs font-semibold uppercase tracking-[0.22em] text-gray-400">Last updated {{ date('F Y') }}</p>
+        </section>
+
+        <section class="space-y-4">
+            @foreach($sections as $index => $section)
+                <article class="glass-card rounded-[1.8rem] p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-black text-primary-700">
+                            {{ $index + 1 }}
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black tracking-tight text-gray-900">{{ $section['title'] }}</h2>
+                            <p class="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base">{{ $section['body'] }}</p>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </section>
+
+        <section class="glass-card rounded-[2rem] p-6 sm:p-8">
+            <h2 class="text-2xl font-black tracking-tight text-gray-900">Questions about privacy?</h2>
+            <p class="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base">
+                If you need clarification about how your information is handled, or if you want to request access, correction, or deletion, contact the team directly.
+            </p>
+            <a href="{{ route('contact') }}"
+               wire:navigate
+               class="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-500">
+                Contact Us
+            </a>
+        </section>
     </div>
-    @endforeach
 </div>

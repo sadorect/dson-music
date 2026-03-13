@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ $siteTitle }}</title>
+        @include('partials.seo-head', ['pageTitle' => $title ?? null])
         @if($siteSettings?->favicon_url)
             <link rel="icon" href="{{ $siteSettings->favicon_url }}">
             <link rel="shortcut icon" href="{{ $siteSettings->favicon_url }}">
@@ -18,6 +18,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('head')
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

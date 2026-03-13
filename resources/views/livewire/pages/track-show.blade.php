@@ -1,8 +1,11 @@
 <?php
 
+use App\Models\ArtistProfile;
 use App\Models\Track;
 use App\Models\Comment;
 use App\Models\Like;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Layout;
 
@@ -15,15 +18,146 @@ new #[Layout('layouts.glass-app')] class extends Component {
     public function mount(Track $track): void
     {
         abort_if(!$track->is_published, 404);
-        $this->track = $track->load(['artistProfile.user', 'genre', 'album',
+        $this->track = $track->load(['artistProfile.user', 'artistProfile.genres', 'genre', 'album',
                                     'comments' => fn($q) => $q->whereNull('parent_id')->with('user', 'replies.user')->latest()]);
     }
 
     public function with(): array
     {
+        $description = $this->track->description
+            ?: 'Listen to ' . $this->track->title . ' by ' . ($this->track->artistProfile->stage_name ?? $this->track->artistProfile->user->name) . ' on GrinMuzik.';
+        $relatedTracksSummary = $this->track->mood_label
+            ? 'Picked for the '.$this->track->mood_label.' lane, plus adjacent artists and tracks that land in the same space.'
+            : ($this->track->genre
+                ? 'Picked from the '.$this->track->genre->name.' lane and the surrounding artist orbit.'
+                : 'Picked from related artists and the wider lane this track sits inside.');
+        $recommendedArtistsSummary = $this->track->genre
+            ? 'Artists listeners often reach for when they stay in '.$this->track->genre->name.' mode.'
+            : 'Artists nearby in style, energy, and listener crossover.';
+
+        $relatedTracks = Cache::remember(
+            "track-page.{$this->track->id}.related-tracks.v1",
+            now()->addMinutes(10),
+            function () {
+                $artistId = $this->track->artist_profile_id;
+                $genreId = $this->track->genre_id;
+
+                $query = Track::query()
+                    ->with(['artistProfile.user', 'genre'])
+                    ->where('is_published', true)
+                    ->whereKeyNot($this->track->id);
+
+                if ($artistId || $genreId) {
+                    $query->where(function ($nested) use ($artistId, $genreId): void {
+                        if ($artistId) {
+                            $nested->where('artist_profile_id', $artistId);
+                        }
+
+                        if ($genreId) {
+                            $method = $artistId ? 'orWhere' : 'where';
+                            $nested->{$method}('genre_id', $genreId);
+                        }
+                    });
+                }
+
+                $related = $query
+                    ->orderByRaw('CASE WHEN artist_profile_id = ? THEN 0 ELSE 1 END', [$artistId ?: 0])
+                    ->orderByRaw('CASE WHEN genre_id = ? THEN 0 ELSE 1 END', [$genreId ?: 0])
+                    ->orderByDesc('play_count')
+                    ->orderByDesc('downloads_count')
+                    ->take(6)
+                    ->get();
+
+                if ($related->isNotEmpty()) {
+                    return $related;
+                }
+
+                return Track::query()
+                    ->with(['artistProfile.user', 'genre'])
+                    ->where('is_published', true)
+                    ->whereKeyNot($this->track->id)
+                    ->orderByDesc('play_count')
+                    ->orderByDesc('downloads_count')
+                    ->take(6)
+                    ->get();
+            }
+        );
+
+        $recommendedArtists = Cache::remember(
+            "track-page.{$this->track->id}.recommended-artists.v1",
+            now()->addMinutes(10),
+            function () {
+                $genreIds = collect([$this->track->genre_id])
+                    ->merge($this->track->artistProfile?->genres?->pluck('id') ?? collect())
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                $query = ArtistProfile::query()
+                    ->approved()
+                    ->with(['user', 'genres'])
+                    ->whereKeyNot($this->track->artist_profile_id);
+
+                if ($genreIds->isNotEmpty()) {
+                    $query->whereHas('genres', fn ($genres) => $genres->whereIn('genres.id', $genreIds->all()));
+                }
+
+                $artists = $query
+                    ->when(ArtistProfile::supportsFeaturedCuration(), fn ($artistsQuery) => $artistsQuery->orderByDesc('is_featured'))
+                    ->orderByDesc('is_verified')
+                    ->orderByDesc('followers_count')
+                    ->orderByDesc('total_plays')
+                    ->take(4)
+                    ->get();
+
+                if ($artists->isNotEmpty()) {
+                    return $artists;
+                }
+
+                return ArtistProfile::query()
+                    ->approved()
+                    ->with('user')
+                    ->whereKeyNot($this->track->artist_profile_id)
+                    ->when(ArtistProfile::supportsFeaturedCuration(), fn ($artistsQuery) => $artistsQuery->orderByDesc('is_featured'))
+                    ->orderByDesc('is_verified')
+                    ->orderByDesc('followers_count')
+                    ->take(4)
+                    ->get();
+            }
+        );
+
         return [
             'track'      => $this->track,
             'likesCount' => Like::where('track_id', $this->track->id)->count(),
+            'shareUrl'   => route('track.show', $this->track->slug),
+            'relatedTracks' => $relatedTracks,
+            'recommendedArtists' => $recommendedArtists,
+            'relatedTracksSummary' => $relatedTracksSummary,
+            'recommendedArtistsSummary' => $recommendedArtistsSummary,
+            'seo'        => [
+                'title' => $this->track->title,
+                'description' => Str::limit(strip_tags($description), 160),
+                'canonical' => route('track.show', $this->track->slug),
+                'type' => 'website',
+                'image' => $this->track->getCoverUrl(),
+                'json_ld' => [
+                    [
+                        '@context' => 'https://schema.org',
+                        '@type' => 'MusicRecording',
+                        'name' => $this->track->title,
+                        'url' => route('track.show', $this->track->slug),
+                        'description' => Str::limit(strip_tags($description), 160),
+                        'duration' => $this->track->duration ? 'PT' . $this->track->duration . 'S' : null,
+                        'image' => $this->track->getCoverUrl() ?: null,
+                        'byArtist' => [
+                            '@type' => 'MusicGroup',
+                            'name' => $this->track->artistProfile->stage_name ?? $this->track->artistProfile->user->name,
+                            'url' => route('artist.page', $this->track->artistProfile),
+                        ],
+                        'genre' => $this->track->genre?->name,
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -64,7 +198,28 @@ new #[Layout('layouts.glass-app')] class extends Component {
 ?>
 
 <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8"
-     x-data
+     x-data="{
+         copied: false,
+         shareUrl: @js($shareUrl),
+         async shareTrack() {
+             if (navigator.share) {
+                 await navigator.share({ title: @js($track->title), text: @js($track->artistProfile->stage_name ?? $track->artistProfile->user->name), url: this.shareUrl });
+                 return;
+             }
+
+             await this.copyTrackLink();
+         },
+         async copyTrackLink() {
+             if (navigator.clipboard?.writeText) {
+                 await navigator.clipboard.writeText(this.shareUrl);
+                 this.copied = true;
+                 setTimeout(() => this.copied = false, 2200);
+                 return;
+             }
+
+             window.prompt('Copy this track link:', this.shareUrl);
+         }
+     }"
      @start-download.window="
          const a = document.createElement('a');
          a.href = $event.detail.url;
@@ -154,9 +309,122 @@ new #[Layout('layouts.glass-app')] class extends Component {
                         </svg>
                         Download
                     </button>
+                    <button @click="shareTrack"
+                            class="flex items-center gap-2 glass-btn glass-btn-hover px-4 py-2 rounded-full text-sm font-medium text-gray-600 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C9.173 13.13 9.713 13 10.286 13c.573 0 1.113.13 1.602.342m-3.204 0a3 3 0 110-2.684m3.204 2.684a3 3 0 100-2.684m0 0L15.5 8m-5.214 5.342L6.5 16"/>
+                        </svg>
+                        Share
+                    </button>
+                    <button @click="copyTrackLink"
+                            class="flex items-center gap-2 glass-btn glass-btn-hover px-4 py-2 rounded-full text-sm font-medium text-gray-600 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        <span x-show="!copied">Copy Link</span>
+                        <span x-show="copied" style="display:none">Copied</span>
+                    </button>
                 </div>
             </div>
         </div>
+
+        @if($relatedTracks->isNotEmpty())
+            <section class="mb-8 rounded-[2rem] glass-card p-5 sm:p-6">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.26em] text-primary/70">More Like This</p>
+                        <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900">Keep the vibe moving</h2>
+                        <p class="mt-1 text-sm text-gray-500">{{ $relatedTracksSummary }}</p>
+                    </div>
+                    @if($track->genre)
+                        <a href="{{ route('browse', ['genre' => $track->genre->slug]) }}"
+                           class="inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:text-primary-600">
+                            Explore {{ $track->genre->name }}
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach($relatedTracks as $relatedTrack)
+                        <article class="rounded-[1.5rem] border border-white/60 bg-white/75 p-3 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-md">
+                            <div class="flex items-center gap-3">
+                                <button @click="Livewire.dispatch('play-track', { id: {{ $relatedTrack->id }} })"
+                                        class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
+                                    @if($relatedTrack->getCoverUrl())
+                                        <img src="{{ $relatedTrack->getCoverUrl() }}" alt="{{ $relatedTrack->cover_alt }}" class="h-full w-full object-cover">
+                                    @endif
+                                </button>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <a href="{{ route('track.show', $relatedTrack) }}" wire:navigate class="truncate text-sm font-semibold text-gray-900 hover:text-primary">
+                                            {{ $relatedTrack->title }}
+                                        </a>
+                                        @if($relatedTrack->artist_profile_id === $track->artist_profile_id)
+                                            <span class="rounded-full bg-primary-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary-700">Same Artist</span>
+                                        @elseif($relatedTrack->genre_id === $track->genre_id && $track->genre_id)
+                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500">Same Genre</span>
+                                        @elseif($relatedTrack->effective_mood && $relatedTrack->effective_mood === $track->effective_mood)
+                                            <span class="rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-600">{{ $relatedTrack->mood_label }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                                        <a href="{{ route('artist.page', $relatedTrack->artistProfile) }}" wire:navigate class="truncate hover:text-primary">
+                                            {{ $relatedTrack->artistProfile?->display_name ?? 'Unknown artist' }}
+                                        </a>
+                                        @if($relatedTrack->genre)
+                                            <span>{{ $relatedTrack->genre->name }}</span>
+                                        @endif
+                                        <x-track-duration :track="$relatedTrack" class="text-gray-400" />
+                                    </div>
+                                    <div class="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-medium text-gray-400">
+                                        <span>{{ number_format($relatedTrack->play_count) }} plays</span>
+                                        <span>{{ number_format($relatedTrack->downloads_count) }} downloads</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        @if($recommendedArtists->isNotEmpty())
+            <section class="mb-8 rounded-[2rem] glass-card p-5 sm:p-6">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.26em] text-primary/70">Related Artists</p>
+                        <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900">Explore nearby scenes</h2>
+                        <p class="mt-1 text-sm text-gray-500">{{ $recommendedArtistsSummary }}</p>
+                    </div>
+                    <a href="{{ route('browse') }}" wire:navigate class="text-sm font-semibold text-primary transition hover:text-primary-600">Discover more artists</a>
+                </div>
+
+                <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    @foreach($recommendedArtists as $artist)
+                        <a href="{{ route('artist.page', $artist) }}"
+                           wire:navigate
+                           class="rounded-[1.5rem] border border-white/60 bg-white/75 p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-md">
+                            <div class="mx-auto h-16 w-16 overflow-hidden rounded-full bg-gradient-to-br from-primary-100 to-primary-200 ring-2 ring-white/80">
+                                @if($artist->getFirstMediaUrl('avatar'))
+                                    <img src="{{ $artist->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $artist->avatar_alt }}" class="h-full w-full object-cover">
+                                @else
+                                    <div class="flex h-full w-full items-center justify-center text-lg font-black text-primary-500">
+                                        {{ strtoupper(substr($artist->display_name, 0, 1)) }}
+                                    </div>
+                                @endif
+                            </div>
+                            <p class="mt-3 truncate text-sm font-semibold text-gray-900">{{ $artist->display_name }}</p>
+                            <p class="mt-1 text-[11px] text-gray-500">
+                                {{ $artist->is_featured ? "Editor's Pick · " : '' }}{{ number_format($artist->followers_count) }} followers
+                            </p>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
         {{-- Comments section --}}
         <div class="glass-card p-6">
@@ -173,7 +441,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                         <input
                             wire:model="commentBody"
                             type="text"
-                            placeholder="Add a comment…"
+                            placeholder="Add a comment..."
                             class="flex-1 bg-white/60 border border-gray-200 rounded-xl px-4 py-2 text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100">
                         <button type="submit"
                                 class="bg-primary hover:bg-primary-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">

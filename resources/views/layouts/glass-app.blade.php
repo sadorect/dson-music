@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? $siteTitle }}</title>
+    @include('partials.seo-head', ['pageTitle' => $title ?? null])
     @if($siteSettings?->favicon_url)
         <link rel="icon" href="{{ $siteSettings->favicon_url }}">
         <link rel="shortcut icon" href="{{ $siteSettings->favicon_url }}">
@@ -19,6 +19,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @livewireStyles
+    @stack('head')
     @stack('styles')
 </head>
 <body class="glass-gradient-light min-h-screen antialiased"
@@ -39,8 +40,10 @@
                 {{-- Desktop links --}}
                 <div class="hidden md:flex items-center gap-7 text-sm">
                     <a href="{{ route('home') }}" class="text-gray-700 hover:text-primary-500 transition" wire:navigate>Browse</a>
+                    <a href="{{ route('search') }}" class="text-gray-700 hover:text-primary-500 transition" wire:navigate>Search</a>
                     <a href="{{ route('charts') }}" class="text-gray-700 hover:text-primary-500 transition" wire:navigate>Charts</a>
                     <a href="{{ route('new-releases') }}" class="text-gray-700 hover:text-primary-500 transition" wire:navigate>New Releases</a>
+                    <a href="{{ route('playlists.public') }}" class="text-gray-700 hover:text-primary-500 transition" wire:navigate>Playlists</a>
 
                     @auth
                         <a href="{{ route('dashboard') }}" class="text-gray-700 hover:text-primary-500 transition" wire:navigate>Dashboard</a>
@@ -88,20 +91,50 @@
     {{-- â”€â”€ Mobile Drawer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ --}}
     <div x-data="{ open: false }" x-on:toggle-mobile-nav.window="open = !open" class="md:hidden">
         <div x-show="open" x-transition @click="open = false" class="fixed inset-0 bg-black/30 z-40 backdrop-blur-sm" style="display:none"></div>
-        <div x-show="open" x-transition class="fixed top-0 left-0 h-full w-64 glass-panel z-50 shadow-xl p-6 flex flex-col gap-4 text-sm" style="display:none">
-            <span class="font-bold text-lg text-gray-800">{{ $siteName }}</span>
-            <a href="{{ route('home') }}" wire:navigate class="text-gray-700 hover:text-primary-500">Browse</a>
-            <a href="{{ route('charts') }}" wire:navigate class="text-gray-700 hover:text-primary-500">Charts</a>
+        <div x-show="open" x-transition class="fixed top-0 left-0 h-full w-[86vw] max-w-xs glass-panel z-50 shadow-xl p-6 flex flex-col text-sm" style="display:none">
+            <div class="mb-6 flex items-center justify-between gap-3">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 text-gray-800" wire:navigate>
+                    <x-application-logo class="h-7 w-auto object-contain" />
+                    <span class="font-bold text-lg">{{ $siteName }}</span>
+                </a>
+                <button @click="open = false" class="rounded-full border border-white/50 bg-white/70 p-2 text-gray-500">
+                    <span class="sr-only">Close menu</span>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-1 rounded-2xl border border-white/50 bg-white/70 p-3">
+                <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-400">Discover</p>
+                <a href="{{ route('home') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Browse</a>
+                <a href="{{ route('search') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Search</a>
+                <a href="{{ route('charts') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Charts</a>
+                <a href="{{ route('new-releases') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">New Releases</a>
+                <a href="{{ route('playlists.public') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Public Playlists</a>
+            </div>
+
             @auth
-                <a href="{{ route('dashboard') }}" wire:navigate class="text-gray-700 hover:text-primary-500">Dashboard</a>
-                <a href="{{ route('profile') }}" wire:navigate class="text-gray-700 hover:text-primary-500">Profile</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="text-left text-gray-700 hover:text-primary-500">Log Out</button>
-                </form>
+                <div class="mt-4 space-y-1 rounded-2xl border border-white/50 bg-white/70 p-3">
+                    <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-400">Account</p>
+                    <a href="{{ route('dashboard') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Dashboard</a>
+                    <a href="{{ route('profile') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Profile</a>
+                    @if(Auth::user()->isListener())
+                        <a href="{{ route('listener.playlists') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">My Playlists</a>
+                    @endif
+                    @if(Auth::user()->isArtist())
+                        <a href="{{ route('artist.tracks') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">My Music</a>
+                    @endif
+                    <form method="POST" action="{{ route('logout') }}" class="pt-1">
+                        @csrf
+                        <button type="submit" class="w-full rounded-xl px-3 py-2.5 text-left text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Log Out</button>
+                    </form>
+                </div>
             @else
-                <a href="{{ route('login') }}" wire:navigate class="text-gray-700 hover:text-primary-500">Login</a>
-                <a href="{{ route('register') }}" wire:navigate class="text-gray-700 hover:text-primary-500">Sign Up</a>
+                <div class="mt-4 space-y-3">
+                    <a href="{{ route('register') }}" wire:navigate class="block rounded-xl bg-primary px-4 py-3 text-center font-semibold text-white shadow-sm">Sign Up Free</a>
+                    <a href="{{ route('login') }}" wire:navigate class="block rounded-xl border border-white/50 bg-white/70 px-4 py-3 text-center font-semibold text-gray-700">Log In</a>
+                </div>
             @endauth
         </div>
     </div>

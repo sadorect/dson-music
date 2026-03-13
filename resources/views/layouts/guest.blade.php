@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? $siteTitle }}</title>
+    @include('partials.seo-head', ['pageTitle' => $title ?? null])
     @if($siteSettings?->favicon_url)
         <link rel="icon" href="{{ $siteSettings->favicon_url }}">
         <link rel="shortcut icon" href="{{ $siteSettings->favicon_url }}">
@@ -18,6 +18,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @stack('head')
     @stack('styles')
 </head>
 <body class="glass-gradient-light min-h-screen antialiased">
@@ -43,7 +44,7 @@
 
         {{-- Footer link --}}
         <p class="mt-6 text-xs text-gray-400">
-            &copy; {{ date('Y') }} {{ $siteName }} &mdash; <a href="{{ route('home') }}" wire:navigate class="hover:text-primary-400 transition">Back to home</a>
+            &copy; {{ date('Y') }} {{ $siteName }} &middot; <a href="{{ route('home') }}" wire:navigate class="hover:text-primary-400 transition">Back to home</a>
         </p>
     </div>
 

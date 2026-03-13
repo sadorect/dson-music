@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Actions;
 use Filament\Tables;
@@ -46,6 +47,11 @@ class TrackResource extends Resource
                         ->searchable()
                         ->preload()
                         ->nullable(),
+                    Forms\Components\Select::make('mood')
+                        ->options(Track::moodOptions())
+                        ->searchable()
+                        ->nullable()
+                        ->helperText('Optional, but recommended. Mood powers vibe-based browse and recommendation rails.'),
                     Forms\Components\TextInput::make('track_number')
                         ->numeric()
                         ->minValue(1)
@@ -72,6 +78,7 @@ class TrackResource extends Resource
                 ->columns(2)
                 ->schema([
                     Forms\Components\Toggle::make('is_published')->label('Published')->default(false),
+                    Forms\Components\Toggle::make('is_featured')->label('Featured')->helperText('Prioritize this track in discovery rails.'),
                     Forms\Components\Toggle::make('is_demo')->label('Demo track')->default(false),
                     Forms\Components\Toggle::make('requires_donation')->label('Requires donation to unlock'),
                     Forms\Components\TextInput::make('donation_amount')
@@ -90,23 +97,48 @@ class TrackResource extends Resource
                 Tables\Columns\TextColumn::make('title')->searchable()->sortable()->limit(40),
                 Tables\Columns\TextColumn::make('artist.stage_name')->label('Artist')->searchable(),
                 Tables\Columns\TextColumn::make('genre.name'),
+                Tables\Columns\TextColumn::make('mood')
+                    ->label('Mood')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => $state ? (Track::moodOptions()[$state] ?? str($state)->replace('-', ' ')->replace('_', ' ')->title()->value()) : 'None'),
                 Tables\Columns\TextColumn::make('play_count')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('donation_amount')->money('USD')->sortable()->label('Unlock $'),
+                Tables\Columns\IconColumn::make('is_featured')->boolean()->label('Featured'),
                 Tables\Columns\IconColumn::make('is_published')->boolean()->label('Live'),
                 Tables\Columns\IconColumn::make('requires_donation')->boolean()->label('Locked'),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_published'),
+                Tables\Filters\TernaryFilter::make('is_featured'),
                 Tables\Filters\TernaryFilter::make('requires_donation'),
                 Tables\Filters\SelectFilter::make('genre_id')
                     ->relationship('genre', 'name')
                     ->label('Genre'),
+                Tables\Filters\SelectFilter::make('mood')
+                    ->options(Track::moodOptions()),
+                Tables\Filters\TernaryFilter::make('has_mood')
+                    ->label('Has mood')
+                    ->queries(
+                        true: fn ($query) => $query->whereNotNull('mood')->where('mood', '!=', ''),
+                        false: fn ($query) => $query->where(function ($nested) {
+                            $nested->whereNull('mood')->orWhere('mood', '');
+                        }),
+                        blank: fn ($query) => $query,
+                    ),
             ])
             ->actions([Actions\EditAction::make()])
             ->bulkActions([
                 Actions\BulkActionGroup::make([
                     Actions\DeleteBulkAction::make(),
+                    Actions\BulkAction::make('feature')
+                        ->label('Feature selected')
+                        ->action(fn ($records) => $records->each->update(['is_featured' => true]))
+                        ->icon('heroicon-o-star'),
+                    Actions\BulkAction::make('unfeature')
+                        ->label('Remove feature')
+                        ->action(fn ($records) => $records->each->update(['is_featured' => false]))
+                        ->icon('heroicon-o-star'),
                     Actions\BulkAction::make('publish')
                         ->label('Publish selected')
                         ->action(fn ($records) => $records->each->update(['is_published' => true]))
@@ -115,6 +147,32 @@ class TrackResource extends Resource
                         ->label('Unpublish selected')
                         ->action(fn ($records) => $records->each->update(['is_published' => false]))
                         ->icon('heroicon-o-x-mark'),
+                    Actions\BulkAction::make('backfillMood')
+                        ->label('Auto-assign mood')
+                        ->icon('heroicon-o-sparkles')
+                        ->requiresConfirmation()
+                        ->modalHeading('Auto-assign mood for selected tracks')
+                        ->modalDescription('Only tracks without a mood will be updated. The suggestion is based on each track genre.')
+                        ->action(function ($records): void {
+                            $updated = 0;
+
+                            $records->loadMissing('genre');
+
+                            foreach ($records as $track) {
+                                if ($track->fillSuggestedMood()) {
+                                    $track->save();
+                                    $updated++;
+                                }
+                            }
+
+                            Notification::make()
+                                ->title($updated > 0 ? 'Mood backfill complete' : 'No missing moods found')
+                                ->body($updated > 0
+                                    ? "{$updated} selected track(s) received an inferred mood."
+                                    : 'Selected tracks already had moods or did not have a genre-based suggestion.')
+                                ->success()
+                                ->send();
+                        }),
                 ]),
             ]);
     }

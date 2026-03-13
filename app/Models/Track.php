@@ -15,6 +15,65 @@ class Track extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, Searchable, SoftDeletes;
 
+    /**
+     * @return array<string, array{label: string, genres: array<int, string>, moods: array<int, string>}>
+     */
+    public static function moodDefinitions(): array
+    {
+        return [
+            'late-night' => [
+                'label' => 'Late Night',
+                'genres' => ['r-b', 'electronic', 'jazz', 'indie'],
+                'moods' => ['late night', 'night', 'moody', 'smooth'],
+            ],
+            'chill' => [
+                'label' => 'Chill',
+                'genres' => ['r-b', 'indie', 'jazz', 'electronic'],
+                'moods' => ['chill', 'calm', 'laid back', 'easy'],
+            ],
+            'focus' => [
+                'label' => 'Focus',
+                'genres' => ['electronic', 'indie', 'jazz'],
+                'moods' => ['focus', 'ambient', 'study', 'deep'],
+            ],
+            'hype' => [
+                'label' => 'Hype',
+                'genres' => ['hip-hop', 'afrobeats', 'electronic', 'rock'],
+                'moods' => ['hype', 'energetic', 'party', 'workout'],
+            ],
+            'romance' => [
+                'label' => 'Romance',
+                'genres' => ['r-b', 'pop', 'afrobeats'],
+                'moods' => ['romantic', 'love', 'warm', 'intimate'],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function moodOptions(): array
+    {
+        return collect(self::moodDefinitions())
+            ->mapWithKeys(fn (array $definition, string $slug) => [$slug => $definition['label']])
+            ->all();
+    }
+
+    public static function suggestedMoodSlugForGenre(?string $genreSlug): ?string
+    {
+        if (! $genreSlug) {
+            return null;
+        }
+
+        foreach (self::moodDefinitions() as $slug => $definition) {
+            if (in_array($genreSlug, $definition['genres'], true)) {
+                return $slug;
+            }
+        }
+
+        return null;
+    }
+
     protected $fillable = [
         'user_id',
         'artist_profile_id',
@@ -23,6 +82,7 @@ class Track extends Model implements HasMedia
         'title',
         'slug',
         'description',
+        'mood',
         'duration',
         'audio_file_path',
         'waveform_data',
@@ -197,6 +257,41 @@ class Track extends Model implements HasMedia
             ?: ($this->album?->getCoverUrl($conversion) ?? '');
     }
 
+    public function getCoverAltAttribute(): string
+    {
+        $artistName = $this->artistProfile?->stage_name
+            ?? $this->artistProfile?->user?->name
+            ?? 'Unknown artist';
+
+        return "{$this->title} cover art by {$artistName}";
+    }
+
+    public function getEffectiveMoodAttribute(): ?string
+    {
+        if ($this->mood) {
+            return Str::of($this->mood)->lower()->replace('_', ' ')->replace('-', ' ')->trim()->value();
+        }
+
+        return self::suggestedMoodSlugForGenre($this->genre?->slug);
+    }
+
+    public function getMoodLabelAttribute(): ?string
+    {
+        $effectiveMood = $this->effective_mood;
+
+        if (!$effectiveMood) {
+            return null;
+        }
+
+        $definition = self::moodDefinitions()[$effectiveMood] ?? null;
+
+        if ($definition) {
+            return $definition['label'];
+        }
+
+        return Str::of($effectiveMood)->replace('_', ' ')->replace('-', ' ')->title()->value();
+    }
+
     public function getAudioUrl(): string
     {
         // First try Spatie Media Library
@@ -211,6 +306,28 @@ class Track extends Model implements HasMedia
         }
 
         return '';
+    }
+
+    public function suggestMood(): ?string
+    {
+        return self::suggestedMoodSlugForGenre($this->genre?->slug);
+    }
+
+    public function fillSuggestedMood(bool $force = false): bool
+    {
+        if (! $force && filled($this->mood)) {
+            return false;
+        }
+
+        $suggestedMood = $this->suggestMood();
+
+        if (! $suggestedMood || $this->mood === $suggestedMood) {
+            return false;
+        }
+
+        $this->mood = $suggestedMood;
+
+        return true;
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

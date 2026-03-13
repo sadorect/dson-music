@@ -3,11 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Throwable;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SiteSetting extends Model
 {
+    protected static ?bool $supportsDiscoveryVisibilityCache = null;
+    protected static ?bool $supportsDiscoveryOrderingCache = null;
+
     protected $fillable = [
         'site_name',
         'site_title',
@@ -18,11 +23,70 @@ class SiteSetting extends Model
         'youtube_handle',
         'site_logo',
         'favicon',
+        'show_home_personalized',
+        'show_home_editor_picks',
+        'show_browse_mood_filters',
+        'show_browse_editor_picks',
+        'show_browse_personalized',
+        'show_browse_fresh_this_week',
+        'show_browse_artists_to_watch',
+        'show_browse_support_direct',
+        'show_search_trending_tracks',
+        'show_search_popular_artists',
+        'home_editor_picks_position',
+        'browse_editor_picks_position',
+    ];
+
+    protected $casts = [
+        'show_home_personalized' => 'boolean',
+        'show_home_editor_picks' => 'boolean',
+        'show_browse_mood_filters' => 'boolean',
+        'show_browse_editor_picks' => 'boolean',
+        'show_browse_personalized' => 'boolean',
+        'show_browse_fresh_this_week' => 'boolean',
+        'show_browse_artists_to_watch' => 'boolean',
+        'show_browse_support_direct' => 'boolean',
+        'show_search_trending_tracks' => 'boolean',
+        'show_search_popular_artists' => 'boolean',
     ];
 
     public static function current(): self
     {
         return static::query()->firstOrCreate([]);
+    }
+
+    public static function supportsDiscoveryVisibility(): bool
+    {
+        if (static::$supportsDiscoveryVisibilityCache !== null) {
+            return static::$supportsDiscoveryVisibilityCache;
+        }
+
+        try {
+            if (! Schema::hasTable('site_settings')) {
+                return static::$supportsDiscoveryVisibilityCache = false;
+            }
+
+            return static::$supportsDiscoveryVisibilityCache = Schema::hasColumn('site_settings', 'show_home_personalized');
+        } catch (Throwable) {
+            return static::$supportsDiscoveryVisibilityCache = false;
+        }
+    }
+
+    public static function supportsDiscoveryOrdering(): bool
+    {
+        if (static::$supportsDiscoveryOrderingCache !== null) {
+            return static::$supportsDiscoveryOrderingCache;
+        }
+
+        try {
+            if (! Schema::hasTable('site_settings')) {
+                return static::$supportsDiscoveryOrderingCache = false;
+            }
+
+            return static::$supportsDiscoveryOrderingCache = Schema::hasColumn('site_settings', 'home_editor_picks_position');
+        } catch (Throwable) {
+            return static::$supportsDiscoveryOrderingCache = false;
+        }
     }
 
     public function getSiteLogoUrlAttribute(): ?string

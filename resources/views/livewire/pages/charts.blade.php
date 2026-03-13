@@ -5,6 +5,7 @@ use App\Models\Track;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
@@ -22,11 +23,19 @@ new #[Layout('layouts.glass-app')] class extends Component
 
     public function with(): array
     {
-        $genres = Genre::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get();
+        $genres = Cache::remember('charts.genres.v1', now()->addMinutes(15), fn () => Genre::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get());
         [$start, $end, $previousStart, $previousEnd] = $this->timeframeWindow();
 
-        $currentRankings = $this->rankingIds($start, $end);
-        $previousRankings = $this->rankingIds($previousStart, $previousEnd);
+        $currentRankings = Cache::remember(
+            'charts.rankings.current.' . md5(json_encode([$this->timeframe, $this->genre, optional($start)?->toDateTimeString(), optional($end)?->toDateTimeString()])),
+            now()->addMinutes(5),
+            fn () => $this->rankingIds($start, $end)
+        );
+        $previousRankings = Cache::remember(
+            'charts.rankings.previous.' . md5(json_encode([$this->timeframe, $this->genre, optional($previousStart)?->toDateTimeString(), optional($previousEnd)?->toDateTimeString()])),
+            now()->addMinutes(5),
+            fn () => $this->rankingIds($previousStart, $previousEnd)
+        );
         $movementMap = $this->movementMap($currentRankings, $previousRankings);
 
         $query = Track::with(['artistProfile.user', 'genre'])
@@ -204,9 +213,9 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <div class="grid gap-0 md:grid-cols-[18rem_minmax(0,1fr)]">
                         <div class="relative min-h-[16rem] bg-gradient-to-br from-primary-100 to-primary-200">
                             @if($heroTrack->getCoverUrl('large'))
-                                <img src="{{ $heroTrack->getCoverUrl('large') }}" alt="{{ $heroTrack->title }}" class="h-full w-full object-cover">
+                                <img src="{{ $heroTrack->getCoverUrl('large') }}" alt="{{ $heroTrack->cover_alt }}" class="h-full w-full object-cover">
                             @elseif($heroTrack->getCoverUrl())
-                                <img src="{{ $heroTrack->getCoverUrl() }}" alt="{{ $heroTrack->title }}" class="h-full w-full object-cover">
+                                <img src="{{ $heroTrack->getCoverUrl() }}" alt="{{ $heroTrack->cover_alt }}" class="h-full w-full object-cover">
                             @else
                                 <div class="flex h-full w-full items-center justify-center">
                                     <svg class="h-16 w-16 text-primary-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
@@ -267,7 +276,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                         <article class="glass-card flex items-center gap-4 rounded-[1.8rem] p-4">
                             <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
                                 @if($track->getCoverUrl())
-                                    <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                    <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                 @endif
                                 <span class="absolute left-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-sm font-black text-gray-900 shadow-sm">#{{ $index + 2 }}</span>
                             </div>
@@ -355,7 +364,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                             <button @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })"
                                     class="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 group/play">
                                 @if($track->getCoverUrl())
-                                    <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                    <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                 @endif
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition group-hover/play:opacity-100">
                                     <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>

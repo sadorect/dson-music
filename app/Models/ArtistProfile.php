@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
@@ -13,6 +14,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class ArtistProfile extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, Searchable;
+
+    protected static ?bool $supportsFeaturedCurationCache = null;
 
     protected $fillable = [
         'user_id',
@@ -27,6 +30,7 @@ class ArtistProfile extends Model implements HasMedia
         'is_verified',
         'is_approved',
         'is_active',
+        'is_featured',
         'total_plays',
         'followers_count',
         'total_donations',
@@ -36,6 +40,7 @@ class ArtistProfile extends Model implements HasMedia
         'is_verified'   => 'boolean',
         'is_approved'   => 'boolean',
         'is_active'     => 'boolean',
+        'is_featured'   => 'boolean',
         'total_plays'   => 'integer',
         'followers_count' => 'integer',
         'total_donations' => 'decimal:2',
@@ -137,6 +142,30 @@ class ArtistProfile extends Model implements HasMedia
             ?: '';
     }
 
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->stage_name ?: ($this->user?->name ?? 'Artist');
+    }
+
+    public function getAvatarAltAttribute(): string
+    {
+        return "{$this->display_name} profile image";
+    }
+
+    public function getBannerAltAttribute(): string
+    {
+        return "{$this->display_name} artist banner";
+    }
+
+    public static function supportsFeaturedCuration(): bool
+    {
+        if (static::$supportsFeaturedCurationCache !== null) {
+            return static::$supportsFeaturedCurationCache;
+        }
+
+        return static::$supportsFeaturedCurationCache = Schema::hasColumn('artist_profiles', 'is_featured');
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -150,5 +179,14 @@ class ArtistProfile extends Model implements HasMedia
     public function scopeVerified($query)
     {
         return $query->where('is_verified', true);
+    }
+
+    public function scopeFeatured($query)
+    {
+        if (!static::supportsFeaturedCuration()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('is_featured', true);
     }
 }

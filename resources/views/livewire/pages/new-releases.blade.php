@@ -4,6 +4,7 @@ use App\Models\Album;
 use App\Models\Track;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Volt\Component;
@@ -18,11 +19,11 @@ new #[Layout('layouts.glass-app')] class extends Component
 
     public function with(): array
     {
-        $featuredTracks = Track::with(['artistProfile.user', 'genre'])
+        $featuredTracks = Cache::remember('new-releases.featured-tracks.v1', now()->addMinutes(5), fn () => Track::with(['artistProfile.user', 'genre'])
             ->where('is_published', true)
             ->latest()
             ->take(3)
-            ->get();
+            ->get());
 
         /** @var LengthAwarePaginator $tracks */
         $tracks = Track::with(['artistProfile.user', 'genre', 'album'])
@@ -50,11 +51,11 @@ new #[Layout('layouts.glass-app')] class extends Component
                 ->get()
             : collect();
 
-        $releaseStats = [
+        $releaseStats = Cache::remember('new-releases.stats.v1', now()->addMinutes(5), fn () => [
             'today' => Track::where('is_published', true)->whereDate('created_at', today())->count(),
             'thisWeek' => Track::where('is_published', true)->where('created_at', '>=', now()->startOfWeek())->count(),
             'albums' => Album::where('is_published', true)->count(),
-        ];
+        ]);
 
         return [
             'featuredTracks' => $featuredTracks,
@@ -123,9 +124,9 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <div class="grid gap-0 md:grid-cols-[16rem_minmax(0,1fr)]">
                         <div class="relative min-h-[16rem] bg-gradient-to-br from-primary-100 to-primary-200">
                             @if($leadTrack->getCoverUrl('large'))
-                                <img src="{{ $leadTrack->getCoverUrl('large') }}" alt="{{ $leadTrack->title }}" class="h-full w-full object-cover">
+                                <img src="{{ $leadTrack->getCoverUrl('large') }}" alt="{{ $leadTrack->cover_alt }}" class="h-full w-full object-cover">
                             @elseif($leadTrack->getCoverUrl())
-                                <img src="{{ $leadTrack->getCoverUrl() }}" alt="{{ $leadTrack->title }}" class="h-full w-full object-cover">
+                                <img src="{{ $leadTrack->getCoverUrl() }}" alt="{{ $leadTrack->cover_alt }}" class="h-full w-full object-cover">
                             @endif
                             <span class="absolute left-4 top-4 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white">Just Dropped</span>
                         </div>
@@ -159,7 +160,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                         <article class="glass-card flex items-center gap-4 rounded-[1.8rem] p-4 transition hover:-translate-y-0.5 hover:bg-white/85 hover:shadow-lg">
                             <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
                                 @if($track->getCoverUrl())
-                                    <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                    <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                 @endif
                             </div>
                             <div class="min-w-0 flex-1">
@@ -194,7 +195,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                             <div class="flex items-center gap-4">
                                 <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
                                     @if($track->getCoverUrl())
-                                        <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                        <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                     @endif
                                 </div>
                                 <div class="min-w-0 flex-1">
@@ -242,7 +243,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                                     <button @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })"
                                             class="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 group/play">
                                         @if($track->getCoverUrl())
-                                            <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                         @endif
                                         <div class="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition group-hover/play:opacity-100">
                                             <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -307,9 +308,9 @@ new #[Layout('layouts.glass-app')] class extends Component
                                 <div class="grid gap-0 md:grid-cols-[12rem_minmax(0,1fr)]">
                                     <div class="min-h-[12rem] bg-gradient-to-br from-primary-100 to-primary-200">
                                         @if($album->getCoverUrl('large'))
-                                            <img src="{{ $album->getCoverUrl('large') }}" alt="{{ $album->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ $album->getCoverUrl('large') }}" alt="{{ $album->cover_alt }}" class="h-full w-full object-cover">
                                         @elseif($album->getCoverUrl())
-                                            <img src="{{ $album->getCoverUrl() }}" alt="{{ $album->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ $album->getCoverUrl() }}" alt="{{ $album->cover_alt }}" class="h-full w-full object-cover">
                                         @endif
                                     </div>
                                     <div class="p-5">
@@ -345,7 +346,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                                 <article class="glass-card rounded-[1.6rem] p-4 transition hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-lg">
                                     <div class="aspect-[1.1/1] overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
                                         @if($album->getCoverUrl())
-                                            <img src="{{ $album->getCoverUrl() }}" alt="{{ $album->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ $album->getCoverUrl() }}" alt="{{ $album->cover_alt }}" class="h-full w-full object-cover">
                                         @endif
                                     </div>
                                     <div class="mt-4">

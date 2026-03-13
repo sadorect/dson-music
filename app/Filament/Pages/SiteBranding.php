@@ -35,17 +35,7 @@ class SiteBranding extends Page implements HasForms
     {
         $this->settings = SiteSetting::current();
 
-        $this->form->fill($this->settings->only([
-            'site_name',
-            'site_title',
-            'x_handle',
-            'instagram_handle',
-            'facebook_handle',
-            'tiktok_handle',
-            'youtube_handle',
-            'site_logo',
-            'favicon',
-        ]));
+        $this->form->fill($this->settingsPayload());
     }
 
     public function form(Schema $schema): Schema
@@ -115,6 +105,74 @@ class SiteBranding extends Page implements HasForms
                             ->maxSize(512)
                             ->helperText('Upload a square PNG, SVG, or ICO. Recommended: 64 x 64px or 512 x 512px. Max 512 KB.'),
                     ]),
+                Section::make('Discovery Visibility')
+                    ->description('Control which extra discovery rails appear on public pages. Core catalog and search results stay available even if you hide these cards.')
+                    ->schema([
+                        Forms\Components\Toggle::make('show_home_personalized')
+                            ->label('Homepage For You')
+                            ->helperText('Show the personalized recommendation rail for signed-in listeners.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_home_editor_picks')
+                            ->label("Homepage Editor's Picks")
+                            ->helperText('Show the curated editor picks rail on the homepage.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_browse_mood_filters')
+                            ->label('Browse mood filters')
+                            ->helperText('Show mood and vibe chips on the browse page.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_browse_editor_picks')
+                            ->label("Browse Editor's Picks")
+                            ->helperText('Show the featured editorial tracks rail on browse.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_browse_personalized')
+                            ->label('Browse For You')
+                            ->helperText('Show the personalized picks rail on browse for signed-in listeners.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_browse_fresh_this_week')
+                            ->label('Browse Fresh This Week')
+                            ->helperText('Show the fresh releases editorial block on browse.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_browse_artists_to_watch')
+                            ->label('Browse Artists To Watch')
+                            ->helperText('Show the artist spotlight block on browse.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_browse_support_direct')
+                            ->label('Browse Support Direct')
+                            ->helperText('Show the donation-powered tracks block on browse.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_search_trending_tracks')
+                            ->label('Search Trending Tracks')
+                            ->helperText('Show the suggested trending tracks card when search is empty.')
+                            ->default(true),
+                        Forms\Components\Toggle::make('show_search_popular_artists')
+                            ->label('Search Popular Artists')
+                            ->helperText('Show the suggested popular artists card when search is empty.')
+                            ->default(true),
+                    ])
+                    ->columns(2)
+                    ->visible(fn (): bool => SiteSetting::supportsDiscoveryVisibility()),
+                Section::make('Discovery Ordering')
+                    ->description('Control where the editorial rails appear relative to personalized sections.')
+                    ->schema([
+                        Forms\Components\Select::make('home_editor_picks_position')
+                            ->label("Homepage Editor's Picks position")
+                            ->options([
+                                'before-personalized' => 'Before For You',
+                                'after-personalized' => 'After For You',
+                            ])
+                            ->default('after-personalized')
+                            ->helperText('Choose whether the curated rail appears before or after the signed-in For You section.'),
+                        Forms\Components\Select::make('browse_editor_picks_position')
+                            ->label("Browse Editor's Picks position")
+                            ->options([
+                                'before-personalized' => 'Before For You',
+                                'after-personalized' => 'After For You',
+                            ])
+                            ->default('before-personalized')
+                            ->helperText('Choose whether the curated browse rail appears before or after the signed-in For You section.'),
+                    ])
+                    ->columns(2)
+                    ->visible(fn (): bool => SiteSetting::supportsDiscoveryOrdering()),
             ]);
     }
 
@@ -131,6 +189,28 @@ class SiteBranding extends Page implements HasForms
             'youtube_handle',
         ]);
 
+        if (SiteSetting::supportsDiscoveryVisibility()) {
+            $data = array_merge($data, Arr::only($this->data, [
+                'show_home_personalized',
+                'show_home_editor_picks',
+                'show_browse_mood_filters',
+                'show_browse_editor_picks',
+                'show_browse_personalized',
+                'show_browse_fresh_this_week',
+                'show_browse_artists_to_watch',
+                'show_browse_support_direct',
+                'show_search_trending_tracks',
+                'show_search_popular_artists',
+            ]));
+        }
+
+        if (SiteSetting::supportsDiscoveryOrdering()) {
+            $data = array_merge($data, Arr::only($this->data, [
+                'home_editor_picks_position',
+                'browse_editor_picks_position',
+            ]));
+        }
+
         foreach (['site_logo', 'favicon'] as $attribute) {
             $data[$attribute] = $this->normalizeBrandAssetState(
                 $this->data[$attribute] ?? null,
@@ -142,17 +222,7 @@ class SiteBranding extends Page implements HasForms
         $settings->refresh();
         $this->settings = $settings;
 
-        $this->form->fill($settings->only([
-            'site_name',
-            'site_title',
-            'x_handle',
-            'instagram_handle',
-            'facebook_handle',
-            'tiktok_handle',
-            'youtube_handle',
-            'site_logo',
-            'favicon',
-        ]));
+        $this->form->fill($this->settingsPayload());
 
         Notification::make()
             ->title('Branding updated')
@@ -163,6 +233,45 @@ class SiteBranding extends Page implements HasForms
     protected function getSettings(): SiteSetting
     {
         return $this->settings ??= SiteSetting::current();
+    }
+
+    protected function settingsPayload(): array
+    {
+        $keys = [
+            'site_name',
+            'site_title',
+            'x_handle',
+            'instagram_handle',
+            'facebook_handle',
+            'tiktok_handle',
+            'youtube_handle',
+            'site_logo',
+            'favicon',
+        ];
+
+        if (SiteSetting::supportsDiscoveryVisibility()) {
+            $keys = array_merge($keys, [
+                'show_home_personalized',
+                'show_home_editor_picks',
+                'show_browse_mood_filters',
+                'show_browse_editor_picks',
+                'show_browse_personalized',
+                'show_browse_fresh_this_week',
+                'show_browse_artists_to_watch',
+                'show_browse_support_direct',
+                'show_search_trending_tracks',
+                'show_search_popular_artists',
+            ]);
+        }
+
+        if (SiteSetting::supportsDiscoveryOrdering()) {
+            $keys = array_merge($keys, [
+                'home_editor_picks_position',
+                'browse_editor_picks_position',
+            ]);
+        }
+
+        return $this->getSettings()->only($keys);
     }
 
     protected function normalizeBrandAssetState(mixed $state, ?string $currentPath = null): ?string

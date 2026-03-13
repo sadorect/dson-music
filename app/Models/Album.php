@@ -104,6 +104,15 @@ class Album extends Model implements HasMedia
             ?: '';
     }
 
+    public function getCoverAltAttribute(): string
+    {
+        $artistName = $this->artist?->stage_name
+            ?? $this->artist?->user?->name
+            ?? 'Unknown artist';
+
+        return "{$this->title} album cover by {$artistName}";
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

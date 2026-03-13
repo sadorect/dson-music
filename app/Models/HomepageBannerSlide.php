@@ -47,4 +47,10 @@ class HomepageBannerSlide extends Model
 
         return Storage::disk('public')->url($this->background_image);
     }
+
+    public function getEffectiveBackgroundAltAttribute(): string
+    {
+        return $this->background_image_alt
+            ?: ($this->heading ?: $this->name ?: 'Homepage banner');
+    }
 }

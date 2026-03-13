@@ -52,11 +52,15 @@ class ArtistProfileResource extends Resource
                     Forms\Components\TextInput::make('spotify')->maxLength(200),
                 ]),
             Section::make('Status')
-                ->columns(3)
+                ->columns(4)
                 ->schema([
                     Forms\Components\Toggle::make('is_verified')->label('Verified'),
                     Forms\Components\Toggle::make('is_approved')->label('Approved'),
                     Forms\Components\Toggle::make('is_active')->label('Active')->default(true),
+                    Forms\Components\Toggle::make('is_featured')
+                        ->label('Featured')
+                        ->helperText('Prioritize this artist in discovery rails.')
+                        ->visible(fn (): bool => ArtistProfile::supportsFeaturedCuration()),
                 ]),
         ]);
     }
@@ -71,6 +75,7 @@ class ArtistProfileResource extends Resource
                 Tables\Columns\TextColumn::make('followers_count')->numeric()->sortable(),
                 Tables\Columns\TextColumn::make('total_donations')->money('USD')->sortable(),
                 Tables\Columns\IconColumn::make('is_verified')->boolean()->label('Verified'),
+                Tables\Columns\IconColumn::make('is_featured')->boolean()->label('Featured')->visible(ArtistProfile::supportsFeaturedCuration()),
                 Tables\Columns\IconColumn::make('is_approved')->boolean()->label('Approved'),
                 Tables\Columns\IconColumn::make('is_active')->boolean()->label('Active'),
                 Tables\Columns\TextColumn::make('created_at')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
@@ -79,9 +84,28 @@ class ArtistProfileResource extends Resource
                 Tables\Filters\TernaryFilter::make('is_approved'),
                 Tables\Filters\TernaryFilter::make('is_verified'),
                 Tables\Filters\TernaryFilter::make('is_active'),
+                ...(ArtistProfile::supportsFeaturedCuration()
+                    ? [Tables\Filters\TernaryFilter::make('is_featured')]
+                    : []),
             ])
             ->actions([Actions\EditAction::make()])
-            ->bulkActions([Actions\BulkActionGroup::make([Actions\DeleteBulkAction::make()])]);  
+            ->bulkActions([
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
+                    ...(ArtistProfile::supportsFeaturedCuration()
+                        ? [
+                            Actions\BulkAction::make('feature')
+                                ->label('Feature selected')
+                                ->action(fn ($records) => $records->each->update(['is_featured' => true]))
+                                ->icon('heroicon-o-star'),
+                            Actions\BulkAction::make('unfeature')
+                                ->label('Remove feature')
+                                ->action(fn ($records) => $records->each->update(['is_featured' => false]))
+                                ->icon('heroicon-o-star'),
+                        ]
+                        : []),
+                ]),
+            ]);  
     }
 
     public static function getPages(): array

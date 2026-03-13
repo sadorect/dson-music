@@ -1,72 +1,154 @@
 <?php
+
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
-new #[Layout('layouts.glass-app')] class extends Component {}; ?>
 
-<div class="max-w-3xl mx-auto px-4 py-12 space-y-8">
+new #[Layout('layouts.glass-app')] class extends Component
+{
+    public function with(): array
+    {
+        return [
+            'seo' => [
+                'title' => 'Pricing and Donations',
+                'description' => 'See how free listening, donation unlocks, and artist earnings work on GrinMuzik.',
+                'canonical' => route('pricing'),
+                'json_ld' => [
+                    [
+                        '@context' => 'https://schema.org',
+                        '@type' => 'WebPage',
+                        'name' => 'Pricing and Donations',
+                        'url' => route('pricing'),
+                        'description' => 'See how free listening, donation unlocks, and artist earnings work on GrinMuzik.',
+                    ],
+                ],
+            ],
+            'listenerPoints' => [
+                'Stream free tracks with no subscription.',
+                'Use likes, playlists, charts, and search without a paid tier.',
+                'Unlock donation-gated tracks only when you choose to support an artist.',
+            ],
+            'artistPoints' => [
+                'Upload tracks and albums without a platform commission.',
+                'Set donation amounts per track when you want deeper fan support.',
+                'Keep ownership of your music and your audience presence.',
+            ],
+        ];
+    }
+};
+?>
 
-    <div class="text-center space-y-3">
-        <div class="inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-teal-500 items-center justify-center mx-auto">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-        </div>
-        <h1 class="text-3xl font-bold text-gray-800">Pricing &amp; Donations</h1>
-        <p class="text-gray-500">Listening is free. Supporting artists is priceless.</p>
-    </div>
+<div class="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-6xl space-y-6">
+        <section class="glass-card relative overflow-hidden rounded-[2rem] px-6 py-8 sm:px-8 sm:py-10">
+            <div class="absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-l from-emerald-200/30 to-transparent lg:block"></div>
 
-    {{-- Listener --}}
-    <div class="glass-card rounded-2xl p-7 space-y-4">
-        <h2 class="text-xl font-bold text-gray-800">For Listeners</h2>
-        <div class="grid sm:grid-cols-2 gap-4">
-            <div class="bg-white/50 rounded-xl p-4 space-y-2">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl font-black text-gray-800">Free</span>
-                    <span class="text-xs bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-full">Forever</span>
+            <div class="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1.35fr),minmax(260px,0.8fr)] lg:items-end">
+                <div class="max-w-3xl">
+                    <p class="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-primary/70">Pricing and Donations</p>
+                    <h1 class="text-3xl font-black tracking-tight text-gray-900 sm:text-5xl">Listening stays open. Support stays direct.</h1>
+                    <p class="mt-4 max-w-2xl text-sm leading-relaxed text-gray-600 sm:text-base">
+                        GrinMuzik is built so listeners can explore music freely while artists can still earn directly when fans want to unlock and support specific tracks.
+                    </p>
                 </div>
-                <p class="text-sm text-gray-600">Stream all free tracks, browse artists, build playlists, like songs, and enjoy the full catalogue — no subscription needed.</p>
-            </div>
-            <div class="bg-white/50 rounded-xl p-4 space-y-2">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl font-black text-gray-800">Donate</span>
-                    <span class="text-xs bg-red-100 text-red-600 font-semibold px-2 py-0.5 rounded-full">Your choice</span>
-                </div>
-                <p class="text-sm text-gray-600">Some tracks are donation-locked. The artist sets a minimum. Pay once, unlock forever, and 100% of your donation goes to the artist (minus Stripe's processing fee).</p>
-            </div>
-        </div>
-    </div>
 
-    {{-- Artist --}}
-    <div class="glass-card rounded-2xl p-7 space-y-4">
-        <h2 class="text-xl font-bold text-gray-800">For Artists</h2>
-        <div class="bg-white/50 rounded-xl p-4 space-y-3">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl font-black text-gray-800">$0</span>
-                <span class="text-xs bg-violet-100 text-violet-700 font-semibold px-2 py-0.5 rounded-full">GrinMuzik takes nothing</span>
+                <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                    @foreach([
+                        ['label' => 'Listeners', 'value' => 'Free'],
+                        ['label' => 'Platform Cut', 'value' => '$0'],
+                        ['label' => 'Support Model', 'value' => 'Donations'],
+                    ] as $metric)
+                        <div class="rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm">
+                            <p class="text-lg font-black text-gray-900">{{ $metric['value'] }}</p>
+                            <p class="mt-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-400">{{ $metric['label'] }}</p>
+                        </div>
+                    @endforeach
+                </div>
             </div>
-            <p class="text-sm text-gray-600 leading-relaxed">We charge no commission. Upload unlimited tracks, build your profile, and receive donations directly. Stripe charges a standard processing fee (typically ~2.9% + $0.30 per transaction), which comes out of each donation before it reaches your account.</p>
-        </div>
-        <ul class="text-sm text-gray-600 space-y-2 list-none">
+        </section>
+
+        <section class="grid gap-4 lg:grid-cols-2">
+            <article class="glass-card rounded-[2rem] p-6 sm:p-8">
+                <div class="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700">
+                    For Listeners
+                </div>
+                <div class="mt-4 flex items-center gap-3">
+                    <p class="text-4xl font-black tracking-tight text-gray-900">Free</p>
+                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Forever</span>
+                </div>
+                <p class="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base">
+                    Browse the catalog, play tracks, follow artists, build playlists, and use the discovery features without paying a subscription fee.
+                </p>
+                <ul class="mt-5 space-y-3 text-sm text-gray-600">
+                    @foreach($listenerPoints as $point)
+                        <li class="flex items-start gap-3">
+                            <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </span>
+                            <span>{{ $point }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </article>
+
+            <article class="glass-card rounded-[2rem] p-6 sm:p-8">
+                <div class="inline-flex rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-primary-700">
+                    For Artists
+                </div>
+                <div class="mt-4 flex items-center gap-3">
+                    <p class="text-4xl font-black tracking-tight text-gray-900">$0</p>
+                    <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary-700">No GrinMuzik commission</span>
+                </div>
+                <p class="mt-3 text-sm leading-relaxed text-gray-600 sm:text-base">
+                    Artists keep control over how their music is shared and monetized. Stripe processing fees still apply to donations, but GrinMuzik does not take a platform cut.
+                </p>
+                <ul class="mt-5 space-y-3 text-sm text-gray-600">
+                    @foreach($artistPoints as $point)
+                        <li class="flex items-start gap-3">
+                            <span class="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary-700">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </span>
+                            <span>{{ $point }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </article>
+        </section>
+
+        <section class="grid gap-4 lg:grid-cols-3">
             @foreach([
-                'Unlimited track uploads',
-                'Set your own donation amounts per track',
-                'Mix of free + paid tracks',
-                'Full artist profile with bio, photo, banner',
-                'Album organisation',
-                'Direct Stripe payouts',
-            ] as $feature)
-            <li class="flex items-center gap-2">
-                <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                {{ $feature }}
-            </li>
+                ['title' => 'Free tracks', 'body' => 'Any track marked free can be streamed immediately by listeners without payment.'],
+                ['title' => 'Donation unlocks', 'body' => 'Artists can set a minimum donation to unlock certain tracks while keeping others open.'],
+                ['title' => 'Stripe processing', 'body' => 'Payment processing is handled by Stripe. Their fees are separate from the platform itself.'],
+            ] as $item)
+                <article class="glass-card rounded-[1.8rem] p-6">
+                    <h2 class="text-lg font-black tracking-tight text-gray-900">{{ $item['title'] }}</h2>
+                    <p class="mt-3 text-sm leading-relaxed text-gray-600">{{ $item['body'] }}</p>
+                </article>
             @endforeach
-        </ul>
-        <a href="{{ route('register') }}" wire:navigate
-           class="inline-flex items-center gap-2 glass-btn-primary glass-btn-primary-hover px-5 py-2.5 rounded-xl text-sm font-semibold">
-            Start for free
-        </a>
+        </section>
+
+        <section class="glass-card rounded-[2rem] p-6 text-center sm:p-8">
+            <h2 class="text-2xl font-black tracking-tight text-gray-900">Ready to publish without a platform tax?</h2>
+            <p class="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-gray-600 sm:text-base">
+                Set up an artist account, upload your catalog, and decide how you want fans to experience and support your work.
+            </p>
+            <div class="mt-5 flex flex-wrap justify-center gap-3">
+                <a href="{{ route('register') }}"
+                   wire:navigate
+                   class="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-500">
+                    Start for Free
+                </a>
+                <a href="https://stripe.com/pricing"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-white">
+                    View Stripe Pricing
+                </a>
+            </div>
+        </section>
     </div>
-
-    <p class="text-xs text-center text-gray-400">Stripe payment processing fees are set by Stripe, not GrinMuzik. See <a href="https://stripe.com/pricing" target="_blank" class="underline hover:text-gray-600">stripe.com/pricing</a> for current rates.</p>
-
 </div>

@@ -4,7 +4,9 @@ use App\Models\ArtistProfile;
 use App\Models\Genre;
 use App\Models\HomepageBannerSlide;
 use App\Models\Playlist;
+use App\Models\SiteSetting;
 use App\Models\Track;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -12,40 +14,168 @@ use Livewire\Volt\Component;
 new #[Layout('layouts.glass-app')] class extends Component {
     public function with(): array
     {
-        return [
-            'trending' => Track::with(['artistProfile.user'])
+        $siteSettings = Schema::hasTable('site_settings') ? SiteSetting::current() : null;
+        $supportsDiscoveryVisibility = SiteSetting::supportsDiscoveryVisibility();
+        $supportsDiscoveryOrdering = SiteSetting::supportsDiscoveryOrdering();
+        $showHomePersonalized = $supportsDiscoveryVisibility ? ($siteSettings?->show_home_personalized ?? true) : true;
+        $showHomeEditorPicks = $supportsDiscoveryVisibility ? ($siteSettings?->show_home_editor_picks ?? true) : true;
+        $homeEditorPicksPosition = $supportsDiscoveryOrdering ? ($siteSettings?->home_editor_picks_position ?? 'after-personalized') : 'after-personalized';
+
+        $trending = Cache::remember('home.trending.v1', now()->addMinutes(5), fn () => Track::with(['artistProfile.user'])
+            ->where('is_published', true)
+            ->orderByDesc('play_count')
+            ->take(16)
+            ->get());
+
+        $latest = Cache::remember('home.latest.v1', now()->addMinutes(5), fn () => Track::with(['artistProfile.user'])
+            ->where('is_published', true)
+            ->orderByDesc('created_at')
+            ->take(8)
+            ->get());
+
+        $editorPicks = $showHomeEditorPicks
+            ? Cache::remember('home.editor-picks.v1', now()->addMinutes(5), fn () => Track::query()
+                ->with(['artistProfile.user', 'genre'])
                 ->where('is_published', true)
+                ->where('is_featured', true)
                 ->orderByDesc('play_count')
-                ->take(16)
-                ->get(),
-
-            'latest' => Track::with(['artistProfile.user'])
-                ->where('is_published', true)
-                ->orderByDesc('created_at')
-                ->take(8)
-                ->get(),
-
-            'featuredArtists' => ArtistProfile::with('user')
-                ->where('is_approved', true)
-                ->orderByDesc('followers_count')
+                ->orderByDesc('downloads_count')
                 ->take(6)
-                ->get(),
+                ->get())
+            : collect();
 
-            'heroSlides' => Schema::hasTable('homepage_banner_slides')
-                ? HomepageBannerSlide::query()->active()->get()
-                : collect(),
+        $featuredArtists = Cache::remember('home.featured-artists.v2', now()->addMinutes(5), fn () => ArtistProfile::with('user')
+            ->approved()
+            ->when(ArtistProfile::supportsFeaturedCuration(), fn ($query) => $query->orderByDesc('is_featured'))
+            ->orderByDesc('followers_count')
+            ->take(6)
+            ->get());
 
-            'genres' => Genre::withCount(['tracks' => fn ($q) => $q->where('is_published', true)])
-                ->where('is_active', true)
-                ->orderByDesc('tracks_count')
-                ->take(12)
-                ->get(),
+        $heroSlides = Cache::remember('home.hero-slides.v1', now()->addMinutes(5), fn () => Schema::hasTable('homepage_banner_slides')
+            ? HomepageBannerSlide::query()->active()->get()
+            : collect());
 
-            'stats' => [
-                'tracks' => Track::where('is_published', true)->count(),
-                'artists' => ArtistProfile::where('is_approved', true)->count(),
-                'genres' => Genre::where('is_active', true)->count(),
-                'playlists' => Playlist::where('is_public', true)->count(),
+        $genres = Cache::remember('home.genres.v1', now()->addMinutes(10), fn () => Genre::withCount(['tracks' => fn ($q) => $q->where('is_published', true)])
+            ->where('is_active', true)
+            ->orderByDesc('tracks_count')
+            ->take(12)
+            ->get());
+
+        $stats = Cache::remember('home.stats.v1', now()->addMinutes(5), fn () => [
+            'tracks' => Track::where('is_published', true)->count(),
+            'artists' => ArtistProfile::where('is_approved', true)->count(),
+            'genres' => Genre::where('is_active', true)->count(),
+            'playlists' => Playlist::where('is_public', true)->count(),
+        ]);
+
+        $personalizedTracks = collect();
+
+        if ($showHomePersonalized && auth()->check()) {
+            $user = auth()->user();
+
+            $personalizedTracks = Cache::remember("home.personalized.{$user->id}.v1", now()->addMinutes(5), function () use ($user) {
+                $tasteSeedTracks = collect()
+                    ->merge($user->likes()->with(['artistProfile.user', 'genre'])->latest('likes.created_at')->take(24)->get())
+                    ->merge(
+                        $user->playHistory()
+                            ->with(['track.artistProfile.user', 'track.genre'])
+                            ->latest()
+                            ->take(36)
+                            ->get()
+                            ->pluck('track')
+                            ->filter()
+                    )
+                    ->filter();
+
+                $topGenreIds = $tasteSeedTracks
+                    ->pluck('genre_id')
+                    ->filter()
+                    ->countBy()
+                    ->sortDesc()
+                    ->keys()
+                    ->take(4)
+                    ->values();
+
+                $topArtistIds = $tasteSeedTracks
+                    ->pluck('artist_profile_id')
+                    ->filter()
+                    ->countBy()
+                    ->sortDesc()
+                    ->keys()
+                    ->take(4)
+                    ->values();
+
+                $excludeTrackIds = $tasteSeedTracks
+                    ->pluck('id')
+                    ->filter()
+                    ->unique()
+                    ->values();
+
+                $query = Track::query()
+                    ->with(['artistProfile.user', 'genre'])
+                    ->where('is_published', true)
+                    ->whereNotIn('id', $excludeTrackIds->all());
+
+                if ($topGenreIds->isNotEmpty() || $topArtistIds->isNotEmpty()) {
+                    $query->where(function ($nested) use ($topGenreIds, $topArtistIds): void {
+                        if ($topGenreIds->isNotEmpty()) {
+                            $nested->whereIn('genre_id', $topGenreIds->all());
+                        }
+
+                        if ($topArtistIds->isNotEmpty()) {
+                            $method = $topGenreIds->isNotEmpty() ? 'orWhereIn' : 'whereIn';
+                            $nested->{$method}('artist_profile_id', $topArtistIds->all());
+                        }
+                    });
+                }
+
+                $tracks = $query
+                    ->orderByDesc('is_featured')
+                    ->orderByDesc('play_count')
+                    ->orderByDesc('downloads_count')
+                    ->take(8)
+                    ->get();
+
+                if ($tracks->isNotEmpty()) {
+                    return $tracks;
+                }
+
+                return Track::query()
+                    ->with(['artistProfile.user', 'genre'])
+                    ->where('is_published', true)
+                    ->orderByDesc('is_featured')
+                    ->orderByDesc('play_count')
+                    ->take(8)
+                    ->get();
+            });
+        }
+
+        return [
+            'trending' => $trending,
+            'latest' => $latest,
+            'editorPicks' => $editorPicks,
+            'featuredArtists' => $featuredArtists,
+            'heroSlides' => $heroSlides,
+            'genres' => $genres,
+            'stats' => $stats,
+            'personalizedTracks' => $personalizedTracks,
+            'showHomePersonalized' => $showHomePersonalized,
+            'showHomeEditorPicks' => $showHomeEditorPicks,
+            'homeEditorPicksPosition' => $homeEditorPicksPosition,
+            'seo' => [
+                'title' => 'Independent Music Streaming',
+                'description' => 'Stream independent music, discover new releases, explore charts, and support artists directly on GrinMuzik.',
+                'canonical' => route('home'),
+                'image' => $heroSlides->first()?->background_url,
+                'json_ld' => [
+                    [
+                        '@context' => 'https://schema.org',
+                        '@type' => 'WebPage',
+                        'name' => 'GrinMuzik Home',
+                        'url' => route('home'),
+                        'description' => 'Discover independent music, explore playlists, and support artists on GrinMuzik.',
+                    ],
+                ],
             ],
         ];
     }
@@ -165,7 +295,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                      class="absolute inset-0">
                     @if($slide->background_url)
                         <img src="{{ $slide->background_url }}"
-                             alt="{{ $slide->background_image_alt ?: $slide->name }}"
+                             alt="{{ $slide->effective_background_alt }}"
                              class="h-full w-full object-cover">
                     @else
                         <div class="h-full w-full bg-gradient-to-br from-primary-700 via-primary-800 to-primary-950"></div>
@@ -332,11 +462,163 @@ new #[Layout('layouts.glass-app')] class extends Component {
         </div>
     </div>
 
+    @if($showHomeEditorPicks && $homeEditorPicksPosition === 'before-personalized' && $editorPicks->isNotEmpty())
+        <section class="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
+            <div class="rounded-[2rem] glass-card p-5 sm:p-7">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary/70">Editor's Picks</p>
+                        <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Hand-picked tracks worth starting with</h2>
+                        <p class="mt-2 max-w-2xl text-sm text-gray-500">These are the tracks the team is actively pushing to the front of discovery right now.</p>
+                    </div>
+                    <a href="{{ route('browse', ['sort' => 'popular']) }}" wire:navigate class="text-sm font-semibold text-primary transition hover:text-primary-600">Browse all discovery</a>
+                </div>
+
+                <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach($editorPicks as $track)
+                        <article class="rounded-[1.5rem] border border-white/60 bg-white/75 p-3 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-md">
+                            <div class="flex items-center gap-3">
+                                <button @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })"
+                                        class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
+                                    @if($track->getCoverUrl())
+                                        <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
+                                    @endif
+                                </button>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <a href="{{ route('track.show', $track) }}" wire:navigate class="truncate text-sm font-semibold text-gray-900 hover:text-primary">
+                                            {{ $track->title }}
+                                        </a>
+                                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">Curated</span>
+                                    </div>
+                                    <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                                        <a href="{{ route('artist.page', $track->artistProfile) }}" wire:navigate class="truncate hover:text-primary">
+                                            {{ $track->artistProfile?->display_name ?? 'Unknown artist' }}
+                                        </a>
+                                        @if($track->mood_label)
+                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">{{ $track->mood_label }}</span>
+                                        @endif
+                                        <x-track-duration :track="$track" class="text-gray-400" />
+                                    </div>
+                                    <div class="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-medium text-gray-400">
+                                        <span>{{ number_format($track->play_count) }} plays</span>
+                                        <span>{{ number_format($track->downloads_count) }} downloads</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    @auth
+        @if($showHomePersonalized && $personalizedTracks->isNotEmpty())
+            <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+                <div class="rounded-[2rem] glass-card p-5 sm:p-7">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary/70">For You</p>
+                            <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Because of what you keep playing</h2>
+                            <p class="mt-2 max-w-2xl text-sm text-gray-500">Recommendations shaped by your likes, recent listening, and the artists you keep circling back to.</p>
+                        </div>
+                        <a href="{{ route('listener.dashboard') }}" wire:navigate class="text-sm font-semibold text-primary transition hover:text-primary-600">Open taste profile</a>
+                    </div>
+
+                    <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                        @foreach($personalizedTracks as $track)
+                            <article class="rounded-[1.5rem] border border-white/60 bg-white/75 p-3 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-md">
+                                <div class="flex items-center gap-3">
+                                    <button @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })"
+                                            class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
+                                        @if($track->getCoverUrl())
+                                            <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
+                                        @endif
+                                    </button>
+                                    <div class="min-w-0 flex-1">
+                                        <a href="{{ route('track.show', $track) }}" wire:navigate class="truncate text-sm font-semibold text-gray-900 hover:text-primary">
+                                            {{ $track->title }}
+                                        </a>
+                                        <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                                            <a href="{{ route('artist.page', $track->artistProfile) }}" wire:navigate class="truncate hover:text-primary">
+                                                {{ $track->artistProfile?->display_name ?? 'Unknown artist' }}
+                                            </a>
+                                            @if($track->genre)
+                                                <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">{{ $track->genre->name }}</span>
+                                            @endif
+                                            <x-track-duration :track="$track" class="text-gray-400" />
+                                        </div>
+                                        <div class="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-medium text-gray-400">
+                                            <span>{{ number_format($track->play_count) }} plays</span>
+                                            <span>{{ number_format($track->downloads_count) }} downloads</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+        @endif
+    @endauth
+
+    @if($showHomeEditorPicks && $homeEditorPicksPosition !== 'before-personalized' && $editorPicks->isNotEmpty())
+        <section class="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
+            <div class="rounded-[2rem] glass-card p-5 sm:p-7">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary/70">Editor's Picks</p>
+                        <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Hand-picked tracks worth starting with</h2>
+                        <p class="mt-2 max-w-2xl text-sm text-gray-500">These are the tracks the team is actively pushing to the front of discovery right now.</p>
+                    </div>
+                    <a href="{{ route('browse', ['sort' => 'popular']) }}" wire:navigate class="text-sm font-semibold text-primary transition hover:text-primary-600">Browse all discovery</a>
+                </div>
+
+                <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                    @foreach($editorPicks as $track)
+                        <article class="rounded-[1.5rem] border border-white/60 bg-white/75 p-3 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/95 hover:shadow-md">
+                            <div class="flex items-center gap-3">
+                                <button @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })"
+                                        class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200">
+                                    @if($track->getCoverUrl())
+                                        <img src="{{ $track->getCoverUrl() }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
+                                    @endif
+                                </button>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <a href="{{ route('track.show', $track) }}" wire:navigate class="truncate text-sm font-semibold text-gray-900 hover:text-primary">
+                                            {{ $track->title }}
+                                        </a>
+                                        <span class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">Curated</span>
+                                    </div>
+                                    <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
+                                        <a href="{{ route('artist.page', $track->artistProfile) }}" wire:navigate class="truncate hover:text-primary">
+                                            {{ $track->artistProfile?->display_name ?? 'Unknown artist' }}
+                                        </a>
+                                        @if($track->mood_label)
+                                            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">{{ $track->mood_label }}</span>
+                                        @endif
+                                        <x-track-duration :track="$track" class="text-gray-400" />
+                                    </div>
+                                    <div class="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-medium text-gray-400">
+                                        <span>{{ number_format($track->play_count) }} plays</span>
+                                        <span>{{ number_format($track->downloads_count) }} downloads</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     @if($trending->count())
         <section class="overflow-hidden bg-gray-50/80 py-10">
             <div class="mx-auto mb-5 flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <h2 class="text-2xl font-bold text-gray-800">Trending Now</h2>
-                <a href="{{ route('browse', ['sort' => 'popular']) }}" class="text-sm font-medium text-primary hover:text-primary-600">See all →</a>
+                <a href="{{ route('browse', ['sort' => 'popular']) }}" class="text-sm font-medium text-primary hover:text-primary-600">See all &rarr;</a>
             </div>
             <div class="relative select-none overflow-hidden cursor-grab active:cursor-grabbing"
                  x-data="{ paused: false }"
@@ -352,7 +634,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                                  @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })">
                                 <div class="relative h-40 w-40">
                                     @if($track->getFirstMediaUrl('cover'))
-                                        <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                        <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                     @else
                                         <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
                                             <svg class="h-10 w-10 text-primary-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55A4 4 0 1014 17V7h4V3h-6z"/></svg>
@@ -385,7 +667,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                         <h2 class="text-2xl font-bold text-gray-800">New Releases</h2>
                         <p class="mt-1 text-sm text-gray-500">Fresh uploads moving through the latest stack.</p>
                     </div>
-                    <a href="{{ route('browse') }}" class="text-sm font-medium text-primary hover:text-primary-600">See all →</a>
+                    <a href="{{ route('browse') }}" class="text-sm font-medium text-primary hover:text-primary-600">See all &rarr;</a>
                 </div>
 
                 <div class="relative overflow-hidden rounded-[1.75rem] p-4 glass-card"
@@ -405,7 +687,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                                         <svg class="hidden h-5 w-5 shrink-0 text-primary group-hover:block" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                         <div class="h-11 w-11 shrink-0 overflow-hidden rounded-xl">
                                             @if($track->getFirstMediaUrl('cover'))
-                                                <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->title }}" class="h-full w-full object-cover">
+                                                <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                             @else
                                                 <div class="h-full w-full bg-gradient-to-br from-primary-100 to-primary-200"></div>
                                             @endif
@@ -472,7 +754,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                            style="animation-delay: {{ $index * 80 }}ms">
                             <div class="h-16 w-16 overflow-hidden rounded-full bg-gradient-to-br from-primary-100 to-primary-200 ring-2 ring-white shadow-sm">
                                 @if($artist->getFirstMediaUrl('avatar'))
-                                    <img src="{{ $artist->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $artist->stage_name }}" class="h-full w-full object-cover">
+                                    <img src="{{ $artist->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $artist->avatar_alt }}" class="h-full w-full object-cover">
                                 @else
                                     <div class="flex h-full w-full items-center justify-center text-xl font-black text-primary-400">
                                         {{ strtoupper(substr($artist->stage_name ?? $artist->user->name, 0, 1)) }}
@@ -481,8 +763,8 @@ new #[Layout('layouts.glass-app')] class extends Component {
                             </div>
                             <div>
                                 <p class="text-xs font-semibold text-gray-800">{{ $artist->stage_name ?? $artist->user->name }}</p>
-                                <p class="text-[10px] {{ $artist->is_verified ? 'text-primary' : 'text-gray-400' }}">
-                                    {{ $artist->is_verified ? 'Verified' : 'Artist' }}
+                                <p class="text-[10px] {{ $artist->is_featured ? 'text-amber-600' : ($artist->is_verified ? 'text-primary' : 'text-gray-400') }}">
+                                    {{ $artist->is_featured ? "Editor's Pick" : ($artist->is_verified ? 'Verified' : 'Artist') }}
                                 </p>
                             </div>
                         </a>
@@ -540,7 +822,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                         </a>
                         <a href="{{ route('browse') }}"
                            class="inline-block rounded-full border border-white/50 px-8 py-3 font-semibold text-white transition hover:bg-white/10">
-                            Just Browsing →
+                            Just Browsing &rarr;
                         </a>
                     </div>
                 </div>

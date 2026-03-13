@@ -83,6 +83,13 @@ class Playlist extends Model implements HasMedia
         return $this->getFirstMediaUrl('cover') ?: '';
     }
 
+    public function getCoverAltAttribute(): string
+    {
+        $owner = $this->user?->name ?? 'community';
+
+        return "{$this->name} playlist cover curated by {$owner}";
+    }
+
     public function setSlug(): string
     {
        return $this->slug = Str::slug($this->name);
