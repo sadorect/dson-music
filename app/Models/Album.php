@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Support\UploadLimits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Album extends Model implements HasMedia
@@ -48,6 +50,7 @@ class Album extends Model implements HasMedia
         $this->addMediaCollection('cover')
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsFile(fn (File $file) => $file->size <= UploadLimits::imageBytes())
             ->withResponsiveImages();
     }
 

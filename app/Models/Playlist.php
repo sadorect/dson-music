@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Support\UploadLimits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Support\Str;
+use Spatie\MediaLibrary\MediaCollections\File;
 
 class Playlist extends Model implements HasMedia
 {
@@ -55,7 +57,8 @@ class Playlist extends Model implements HasMedia
         $this->addMediaCollection('cover')
             ->useDisk($disk)
             ->singleFile()
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsFile(fn (File $file) => $file->size <= UploadLimits::imageBytes());
     }
 
     // ─── Relationships ─────────────────────────────────────────────────────────

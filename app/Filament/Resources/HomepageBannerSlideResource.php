@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\HomepageBannerSlideResource\Pages;
 use App\Models\HomepageBannerSlide;
 use App\Rules\UrlOrInternalPath;
+use App\Support\UploadLimits;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -65,7 +66,8 @@ class HomepageBannerSlideResource extends Resource
                         ->imageEditor()
                         ->imageResizeTargetWidth('1920')
                         ->imageResizeTargetHeight('960')
-                        ->helperText('Recommended hero image: 1920 x 960px (2:1). Minimum 1600 x 800px. JPG or WebP works best.')
+                        ->maxSize(fn (): int => UploadLimits::heroImageKb())
+                        ->helperText(fn (): string => 'Recommended hero image: 1920 x 960px (2:1). Minimum 1600 x 800px. JPG or WebP works best. Max ' . UploadLimits::formatKilobytes(UploadLimits::heroImageKb()) . '.')
                         ->columnSpanFull(),
                     Forms\Components\TextInput::make('background_image_alt')
                         ->label('Background alt text')

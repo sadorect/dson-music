@@ -3,11 +3,14 @@
 use App\Models\ArtistProfile;
 use App\Models\Genre;
 use App\Models\User;
-use App\StagesLivewireUploads;
 use App\Rules\CaptchaAnswer;
+use App\StagesLivewireUploads;
+use App\Support\UploadLimits;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -38,7 +41,7 @@ new #[Layout('layouts.guest')] class extends Component
 
     public array $genres = [];
 
-    public function register(): void
+    protected function rules(): array
     {
         $rules = [
             'name'     => ['required', 'string', 'max:255'],
@@ -52,40 +55,70 @@ new #[Layout('layouts.guest')] class extends Component
             $rules['stage_name']     = ['required', 'string', 'max:100'];
             $rules['bio']            = ['nullable', 'string', 'max:500'];
             $rules['selectedGenres'] = ['nullable', 'array', 'max:5'];
-            $rules['avatar']         = ['nullable', 'image', 'max:2048'];
+            $rules['avatar']         = ['nullable', 'image', 'max:' . UploadLimits::imageKb()];
         }
 
-        $validated = $this->validate($rules);
+        return $rules;
+    }
 
-        $user = User::create([
-            'name'     => $this->name,
-            'email'    => $this->email,
-            'password' => Hash::make($this->password),
-        ]);
+    public function updatedAvatar(): void
+    {
+        if ($this->role !== 'artist') {
+            return;
+        }
 
-        $user->assignRole($this->role);
+        $this->validateOnly('avatar');
+    }
 
-        if ($this->role === 'artist') {
-            $profile = ArtistProfile::create([
-                'user_id'    => $user->id,
-                'stage_name' => $this->stage_name,
-                'bio'        => $this->bio,
-                'is_active'  => true,
-                'is_approved' => false,
-            ]);
+    public function register(): void
+    {
+        $this->resetErrorBag('register');
+        $this->validate();
 
-            if (!empty($this->selectedGenres)) {
-                $profile->genres()->sync($this->selectedGenres);
-            }
+        $user = null;
 
-            if ($this->avatar) {
-                $this->addStagedMedia(
-                    $profile,
-                    $this->avatar,
-                    'avatar',
-                    'avatar.' . strtolower($this->avatar->getClientOriginalExtension())
-                );
-            }
+        try {
+            DB::transaction(function () use (&$user): void {
+                $user = User::create([
+                    'name'     => $this->name,
+                    'email'    => $this->email,
+                    'password' => Hash::make($this->password),
+                ]);
+
+                $user->assignRole($this->role);
+
+                if ($this->role === 'artist') {
+                    $profile = ArtistProfile::create([
+                        'user_id'    => $user->id,
+                        'stage_name' => $this->stage_name,
+                        'bio'        => $this->bio,
+                        'is_active'  => true,
+                        'is_approved' => false,
+                    ]);
+
+                    if (!empty($this->selectedGenres)) {
+                        $profile->genres()->sync($this->selectedGenres);
+                    }
+
+                    if ($this->avatar) {
+                        $this->addStagedMedia(
+                            $profile,
+                            $this->avatar,
+                            'avatar',
+                            'avatar.' . strtolower($this->avatar->getClientOriginalExtension()),
+                            'avatar'
+                        );
+                    }
+                }
+            });
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            $this->addError('register', "We couldn't finish creating your account right now. Please review the form and try again.");
+
+            return;
         }
 
         event(new Registered($user));
@@ -100,6 +133,12 @@ new #[Layout('layouts.guest')] class extends Component
         <h1 class="text-2xl font-bold text-gray-800">Create your account</h1>
         <p class="text-sm text-gray-500 mt-1">Join {{ $siteName }} today — it's free</p>
     </div>
+
+    @if($errors->has('register'))
+        <div class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {{ $errors->first('register') }}
+        </div>
+    @endif
 
     <form wire:submit="register" enctype="multipart/form-data" class="space-y-4">
 
@@ -207,6 +246,7 @@ new #[Layout('layouts.guest')] class extends Component
                     <input wire:model="avatar" id="avatar" type="file" accept="image/jpeg,image/png,image/webp"
                            class="text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100">
                 </div>
+                <p class="mt-2 text-xs text-gray-400">JPG, PNG, or WEBP up to {{ UploadLimits::formatKilobytes(UploadLimits::imageKb()) }}.</p>
                 <x-input-error :messages="$errors->get('avatar')" class="mt-2" />
             </div>
         </div>

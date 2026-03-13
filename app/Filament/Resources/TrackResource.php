@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TrackResource\Pages;
 use App\Models\Track;
+use App\Support\UploadLimits;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -70,8 +71,8 @@ class TrackResource extends Resource
                         ->disk('public')
                         ->directory('audio/tracks')
                         ->acceptedFileTypes(['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/flac', 'audio/ogg', 'audio/x-wav'])
-                        ->maxSize(102400)
-                        ->helperText('MP3, WAV, FLAC or OGG up to 100 MB')
+                        ->maxSize(fn (): int => UploadLimits::audioKb())
+                        ->helperText(fn (): string => 'MP3, WAV, FLAC or OGG up to ' . UploadLimits::formatKilobytes(UploadLimits::audioKb()))
                         ->columnSpanFull(),
                 ]),
             Section::make('Visibility & Monetization')

@@ -3,6 +3,7 @@
 use App\Models\Playlist;
 use App\Models\Track;
 use App\StagesLivewireUploads;
+use App\Support\UploadLimits;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -63,7 +64,7 @@ new #[Layout('layouts.glass-app')] class extends Component
             'title' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:600'],
             'isPublic' => ['boolean'],
-            'coverFile' => ['nullable', 'image', 'max:3072'],
+            'coverFile' => ['nullable', 'image', 'max:' . UploadLimits::imageKb()],
         ]);
 
         $playlist = $this->editingPlaylistId
@@ -777,7 +778,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                                         <input wire:model="coverFile" type="file" accept="image/png,image/jpeg,image/webp" class="hidden">
                                         <div class="space-y-2">
                                             <p class="text-sm font-semibold text-gray-700">Upload playlist cover</p>
-                                            <p class="text-xs text-gray-500">Optional. JPG, PNG or WEBP up to 3MB.</p>
+                                            <p class="text-xs text-gray-500">Optional. JPG, PNG or WEBP up to {{ UploadLimits::formatKilobytes(UploadLimits::imageKb()) }}.</p>
                                         </div>
                                     </label>
                                     @error('coverFile') <p class="text-xs font-medium text-rose-600">{{ $message }}</p> @enderror

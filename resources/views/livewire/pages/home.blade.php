@@ -199,6 +199,14 @@ new #[Layout('layouts.glass-app')] class extends Component {
     animation-play-state: paused;
 }
 
+.ticker-track-slow {
+    animation-duration: 42s;
+}
+
+.ticker-track-reverse {
+    animation-direction: reverse;
+}
+
 @keyframes verticalMarquee {
     0% { transform: translateY(0); }
     100% { transform: translateY(-50%); }
@@ -235,6 +243,24 @@ new #[Layout('layouts.glass-app')] class extends Component {
 
 .float-card.visible {
     animation: floatIn 0.5s ease-out forwards;
+}
+
+@keyframes genreBob {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+    25% { transform: translate3d(0, -3px, 0) rotate(-0.7deg) scale(1.01); }
+    50% { transform: translate3d(0, 1px, 0) rotate(0.6deg) scale(0.995); }
+    75% { transform: translate3d(0, -2px, 0) rotate(-0.35deg) scale(1.005); }
+}
+
+.genre-pill {
+    animation: genreBob var(--genre-float-duration, 7s) ease-in-out infinite;
+    animation-delay: var(--genre-float-delay, 0s);
+    transform-origin: center;
+    will-change: transform;
+}
+
+.genre-pill:hover {
+    animation-play-state: paused;
 }
 
 .genre-pill:hover::before {
@@ -719,12 +745,13 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 <div class="flex flex-wrap gap-3">
                     @php
                         $fallbackColors = ['#728FCE', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#6366f1', '#ec4899', '#8b5cf6', '#14b8a6', '#5574b9', '#84cc16', '#0ea5e9'];
+                        $genreDurations = [6.6, 7.2, 7.8, 8.4, 7.0, 8.8];
                     @endphp
                     @foreach($genres as $idx => $genre)
                         @php $color = $genre->color ?: $fallbackColors[$idx % count($fallbackColors)]; @endphp
                         <a href="{{ route('browse', ['genre' => $genre->slug]) }}"
                            class="genre-pill relative inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:scale-105 hover:shadow-md active:scale-95"
-                           style="background: {{ $color }};">
+                           style="background: {{ $color }}; --genre-float-delay: -{{ number_format($idx * 0.33, 2, '.', '') }}s; --genre-float-duration: {{ $genreDurations[$idx % count($genreDurations)] }}s;">
                             {{ $genre->name }}
                             @if($genre->tracks_count > 0)
                                 <span class="rounded-full bg-white/25 px-1.5 py-0.5 text-[10px] text-white">{{ $genre->tracks_count }}</span>
@@ -736,41 +763,43 @@ new #[Layout('layouts.glass-app')] class extends Component {
         @endif
 
         @if($featuredArtists->count())
-            <section class="mb-14"
-                     x-data="{ ready: false }"
-                     x-init="
-                        const observer = new IntersectionObserver((entries) => {
-                            if (entries[0].isIntersecting) {
-                                ready = true;
-                                observer.disconnect();
-                            }
-                        }, { threshold: 0.1 });
-                        observer.observe($el);
-                     ">
-                <h2 class="mb-5 text-2xl font-bold text-gray-800">Featured Artists</h2>
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
-                    @foreach($featuredArtists as $index => $artist)
-                        <a href="{{ route('artist.page', $artist) }}"
-                           class="float-card flex flex-col items-center gap-2 rounded-xl p-4 text-center transition glass-card glass-card-hover"
-                           :class="{ 'visible': ready }"
-                           style="animation-delay: {{ $index * 80 }}ms">
-                            <div class="h-16 w-16 overflow-hidden rounded-full bg-gradient-to-br from-primary-100 to-primary-200 ring-2 ring-white shadow-sm">
-                                @if($artist->getFirstMediaUrl('avatar'))
-                                    <img src="{{ $artist->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $artist->avatar_alt }}" class="h-full w-full object-cover">
-                                @else
-                                    <div class="flex h-full w-full items-center justify-center text-xl font-black text-primary-400">
-                                        {{ strtoupper(substr($artist->stage_name ?? $artist->user->name, 0, 1)) }}
+            <section class="mb-14 overflow-hidden">
+                <div class="mb-5 flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-800">Featured Artists</h2>
+                    <a href="{{ route('browse') }}" class="text-sm font-medium text-primary hover:text-primary-600">Discover artists &rarr;</a>
+                </div>
+
+                <div class="relative select-none overflow-hidden"
+                     x-data="{ paused: false }"
+                     @mouseenter="paused = true"
+                     @mouseleave="paused = false">
+                    <div class="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-16 bg-gradient-to-r from-white/90 to-transparent"></div>
+                    <div class="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-16 bg-gradient-to-l from-white/90 to-transparent"></div>
+
+                    <div class="ticker-track ticker-track-reverse ticker-track-slow gap-4 px-1" :class="{ 'paused': paused }">
+                        @foreach([$featuredArtists, $featuredArtists] as $loopSet)
+                            @foreach($loopSet as $artist)
+                                <a href="{{ route('artist.page', $artist) }}"
+                                   class="group flex w-40 shrink-0 flex-col items-center gap-3 rounded-[1.5rem] p-4 text-center transition glass-card glass-card-hover hover:-translate-y-1">
+                                    <div class="h-20 w-20 overflow-hidden rounded-full bg-gradient-to-br from-primary-100 to-primary-200 ring-2 ring-white shadow-sm transition duration-300 group-hover:scale-[1.04]">
+                                        @if($artist->getFirstMediaUrl('avatar'))
+                                            <img src="{{ $artist->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $artist->avatar_alt }}" class="h-full w-full object-cover">
+                                        @else
+                                            <div class="flex h-full w-full items-center justify-center text-2xl font-black text-primary-400">
+                                                {{ strtoupper(substr($artist->stage_name ?? $artist->user->name, 0, 1)) }}
+                                            </div>
+                                        @endif
                                     </div>
-                                @endif
-                            </div>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-800">{{ $artist->stage_name ?? $artist->user->name }}</p>
-                                <p class="text-[10px] {{ $artist->is_featured ? 'text-amber-600' : ($artist->is_verified ? 'text-primary' : 'text-gray-400') }}">
-                                    {{ $artist->is_featured ? "Editor's Pick" : ($artist->is_verified ? 'Verified' : 'Artist') }}
-                                </p>
-                            </div>
-                        </a>
-                    @endforeach
+                                    <div class="space-y-1">
+                                        <p class="truncate text-sm font-semibold text-gray-800">{{ $artist->stage_name ?? $artist->user->name }}</p>
+                                        <p class="text-[10px] font-medium uppercase tracking-[0.18em] {{ $artist->is_featured ? 'text-amber-600' : ($artist->is_verified ? 'text-primary' : 'text-gray-400') }}">
+                                            {{ $artist->is_featured ? "Editor's Pick" : ($artist->is_verified ? 'Verified' : 'Artist') }}
+                                        </p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </section>
         @endif

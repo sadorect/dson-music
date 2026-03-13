@@ -4,7 +4,9 @@ use App\Models\Genre;
 use App\Models\Track;
 use App\Rules\ValidAudioUpload;
 use App\StagesLivewireUploads;
+use App\Support\UploadLimits;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
@@ -73,7 +75,7 @@ new #[Layout('layouts.glass-app')] class extends Component
         return $suggestedMood ? (Track::moodOptions()[$suggestedMood] ?? null) : null;
     }
 
-    public function save(): void
+    protected function rules(): array
     {
         $rules = [
             'title' => ['required', 'string', 'max:200'],
@@ -86,44 +88,69 @@ new #[Layout('layouts.glass-app')] class extends Component
             'is_published' => ['boolean'],
             'requires_donation' => ['boolean'],
             'donation_amount' => ['nullable', 'numeric', 'min:0.5', 'max:999'],
-            'audioFile' => ['nullable', 'file', new ValidAudioUpload(), 'max:102400'],
-            'coverFile' => ['nullable', 'image', 'max:4096'],
+            'audioFile' => ['nullable', 'file', new ValidAudioUpload(), 'max:' . UploadLimits::audioKb()],
+            'coverFile' => ['nullable', 'image', 'max:' . UploadLimits::imageKb()],
         ];
 
         if ($this->requires_donation) {
             $rules['donation_amount'][] = 'required';
         }
 
-        $this->validate($rules);
+        return $rules;
+    }
 
-        $this->track->update([
-            'title' => $this->title,
-            'description' => $this->description ?: null,
-            'lyrics' => $this->lyrics ?: null,
-            'genre_id' => $this->genre_id,
-            'album_id' => $this->album_id,
-            'mood' => $this->mood,
-            'track_number' => $this->track_number ?: 1,
-            'is_published' => $this->is_published,
-            'is_free' => ! $this->requires_donation,
-            'donation_amount' => $this->requires_donation ? (float) $this->donation_amount : 1.00,
-        ]);
+    public function updatedAudioFile(): void
+    {
+        $this->validateOnly('audioFile');
+    }
 
-        if ($this->audioFile) {
-            $this->track->clearMediaCollection('audio');
-            $audioFileName = (Str::slug($this->title) ?: 'track') . '.' . strtolower($this->audioFile->getClientOriginalExtension());
+    public function updatedCoverFile(): void
+    {
+        $this->validateOnly('coverFile');
+    }
 
-            $this->addStagedMedia($this->track, $this->audioFile, 'audio', $audioFileName);
-        }
+    public function save(): void
+    {
+        $this->resetErrorBag('save');
+        $this->validate();
 
-        if ($this->coverFile) {
-            $this->track->clearMediaCollection('cover');
-            $this->addStagedMedia(
-                $this->track,
-                $this->coverFile,
-                'cover',
-                'cover.' . strtolower($this->coverFile->getClientOriginalExtension())
-            );
+        try {
+            $this->track->update([
+                'title' => $this->title,
+                'description' => $this->description ?: null,
+                'lyrics' => $this->lyrics ?: null,
+                'genre_id' => $this->genre_id,
+                'album_id' => $this->album_id,
+                'mood' => $this->mood,
+                'track_number' => $this->track_number ?: 1,
+                'is_published' => $this->is_published,
+                'is_free' => ! $this->requires_donation,
+                'donation_amount' => $this->requires_donation ? (float) $this->donation_amount : 1.00,
+            ]);
+
+            if ($this->audioFile) {
+                $audioFileName = (Str::slug($this->title) ?: 'track') . '.' . strtolower($this->audioFile->getClientOriginalExtension());
+
+                $this->addStagedMedia($this->track, $this->audioFile, 'audio', $audioFileName, 'audioFile');
+            }
+
+            if ($this->coverFile) {
+                $this->addStagedMedia(
+                    $this->track,
+                    $this->coverFile,
+                    'cover',
+                    'cover.' . strtolower($this->coverFile->getClientOriginalExtension()),
+                    'coverFile'
+                );
+            }
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            $this->addError('save', "We couldn't save your track changes right now. Please try again.");
+
+            return;
         }
 
         session()->flash('success', "\"{$this->track->title}\" updated successfully!");
@@ -145,6 +172,12 @@ new #[Layout('layouts.glass-app')] class extends Component
 
     @if(session('success'))
         <div class="mb-6 px-4 py-3 bg-green-100 text-green-700 rounded-xl text-sm">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->has('save'))
+        <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {{ $errors->first('save') }}
+        </div>
     @endif
 
     <form wire:submit="save" class="space-y-6" enctype="multipart/form-data">
@@ -234,7 +267,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                 <div>
                     <input wire:model="coverFile" type="file" accept="image/jpeg,image/png,image/webp"
                         class="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
-                    <p class="text-xs text-gray-400 mt-1">Upload a new image to replace the current cover - JPG, PNG, WEBP</p>
+                    <p class="text-xs text-gray-400 mt-1">Upload a new image to replace the current cover - JPG, PNG, WEBP, up to {{ UploadLimits::formatKilobytes(UploadLimits::imageKb()) }}</p>
                     <x-input-error :messages="$errors->get('coverFile')" class="mt-1" />
                 </div>
             </div>
@@ -272,7 +305,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <p class="text-xs text-gray-500 mt-1">{{ round($audioFile->getSize() / 1048576, 1) }} MB - will replace existing</p>
                 @else
                     <p class="text-sm text-gray-500">Drop new audio file here or <span class="text-red-500">browse</span></p>
-                    <p class="text-xs text-gray-400 mt-1">MP3, WAV, FLAC, OGG, AAC, M4A - Max 100 MB</p>
+                    <p class="text-xs text-gray-400 mt-1">MP3, WAV, FLAC, OGG, AAC, M4A - Max {{ UploadLimits::formatKilobytes(UploadLimits::audioKb()) }}</p>
                 @endif
                 <input id="audioReplaceInput" wire:model="audioFile" type="file" accept=".mp3,.wav,.flac,.ogg,.aac,.m4a,audio/*" class="sr-only">
             </div>

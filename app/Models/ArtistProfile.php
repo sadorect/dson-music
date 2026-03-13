@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UploadLimits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
@@ -9,6 +10,7 @@ use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ArtistProfile extends Model implements HasMedia
@@ -64,6 +66,7 @@ class ArtistProfile extends Model implements HasMedia
             ->useDisk($disk)
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsFile(fn (File $file) => $file->size <= UploadLimits::imageBytes())
             ->withResponsiveImages();
 
         $this->addMediaCollection('banner')

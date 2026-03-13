@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\SiteSetting;
+use App\Support\UploadLimits;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -95,16 +96,62 @@ class SiteBranding extends Page implements HasForms
                             ->disk('public')
                             ->directory('site-branding')
                             ->acceptedFileTypes(['image/png', 'image/webp', 'image/svg+xml'])
-                            ->maxSize(2048)
-                            ->helperText('Upload PNG, WEBP, or SVG. Recommended canvas: 320 x 96px with transparent background. Max 2 MB.'),
+                            ->maxSize(fn (): int => UploadLimits::siteLogoKb())
+                            ->helperText(fn (): string => 'Upload PNG, WEBP, or SVG. Recommended canvas: 320 x 96px with transparent background. Max ' . UploadLimits::formatKilobytes(UploadLimits::siteLogoKb()) . '.'),
                         Forms\Components\FileUpload::make('favicon')
                             ->label('Favicon')
                             ->disk('public')
                             ->directory('site-branding')
                             ->acceptedFileTypes(['image/png', 'image/x-icon', 'image/svg+xml'])
-                            ->maxSize(512)
-                            ->helperText('Upload a square PNG, SVG, or ICO. Recommended: 64 x 64px or 512 x 512px. Max 512 KB.'),
+                            ->maxSize(fn (): int => UploadLimits::faviconKb())
+                            ->helperText(fn (): string => 'Upload a square PNG, SVG, or ICO. Recommended: 64 x 64px or 512 x 512px. Max ' . UploadLimits::formatKilobytes(UploadLimits::faviconKb()) . '.'),
                     ]),
+                Section::make('Upload Limits')
+                    ->description('Adjust upload size caps without touching code. These limits are applied across the public site and admin upload forms.')
+                    ->schema([
+                        Forms\Components\TextInput::make('audio_upload_limit_kb')
+                            ->label('Track audio limit')
+                            ->numeric()
+                            ->minValue(512)
+                            ->step(256)
+                            ->default(UploadLimits::DEFAULT_AUDIO_KB)
+                            ->suffix('KB')
+                            ->helperText('Controls artist and admin track audio uploads. Default: ' . UploadLimits::formatKilobytes(UploadLimits::DEFAULT_AUDIO_KB) . '.'),
+                        Forms\Components\TextInput::make('image_upload_limit_kb')
+                            ->label('General image limit')
+                            ->numeric()
+                            ->minValue(256)
+                            ->step(128)
+                            ->default(UploadLimits::DEFAULT_IMAGE_KB)
+                            ->suffix('KB')
+                            ->helperText('Used for cover art, playlist art, album art, and profile images site-wide. Default: ' . UploadLimits::formatKilobytes(UploadLimits::DEFAULT_IMAGE_KB) . '.'),
+                        Forms\Components\TextInput::make('site_logo_upload_limit_kb')
+                            ->label('Logo upload limit')
+                            ->numeric()
+                            ->minValue(128)
+                            ->step(128)
+                            ->default(UploadLimits::DEFAULT_SITE_LOGO_KB)
+                            ->suffix('KB')
+                            ->helperText('Controls the site logo file size on this page. Default: ' . UploadLimits::formatKilobytes(UploadLimits::DEFAULT_SITE_LOGO_KB) . '.'),
+                        Forms\Components\TextInput::make('favicon_upload_limit_kb')
+                            ->label('Favicon upload limit')
+                            ->numeric()
+                            ->minValue(64)
+                            ->step(64)
+                            ->default(UploadLimits::DEFAULT_FAVICON_KB)
+                            ->suffix('KB')
+                            ->helperText('Controls favicon uploads in site branding. Default: ' . UploadLimits::formatKilobytes(UploadLimits::DEFAULT_FAVICON_KB) . '.'),
+                        Forms\Components\TextInput::make('hero_image_upload_limit_kb')
+                            ->label('Hero/banner image limit')
+                            ->numeric()
+                            ->minValue(512)
+                            ->step(256)
+                            ->default(UploadLimits::DEFAULT_HERO_IMAGE_KB)
+                            ->suffix('KB')
+                            ->helperText('Used for homepage banner images in admin. Default: ' . UploadLimits::formatKilobytes(UploadLimits::DEFAULT_HERO_IMAGE_KB) . '.'),
+                    ])
+                    ->columns(2)
+                    ->visible(fn (): bool => SiteSetting::supportsUploadLimits()),
                 Section::make('Discovery Visibility')
                     ->description('Control which extra discovery rails appear on public pages. Core catalog and search results stay available even if you hide these cards.')
                     ->schema([
@@ -189,6 +236,16 @@ class SiteBranding extends Page implements HasForms
             'youtube_handle',
         ]);
 
+        if (SiteSetting::supportsUploadLimits()) {
+            $data = array_merge($data, Arr::only($this->data, [
+                'audio_upload_limit_kb',
+                'image_upload_limit_kb',
+                'site_logo_upload_limit_kb',
+                'favicon_upload_limit_kb',
+                'hero_image_upload_limit_kb',
+            ]));
+        }
+
         if (SiteSetting::supportsDiscoveryVisibility()) {
             $data = array_merge($data, Arr::only($this->data, [
                 'show_home_personalized',
@@ -221,6 +278,7 @@ class SiteBranding extends Page implements HasForms
         $settings->forceFill($data)->save();
         $settings->refresh();
         $this->settings = $settings;
+        UploadLimits::resetCache();
 
         $this->form->fill($this->settingsPayload());
 
@@ -248,6 +306,16 @@ class SiteBranding extends Page implements HasForms
             'site_logo',
             'favicon',
         ];
+
+        if (SiteSetting::supportsUploadLimits()) {
+            $keys = array_merge($keys, [
+                'audio_upload_limit_kb',
+                'image_upload_limit_kb',
+                'site_logo_upload_limit_kb',
+                'favicon_upload_limit_kb',
+                'hero_image_upload_limit_kb',
+            ]);
+        }
 
         if (SiteSetting::supportsDiscoveryVisibility()) {
             $keys = array_merge($keys, [

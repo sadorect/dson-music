@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UploadLimits;
 use Illuminate\Database\Eloquent\Model;
 use Throwable;
 use Illuminate\Support\Facades\Schema;
@@ -12,6 +13,7 @@ class SiteSetting extends Model
 {
     protected static ?bool $supportsDiscoveryVisibilityCache = null;
     protected static ?bool $supportsDiscoveryOrderingCache = null;
+    protected static ?bool $supportsUploadLimitsCache = null;
 
     protected $fillable = [
         'site_name',
@@ -23,6 +25,11 @@ class SiteSetting extends Model
         'youtube_handle',
         'site_logo',
         'favicon',
+        'audio_upload_limit_kb',
+        'image_upload_limit_kb',
+        'site_logo_upload_limit_kb',
+        'favicon_upload_limit_kb',
+        'hero_image_upload_limit_kb',
         'show_home_personalized',
         'show_home_editor_picks',
         'show_browse_mood_filters',
@@ -40,6 +47,11 @@ class SiteSetting extends Model
     protected $casts = [
         'show_home_personalized' => 'boolean',
         'show_home_editor_picks' => 'boolean',
+        'audio_upload_limit_kb' => 'integer',
+        'image_upload_limit_kb' => 'integer',
+        'site_logo_upload_limit_kb' => 'integer',
+        'favicon_upload_limit_kb' => 'integer',
+        'hero_image_upload_limit_kb' => 'integer',
         'show_browse_mood_filters' => 'boolean',
         'show_browse_editor_picks' => 'boolean',
         'show_browse_personalized' => 'boolean',
@@ -89,6 +101,23 @@ class SiteSetting extends Model
         }
     }
 
+    public static function supportsUploadLimits(): bool
+    {
+        if (static::$supportsUploadLimitsCache !== null) {
+            return static::$supportsUploadLimitsCache;
+        }
+
+        try {
+            if (! Schema::hasTable('site_settings')) {
+                return static::$supportsUploadLimitsCache = false;
+            }
+
+            return static::$supportsUploadLimitsCache = Schema::hasColumn('site_settings', 'audio_upload_limit_kb');
+        } catch (Throwable) {
+            return static::$supportsUploadLimitsCache = false;
+        }
+    }
+
     public function getSiteLogoUrlAttribute(): ?string
     {
         return $this->buildPublicAssetUrl($this->site_logo);
@@ -119,6 +148,31 @@ class SiteSetting extends Model
     public function getEffectiveSiteTitleAttribute(): string
     {
         return $this->site_title ?: $this->effective_site_name;
+    }
+
+    public function getEffectiveAudioUploadLimitKbAttribute(): int
+    {
+        return (int) ($this->audio_upload_limit_kb ?: UploadLimits::DEFAULT_AUDIO_KB);
+    }
+
+    public function getEffectiveImageUploadLimitKbAttribute(): int
+    {
+        return (int) ($this->image_upload_limit_kb ?: UploadLimits::DEFAULT_IMAGE_KB);
+    }
+
+    public function getEffectiveSiteLogoUploadLimitKbAttribute(): int
+    {
+        return (int) ($this->site_logo_upload_limit_kb ?: UploadLimits::DEFAULT_SITE_LOGO_KB);
+    }
+
+    public function getEffectiveFaviconUploadLimitKbAttribute(): int
+    {
+        return (int) ($this->favicon_upload_limit_kb ?: UploadLimits::DEFAULT_FAVICON_KB);
+    }
+
+    public function getEffectiveHeroImageUploadLimitKbAttribute(): int
+    {
+        return (int) ($this->hero_image_upload_limit_kb ?: UploadLimits::DEFAULT_HERO_IMAGE_KB);
     }
 
     public function getSocialLinksAttribute(): array

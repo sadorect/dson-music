@@ -59,6 +59,12 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                     Profile
                                 </a>
+                                @if(Auth::user()->isSuperAdmin())
+                                <a href="{{ url('/musicdirector') }}" class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7.5l9-4 9 4m-18 0v9l9 4 9-4v-9m-18 0l9 4m0 9v-9m9-4l-9 4"/></svg>
+                                    Admin Panel
+                                </a>
+                                @endif
                                 @if(Auth::user()->isArtist())
                                 <a href="{{ route('artist.tracks') }}" wire:navigate class="flex items-center gap-2 px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13"/></svg>
@@ -119,6 +125,9 @@
                     <p class="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-400">Account</p>
                     <a href="{{ route('dashboard') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Dashboard</a>
                     <a href="{{ route('profile') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Profile</a>
+                    @if(Auth::user()->isSuperAdmin())
+                        <a href="{{ url('/musicdirector') }}" class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">Admin Panel</a>
+                    @endif
                     @if(Auth::user()->isListener())
                         <a href="{{ route('listener.playlists') }}" wire:navigate class="block rounded-xl px-3 py-2.5 text-gray-700 transition hover:bg-primary-50 hover:text-primary-600">My Playlists</a>
                     @endif

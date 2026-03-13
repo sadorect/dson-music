@@ -3,6 +3,7 @@
 use App\Models\Album;
 use App\Models\Genre;
 use App\StagesLivewireUploads;
+use App\Support\UploadLimits;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Volt\Component;
@@ -44,7 +45,7 @@ new #[Layout('layouts.glass-app')] class extends Component
             'genre_id'     => ['nullable', 'exists:genres,id'],
             'release_date' => ['nullable', 'date'],
             'is_published' => ['boolean'],
-            'coverFile'    => ['nullable', 'image', 'max:4096'],
+            'coverFile'    => ['nullable', 'image', 'max:' . UploadLimits::imageKb()],
         ]);
 
         $user    = auth()->user();
@@ -143,6 +144,7 @@ new #[Layout('layouts.glass-app')] class extends Component
                     <input wire:model="coverFile" type="file" accept="image/jpeg,image/png,image/webp"
                            class="text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
                 </div>
+                <p class="text-xs text-gray-400 mt-2">JPG, PNG, or WEBP up to {{ UploadLimits::formatKilobytes(UploadLimits::imageKb()) }}.</p>
                 <x-input-error :messages="$errors->get('coverFile')" class="mt-1" />
             </div>
 

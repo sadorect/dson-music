@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\UploadLimits;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,6 +10,7 @@ use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Track extends Model implements HasMedia
@@ -115,12 +117,14 @@ class Track extends Model implements HasMedia
         $this->addMediaCollection('audio')
             ->useDisk($disk)
             ->singleFile()
-            ->acceptsMimeTypes(['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/flac', 'audio/ogg']);
+            ->acceptsMimeTypes(['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/flac', 'audio/ogg', 'audio/aac', 'audio/mp4', 'audio/x-m4a', 'video/mp4'])
+            ->acceptsFile(fn (File $file) => $file->size <= UploadLimits::audioBytes());
 
         $this->addMediaCollection('cover')
             ->useDisk($disk)
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsFile(fn (File $file) => $file->size <= UploadLimits::imageBytes())
             ->withResponsiveImages();
     }
 
