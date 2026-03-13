@@ -520,7 +520,7 @@ new #[Layout('layouts.glass-app')] class extends Component {
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.28em] text-primary/70">For You</p>
-                            <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Because of what you keep playing</h2>
+                            <h2 class="mt-2 text-2xl font-black tracking-tight text-gray-900 sm:text-3xl">Suggested</h2>
                             <p class="mt-2 max-w-2xl text-sm text-gray-500">Recommendations shaped by your likes, recent listening, and the artists you keep circling back to.</p>
                         </div>
                         <a href="{{ route('listener.dashboard') }}" wire:navigate class="text-sm font-semibold text-primary transition hover:text-primary-600">Open taste profile</a>

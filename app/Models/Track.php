@@ -15,38 +15,15 @@ class Track extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, Searchable, SoftDeletes;
 
-    /**
-     * @return array<string, array{label: string, genres: array<int, string>, moods: array<int, string>}>
-     */
     public static function moodDefinitions(): array
     {
-        return [
-            'late-night' => [
-                'label' => 'Late Night',
-                'genres' => ['r-b', 'electronic', 'jazz', 'indie'],
-                'moods' => ['late night', 'night', 'moody', 'smooth'],
-            ],
-            'chill' => [
-                'label' => 'Chill',
-                'genres' => ['r-b', 'indie', 'jazz', 'electronic'],
-                'moods' => ['chill', 'calm', 'laid back', 'easy'],
-            ],
-            'focus' => [
-                'label' => 'Focus',
-                'genres' => ['electronic', 'indie', 'jazz'],
-                'moods' => ['focus', 'ambient', 'study', 'deep'],
-            ],
-            'hype' => [
-                'label' => 'Hype',
-                'genres' => ['hip-hop', 'afrobeats', 'electronic', 'rock'],
-                'moods' => ['hype', 'energetic', 'party', 'workout'],
-            ],
-            'romance' => [
-                'label' => 'Romance',
-                'genres' => ['r-b', 'pop', 'afrobeats'],
-                'moods' => ['romantic', 'love', 'warm', 'intimate'],
-            ],
-        ];
+        return collect(Mood::definitions())
+            ->map(fn (array $definition) => [
+                'label' => $definition['name'],
+                'genres' => $definition['related_genres'] ?? [],
+                'moods' => $definition['keywords'] ?? [],
+            ])
+            ->all();
     }
 
     /**
@@ -54,24 +31,12 @@ class Track extends Model implements HasMedia
      */
     public static function moodOptions(): array
     {
-        return collect(self::moodDefinitions())
-            ->mapWithKeys(fn (array $definition, string $slug) => [$slug => $definition['label']])
-            ->all();
+        return Mood::optionMap();
     }
 
     public static function suggestedMoodSlugForGenre(?string $genreSlug): ?string
     {
-        if (! $genreSlug) {
-            return null;
-        }
-
-        foreach (self::moodDefinitions() as $slug => $definition) {
-            if (in_array($genreSlug, $definition['genres'], true)) {
-                return $slug;
-            }
-        }
-
-        return null;
+        return Mood::suggestedSlugForGenre($genreSlug);
     }
 
     protected $fillable = [
@@ -283,10 +248,10 @@ class Track extends Model implements HasMedia
             return null;
         }
 
-        $definition = self::moodDefinitions()[$effectiveMood] ?? null;
+        $label = self::moodOptions()[$effectiveMood] ?? null;
 
-        if ($definition) {
-            return $definition['label'];
+        if ($label) {
+            return $label;
         }
 
         return Str::of($effectiveMood)->replace('_', ' ')->replace('-', ' ')->title()->value();

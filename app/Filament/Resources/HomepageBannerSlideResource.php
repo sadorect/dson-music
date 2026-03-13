@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\HomepageBannerSlideResource\Pages;
 use App\Models\HomepageBannerSlide;
-use Closure;
+use App\Rules\UrlOrInternalPath;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -37,25 +37,6 @@ class HomepageBannerSlideResource extends Resource
             route('login', absolute: false),
             route('register', absolute: false),
         ];
-    }
-
-    protected static function urlOrPathRule(): Closure
-    {
-        return function (string $attribute, $value, Closure $fail): void {
-            if (blank($value)) {
-                return;
-            }
-
-            if (str_starts_with($value, '/')) {
-                return;
-            }
-
-            if (filter_var($value, FILTER_VALIDATE_URL)) {
-                return;
-            }
-
-            $fail('Use a full URL like https://example.com or an internal path like /browse.');
-        };
     }
 
     public static function form(Schema $schema): Schema
@@ -109,7 +90,7 @@ class HomepageBannerSlideResource extends Resource
                         ->datalist(static::internalPageOptions())
                         ->placeholder('/browse or https://example.com')
                         ->helperText('Start typing to pick an internal page, or enter any full external URL.')
-                        ->rule(static::urlOrPathRule()),
+                        ->rule(new UrlOrInternalPath()),
                     Forms\Components\TextInput::make('secondary_button_label')
                         ->maxLength(80),
                     Forms\Components\TextInput::make('secondary_button_url')
@@ -117,7 +98,7 @@ class HomepageBannerSlideResource extends Resource
                         ->datalist(static::internalPageOptions())
                         ->placeholder('/contact or https://example.com')
                         ->helperText('Start typing to pick an internal page, or enter any full external URL.')
-                        ->rule(static::urlOrPathRule()),
+                        ->rule(new UrlOrInternalPath()),
                 ]),
         ]);
     }
