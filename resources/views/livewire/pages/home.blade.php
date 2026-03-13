@@ -630,9 +630,9 @@ new #[Layout('layouts.glass-app')] class extends Component {
                 <div class="ticker-track gap-4 px-4" :class="{ 'paused': paused }">
                     @foreach([$trending, $trending] as $loopSet)
                         @foreach($loopSet as $track)
-                            <div class="group w-40 shrink-0 cursor-pointer overflow-hidden rounded-2xl transition-transform hover:scale-[1.03] glass-card"
-                                 @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })">
-                                <div class="relative h-40 w-40">
+                            <div class="group w-40 shrink-0 cursor-pointer overflow-hidden rounded-2xl transition-transform hover:scale-[1.03] glass-card">
+                                
+                                <div class="relative h-40 w-40"  @click="Livewire.dispatch('play-track', { id: {{ $track->id }} })">
                                     @if($track->getFirstMediaUrl('cover'))
                                         <img src="{{ $track->getFirstMediaUrl('cover', 'thumb') }}" alt="{{ $track->cover_alt }}" class="h-full w-full object-cover">
                                     @else
@@ -647,7 +647,9 @@ new #[Layout('layouts.glass-app')] class extends Component {
                                 <div class="space-y-1 p-3">
                                     <p class="truncate text-sm font-semibold text-gray-800">{{ $track->title }}</p>
                                     <div class="flex items-center justify-between gap-2 text-[11px] text-gray-500">
-                                        <span class="truncate">{{ $track->artistProfile->stage_name ?? ($track->artistProfile->user->name ?? '') }}</span>
+                                        <a href="{{ route('artist.page', $track->artistProfile) }}" class="truncate hover:text-primary">
+                                            {{ $track->artistProfile->stage_name ?? ($track->artistProfile->user->name ?? '') }}
+                                        </a>
                                         <x-track-duration :track="$track" class="shrink-0 text-[11px] text-gray-400" :icon="false" />
                                     </div>
                                 </div>
